@@ -4,17 +4,21 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Board;
+using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Hud;
 using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
 using Game.Services.Ads;
+using Game.Services.Album;
 using Game.Services.Audio;
 using Game.Services.Content;
+using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
+using Game.Services.Wallet;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -53,7 +57,11 @@ namespace Game.Features.Gameplay
         private readonly IDialogService _dialogs;
         private readonly IUIService _ui;
         private readonly IOverlayService _overlay;
-        private readonly IProgressService _progress;
+        private readonly IWalletService _wallet;
+        private readonly IBoosterInventory _inventory;
+        private readonly IOnboardingService _onboarding;
+        private readonly ILevelProgressService _levels;
+        private readonly IExperimentsService _experiments;
         private readonly IContentService _content;
         private readonly ILevelCurveService _curves;
         private readonly IGameFlow _flow;
@@ -91,7 +99,11 @@ namespace Game.Features.Gameplay
             _dialogs = services.Dialogs;
             _ui = services.UI;
             _overlay = services.Overlay;
-            _progress = services.Progress;
+            _wallet = services.Wallet;
+            _inventory = services.Boosters;
+            _onboarding = services.Onboarding;
+            _levels = services.Levels;
+            _experiments = services.Experiments;
             _content = services.Content;
             _curves = services.Curves;
             _flow = services.Flow;
@@ -117,7 +129,7 @@ namespace Game.Features.Gameplay
             _session.UndoLeft.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
             _session.CanUndo.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
             _session.BonusPick.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
-            _progress.Changed.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
+            _inventory.Changed.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
             _board.ItemTapped.Subscribe(OnItemTapped).AddTo(_disposables);
             _board.ExtraBasketClicked.Subscribe(_ => OfferExtraBasketAsync().Forget()).AddTo(_disposables);
             StartWhenLaidOutAsync().Forget();
@@ -136,7 +148,7 @@ namespace Game.Features.Gameplay
         public void Tick()
         {
             if (_session.State == null || _session.IsOver || _ui.IsPopupOpen) return;
-            if (Level > GameplayBalance.HintUntilLevel && !_progress.Data.FailedLevels.Contains(Level)) return;
+            if (Level > GameplayBalance.HintUntilLevel && !_levels.HasFailed(Level)) return;
             if (Time.unscaledTime - _lastActionTime < GameplayBalance.HintIdleSeconds) return;
 
             _lastActionTime = Time.unscaledTime;
@@ -169,13 +181,13 @@ namespace Game.Features.Gameplay
             ShowBanner();
             GiftBooster();
             if (level == 1) ShowTutorialAsync().Forget();
-            if (level == GameplayBalance.ExtraBasketSlotLevel && !_progress.HasFlag(Flags.FreeBasket)) ShowBasketTipAsync().Forget();
+            if (level == GameplayBalance.ExtraBasketSlotLevel && !_onboarding.HasFlag(Flags.FreeBasket)) ShowBasketTipAsync().Forget();
         }
 
         private void BindHud()
         {
             DisposeHud();
-            _hudModel = new HudViewModel(_session, _progress);
+            _hudModel = new HudViewModel(_session, _wallet);
             _hudModel.SettingsRequested.Subscribe(_ => OpenSettings()).AddTo(_disposables);
             _hud.Bind(_hudModel);
         }
@@ -276,7 +288,7 @@ namespace Game.Features.Gameplay
                     if (notice.StartsWith("family:"))
                     {
                         var family = _content.Catalog.FamilyName(notice.Substring("family:".Length));
-                        _overlay.Toast($"{family} complete! +{ProgressService.FamilyBonus} coins");
+                        _overlay.Toast($"{family} complete! +{AlbumService.FamilyBonus} coins");
                     }
 
                     break;
@@ -285,10 +297,9 @@ namespace Game.Features.Gameplay
 
         private void QueueTip(string key, string text, VisualElement anchor, bool isAbove)
         {
-            if (Level > GameplayBalance.CoachTipsUntilLevel || _progress.Data.SeenTips.Contains(key)) return;
+            if (Level > GameplayBalance.CoachTipsUntilLevel || _onboarding.HasSeenTip(key)) return;
 
-            _progress.Data.SeenTips.Add(key);
-            _progress.NotifyChanged();
+            _onboarding.MarkTipSeen(key);
             _tipQueue.Enqueue((text, anchor, isAbove));
             if (Time.unscaledTime >= _tipBusyUntil) ShowNextTipAsync().Forget();
         }
@@ -342,11 +353,10 @@ namespace Game.Features.Gameplay
             };
             foreach (var (id, level) in unlocks)
             {
-                if (level != Level || _progress.Data.GiftedBoosters.Contains(id)) continue;
+                if (level != Level || _inventory.IsGifted(id)) continue;
 
-                _progress.Data.GiftedBoosters.Add(id);
-                if (id != BoosterIds.Undo) _progress.Data.Boosters[id] = _progress.GetBooster(id) + GameplayBalance.BoosterGift;
-                _progress.NotifyChanged();
+                _inventory.MarkGifted(id);
+                if (id != BoosterIds.Undo) _inventory.Add(id, GameplayBalance.BoosterGift);
                 // Undo means nothing before the first move, so its tip waits for that move.
                 if (id == BoosterIds.Undo) _pendingGift = id;
                 else ShowGiftAsync(id, 2400).Forget();
@@ -418,10 +428,10 @@ namespace Game.Features.Gameplay
                             almostFull && _session.CanUndo.Value && _session.UndoLeft.Value > 0);
                         break;
                     case BoosterIds.Pick:
-                        vm.Set(_progress.GetBooster(BoosterIds.Pick) + _session.BonusPick.Value, false, false);
+                        vm.Set(_inventory.Get(BoosterIds.Pick) + _session.BonusPick.Value, false, false);
                         break;
                     default:
-                        vm.Set(_progress.GetBooster(vm.Id), false, false);
+                        vm.Set(_inventory.Get(vm.Id), false, false);
                         break;
                 }
             }
@@ -439,7 +449,7 @@ namespace Game.Features.Gameplay
 
             if (_session.IsOver && id != BoosterIds.Tidy) return;
 
-            var owned = _progress.GetBooster(id) + (id == BoosterIds.Pick ? _session.BonusPick.Value : 0);
+            var owned = _inventory.Get(id) + (id == BoosterIds.Pick ? _session.BonusPick.Value : 0);
             if (owned <= 0)
             {
                 OfferBoosterAsync(id).Forget();
@@ -487,13 +497,13 @@ namespace Game.Features.Gameplay
             };
             var buy = new DialogButton("Get 2", ButtonStyle.Gold, () =>
             {
-                if (!_progress.TrySpend(GameplayBalance.UndoPackPrice)) return;
+                if (!_wallet.TrySpend(GameplayBalance.UndoPackPrice)) return;
 
                 _audio.Play(SoundId.Coin);
                 _session.AddUndos(GameplayBalance.UndoPackSize);
                 Undo();
             }) { Badge = ButtonBadge.Coins, Price = GameplayBalance.UndoPackPrice };
-            buy.IsEnabled.Value = _progress.Coins.Value >= GameplayBalance.UndoPackPrice;
+            buy.IsEnabled.Value = _wallet.Coins.Value >= GameplayBalance.UndoPackPrice;
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
@@ -522,18 +532,18 @@ namespace Game.Features.Gameplay
             var dialog = new DialogViewModel(title, RibbonStyle.Berry) { Icon = _art.IconOf(id), Text = text };
             var buy = new DialogButton("Get 1", ButtonStyle.Gold, () =>
             {
-                if (!_progress.TrySpend(GameplayBalance.BoosterPrice)) return;
+                if (!_wallet.TrySpend(GameplayBalance.BoosterPrice)) return;
 
                 _audio.Play(SoundId.Coin);
-                _progress.AddBooster(id, 1);
+                _inventory.Add(id, 1);
             }) { Badge = ButtonBadge.Coins, Price = GameplayBalance.BoosterPrice };
-            buy.IsEnabled.Value = _progress.Coins.Value >= GameplayBalance.BoosterPrice;
+            buy.IsEnabled.Value = _wallet.Coins.Value >= GameplayBalance.BoosterPrice;
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
                 dialog.Buttons.Add(new DialogButton("Get 1 free", ButtonStyle.Green, () => RewardAsync(() =>
                 {
-                    _progress.AddBooster(id, 1);
+                    _inventory.Add(id, 1);
                     _overlay.Toast(title + " +1");
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
@@ -547,9 +557,9 @@ namespace Game.Features.Gameplay
             if (_ui.IsPopupOpen || _session.IsOver) return;
 
             _overlay.ClearCoach();
-            if (!_progress.HasFlag(Flags.FreeBasket))
+            if (!_onboarding.HasFlag(Flags.FreeBasket))
             {
-                _progress.SetFlag(Flags.FreeBasket);
+                _onboarding.SetFlag(Flags.FreeBasket);
                 _session.OpenExtraBasket();
                 _overlay.Toast("Rosie opened a third basket. On the house!");
                 return;
@@ -562,9 +572,9 @@ namespace Game.Features.Gameplay
             };
             var buy = new DialogButton("Open", ButtonStyle.Gold, () =>
             {
-                if (_progress.TrySpend(GameplayBalance.ExtraBasketPrice)) _session.OpenExtraBasket();
+                if (_wallet.TrySpend(GameplayBalance.ExtraBasketPrice)) _session.OpenExtraBasket();
             }) { Badge = ButtonBadge.Coins, Price = GameplayBalance.ExtraBasketPrice };
-            buy.IsEnabled.Value = _progress.Coins.Value >= GameplayBalance.ExtraBasketPrice;
+            buy.IsEnabled.Value = _wallet.Coins.Value >= GameplayBalance.ExtraBasketPrice;
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
@@ -619,7 +629,7 @@ namespace Game.Features.Gameplay
             {
                 dialog.Buttons.Add(new DialogButton("Double coins", ButtonStyle.Green, () => RewardAsync(() =>
                 {
-                    _progress.AddCoins(outcome.Reward);
+                    _wallet.Add(outcome.Reward);
                     _audio.Play(SoundId.Coin);
                     _overlay.Toast($"+{outcome.Reward} coins");
                     AfterWin();
@@ -646,10 +656,10 @@ namespace Game.Features.Gameplay
         {
             var st = _session.State;
             var canUndo = _session.IsUnlocked(BoosterIds.Undo) && _session.CanUndo.Value && _session.UndoLeft.Value > 0;
-            var tidy = _progress.GetBooster(BoosterIds.Tidy);
+            var tidy = _inventory.Get(BoosterIds.Tidy);
             var offer = !HasAds
                 ? null
-                : _progress.Data.LossOffer == "basket" && st.UnlockedBaskets < LevelState.MaxBaskets ? "basket"
+                : _experiments.LossOffer == "basket" && st.UnlockedBaskets < LevelState.MaxBaskets ? "basket"
                 : st.Capacity < GameplayBalance.ExtendedCapacity ? "slot" : null;
             var dialog = new DialogViewModel("Oops, the counter is full!", RibbonStyle.Berry)
             {
@@ -682,11 +692,11 @@ namespace Game.Features.Gameplay
             {
                 var tidyButton = new DialogButton(tidy > 0 ? $"Tidy Up ({tidy} left)" : "Tidy Up", ButtonStyle.Gold, () =>
                 {
-                    if (_progress.GetBooster(BoosterIds.Tidy) <= 0)
+                    if (_inventory.Get(BoosterIds.Tidy) <= 0)
                     {
-                        if (!_progress.TrySpend(GameplayBalance.BoosterPrice)) return;
+                        if (!_wallet.TrySpend(GameplayBalance.BoosterPrice)) return;
 
-                        _progress.AddBooster(BoosterIds.Tidy, 1);
+                        _inventory.Add(BoosterIds.Tidy, 1);
                     }
 
                     UseBooster(BoosterIds.Tidy);
@@ -695,7 +705,7 @@ namespace Game.Features.Gameplay
                 {
                     tidyButton.Badge = ButtonBadge.Coins;
                     tidyButton.Price = GameplayBalance.BoosterPrice;
-                    tidyButton.IsEnabled.Value = _progress.Coins.Value >= GameplayBalance.BoosterPrice;
+                    tidyButton.IsEnabled.Value = _wallet.Coins.Value >= GameplayBalance.BoosterPrice;
                 }
 
                 dialog.Buttons.Add(tidyButton);

@@ -1,6 +1,6 @@
 using System;
 using Game.Features.Gameplay.Session;
-using Game.Services.Progress;
+using Game.Services.Wallet;
 using Game.Services.UI;
 using UniRx;
 
@@ -23,11 +23,11 @@ namespace Game.Features.Gameplay.Hud
         /// Creates the view model and follows the session and the wallet.
         /// </summary>
         /// <param name="session">Level in play.</param>
-        /// <param name="progress">Coins.</param>
-        public HudViewModel(LevelSession session, IProgressService progress)
+        /// <param name="wallet">Coins.</param>
+        public HudViewModel(LevelSession session, IWalletService wallet)
         {
             _session = session;
-            Coins = progress.Coins;
+            Coins = wallet.Coins;
             Disposables.Add(_badgeTitle);
             Disposables.Add(_levelNumber);
             Disposables.Add(_isTricky);
