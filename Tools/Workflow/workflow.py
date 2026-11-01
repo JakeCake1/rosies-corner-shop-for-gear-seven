@@ -6,13 +6,16 @@ successful `handoff` (or `abandon`). Usage of the model is accounted per attempt
 
 Commands
   start ISSUE         Fetch the issue, move it to In Progress, switch to its branch, open a new attempt.
-  handoff             Run checks, push, create or update the PR, move the issue to In Review, send usage, close.
+  handoff             Run checks, push, create or update the PR (a draft becomes ready for review), move the issue
+                      to In Review, send usage, close.
   status              Show the active attempt, handoff steps, collected usage and unsent Langfuse payloads.
   flush               Resend Langfuse payloads that could not be sent earlier.
   abandon             Close the active attempt without handoff (usage is still sent; Linear is not touched).
   collect             Copy usage from the attempt's transcripts into its ledger (hooks do this automatically).
   install / uninstall Add or remove the Claude Code hooks and slash commands, the git hooks (commit-msg,
                       pre-commit) and the merge -> Done GitHub Action (install only; existing hooks are kept).
+  (Stop hook)         After each agent reply, new commits on the issue branch are pushed and a draft PR is created
+                      if none is open (config "auto_draft_pr"). Not a handoff: status and attempt stay as they are.
   hook EVENT          Entry point for Claude Code and git hooks (session-start, collect, guard, commit-msg,
                       pre-commit).
 
@@ -145,6 +148,7 @@ def load_config():
     cfg["git"].setdefault("remote", "origin")
     cfg.setdefault("langfuse", {}).setdefault("environment", "default")
     cfg.setdefault("checks", [])
+    cfg.setdefault("auto_draft_pr", True)
     cfg.setdefault("guarded_paths", ["Assets/", "Packages/", "ProjectSettings/"])
     return cfg
 
@@ -273,7 +277,7 @@ def gh(*args, check=True):
 
 
 def open_pr_for_branch(branch):
-    out = gh("pr", "list", "--head", branch, "--state", "open", "--json", "number,url,title").stdout
+    out = gh("pr", "list", "--head", branch, "--state", "open", "--json", "number,url,title,isDraft").stdout
     prs = json.loads(out or "[]")
     return prs[0] if prs else None
 
@@ -646,7 +650,11 @@ def cmd_handoff(args):
         pr = open_pr_for_branch(branch)
         if pr:
             gh("pr", "edit", str(pr["number"]), "--body", body)
-            step(attempt, "pr", "ok", f"updated {pr['url']}")
+            was_draft = bool(pr.get("isDraft"))
+            if was_draft:
+                gh("pr", "ready", str(pr["number"]))
+                pr["isDraft"] = False
+            step(attempt, "pr", "ok", f"updated {pr['url']}" + (" (draft marked ready for review)" if was_draft else ""))
         else:
             out = gh("pr", "create", "--base", base, "--head", branch,
                      "--title", f"{attempt['issue']}: {attempt['title']}", "--body", body).stdout.strip()
@@ -724,6 +732,7 @@ def cmd_status(args):
         ledger = read_json(os.path.join(USAGE_DIR, f"{attempt['attempt_id']}.json"), {}) or {}
         print(json.dumps({"active": {k: attempt[k] for k in ("attempt_id", "issue", "branch", "started_at", "pr",
                                                              "handoff", "previous_attempts")},
+                          "auto_draft_pr": attempt.get("auto_pr"),
                           "transcripts": len(attempt.get("transcripts", [])), "usage": usage_summary(ledger)},
                          indent=2, ensure_ascii=False))
     else:
@@ -787,6 +796,61 @@ def hook_collect(data):
         if register_transcript(attempt, data.get("transcript_path"), data.get("session_id")):
             save_attempt(attempt)
         collect_usage(attempt)
+    if data.get("hook_event_name") == "Stop" and load_config()["auto_draft_pr"]:
+        auto_draft_pr(attempt)
+
+
+def auto_draft_pr(attempt):
+    """After an agent reply: if the issue branch has commits that are not on the remote yet, push them and make
+    sure a draft PR exists. This is not a handoff: the issue status, the attempt and Langfuse are not touched, and
+    the PR becomes ready for review only in `handoff`. Failures are recorded and never block the session."""
+    cfg = load_config()
+    remote, base = cfg["git"]["remote"], cfg["git"]["base"]
+    result = {"at": now_iso()}
+    try:
+        branch = git("rev-parse", "--abbrev-ref", "HEAD")
+        if branch != attempt["branch"]:
+            return
+        if run(["git", "rev-parse", "--verify", "--quiet", f"{remote}/{base}"], check=False).returncode != 0:
+            run(["git", "fetch", remote, base], check=False, timeout=30)
+        if (git("rev-list", "--count", f"{remote}/{base}..HEAD", check=False) or "0") == "0":
+            return  # nothing committed for the issue yet
+        head = git("rev-parse", "HEAD")
+        pushed = run(["git", "rev-parse", "--verify", "--quiet", f"{remote}/{branch}"], check=False).stdout.strip()
+        known_pr = (attempt.get("pr") or {}).get("url")
+        if head == pushed and known_pr:
+            return  # already pushed and a PR is known: nothing new
+        if head != pushed:
+            git("push", "-u", remote, branch)
+            result["pushed"] = head[:10]
+        pr = open_pr_for_branch(branch)
+        if pr:
+            result.update(status="ok", detail=f"pushed to open PR {pr['url']}")
+        else:
+            body = ("Draft: implementation in progress, created automatically after an agent reply. It becomes ready "
+                    "for review with the explicit handoff.\n\n" + pr_body(attempt, []))
+            gh("pr", "create", "--draft", "--base", base, "--head", branch,
+               "--title", f"{attempt['issue']}: {attempt['title']}", "--body", body)
+            pr = open_pr_for_branch(branch) or {}
+            result.update(status="ok", detail=f"created draft PR {pr.get('url')}")
+        with Lock():
+            fresh = active_attempt()
+            if fresh and fresh["attempt_id"] == attempt["attempt_id"]:
+                fresh["pr"] = pr or fresh.get("pr")
+                fresh["auto_pr"] = result
+                save_attempt(fresh)
+                rec = issue_record(fresh["issue"])
+                if pr.get("url") and all(p.get("url") != pr["url"] for p in rec["prs"]):
+                    rec["prs"].append(pr)
+                    save_issue_record(rec)
+    except (WorkflowError, subprocess.TimeoutExpired) as e:
+        result.update(status="failed", detail=str(e))
+        log(f"auto draft PR failed: {e}")
+        with Lock():
+            fresh = active_attempt()
+            if fresh and fresh["attempt_id"] == attempt["attempt_id"]:
+                fresh["auto_pr"] = result
+                save_attempt(fresh)
 
 
 def deny(reason):
@@ -876,17 +940,13 @@ def git_hooks_dir():
 
 def merge_settings(path, template):
     """Adds the workflow hooks to .claude/settings.json and keeps every hook and setting already there."""
+    strip_settings(path)  # re-install replaces older workflow hooks instead of duplicating them
     settings = read_json(path, {}) or {}
     hooks = settings.setdefault("hooks", {})
-    added = 0
     for event, groups in template["hooks"].items():
-        existing = hooks.setdefault(event, [])
-        if any(HOOK_MARK in h.get("command", "") for g in existing for h in g.get("hooks", [])):
-            continue
-        existing.extend(groups)
-        added += 1
+        hooks.setdefault(event, []).extend(groups)
     write_json(path, settings)
-    return added
+    return len(template["hooks"])
 
 
 def strip_settings(path):
@@ -921,7 +981,7 @@ def cmd_install(args):
     """Run by the user once per clone: Claude Code hooks, slash commands, git hooks, merge automation."""
     settings_path = os.path.join(ROOT, ".claude", "settings.json")
     added = merge_settings(settings_path, read_json(os.path.join(TEMPLATES, "settings.hooks.json")))
-    print(f"{settings_path}: {added} hook event(s) added, existing hooks kept")
+    print(f"{settings_path}: workflow hooks for {added} event(s) installed, other hooks kept")
     for name in sorted(os.listdir(os.path.join(TEMPLATES, "commands"))):
         dst = os.path.join(ROOT, ".claude", "commands", name)
         copy_file(os.path.join(TEMPLATES, "commands", name), dst)

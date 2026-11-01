@@ -31,11 +31,15 @@ accounting attempt (issue id + unique attempt id). Then read the issue context a
   deduplicated by message id. After an app restart the SessionStart hook reconnects to the active attempt.
 - Missing usage data is reported as unavailable, never as zero.
 - Update `Docs/` when the issue changes something the docs describe.
+- After each agent reply the Stop hook pushes new commits of the issue branch and opens a **draft** PR if none is
+  open (`auto_draft_pr` in `Tools/Workflow/config.json`). A draft PR is not a handoff: the status stays In Progress
+  and the attempt stays open.
 
 ### Handoff to review: `/handoff`
 
 Runs the available checks and reports them (Unity EditMode tests via Unity MCP when the Editor is open, passed as
-`--check-result`), pushes, creates or updates the PR for the issue (never a second open PR for the same branch),
+`--check-result`), pushes, creates or updates the PR for the issue (never a second open PR for the same branch; a draft is marked ready
+for review),
 moves the issue to In Review only after the PR step succeeded, sends the attempt's usage to Langfuse and closes the
 attempt. If a step fails, state is kept and the output says which step is unfinished; run `/handoff` again.
 
