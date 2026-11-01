@@ -5,6 +5,7 @@ using Game.Services.Content;
 using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
@@ -34,11 +35,13 @@ namespace Game.Features.Gameplay
         /// <param name="ads">Rewarded ad placeholder.</param>
         /// <param name="settings">Settings dialog.</param>
         /// <param name="audio">Sound effects.</param>
+        /// <param name="texts">Dialog, toast and tip texts.</param>
         public GameplayServices(IDialogService dialogs, IUIService ui, IOverlayService overlay, IWalletService wallet,
             IBoosterInventory boosters, IOnboardingService onboarding, ILevelProgressService levels,
             IExperimentsService experiments, IContentService content, ILevelCurveService curves, IGameFlow flow, IRewardedAdService ads,
-            ISettingsScreen settings, IAudioService audio)
+            ISettingsScreen settings, IAudioService audio, ILocalizationService texts)
         {
+            Texts = texts;
             Dialogs = dialogs;
             UI = ui;
             Overlay = overlay;
@@ -96,5 +99,8 @@ namespace Game.Features.Gameplay
 
         /// <summary>Sound effects.</summary>
         public IAudioService Audio { get; }
+
+        /// <summary>Player-facing text from the string tables.</summary>
+        public ILocalizationService Texts { get; }
     }
 }

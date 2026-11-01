@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Services.Content;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using UniRx;
@@ -15,11 +16,6 @@ namespace Game.Features.Home
     /// </summary>
     public sealed class HomeViewModel : ViewModel
     {
-        /// <summary>
-        /// Name on the sign until the player names the shop.
-        /// </summary>
-        public const string DefaultShopName = "Rosie's Corner Shop";
-
         private const int AlbumFromLevel = 9;
         private const int ShowcaseSize = 7;
 
@@ -35,6 +31,7 @@ namespace Game.Features.Home
         private readonly HomeProgress _progress;
         private readonly ILevelCurveService _curves;
         private readonly IContentService _content;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the view model and follows progress changes.
@@ -42,11 +39,18 @@ namespace Game.Features.Home
         /// <param name="progress">Coins, stars, album, flags, shop name.</param>
         /// <param name="curves">Next level and its difficulty.</param>
         /// <param name="content">Item sprites for the showcase.</param>
-        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content)
+        /// <param name="texts">Sign, button and play line texts.</param>
+        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content,
+            ILocalizationService texts)
         {
             _progress = progress;
             _curves = curves;
             _content = content;
+            _texts = texts;
+            Tagline = texts.Get(HomeTexts.Tagline);
+            ReviewersLink = texts.Get(HomeTexts.Reviewers);
+            AlbumCaption = texts.Get(HomeTexts.Album);
+            PlayTitle = texts.Get(HomeTexts.PlayTitle);
             Coins = progress.Wallet.Coins;
             Disposables.Add(_shopName);
             Disposables.Add(_subtitle);
@@ -88,6 +92,18 @@ namespace Game.Features.Home
         /// <summary>Coins.</summary>
         public IReadOnlyReactiveProperty<int> Coins { get; }
 
+        /// <summary>Line under the shop name ("GROCERIES · BAKERY · SWEETS").</summary>
+        public string Tagline { get; }
+
+        /// <summary>Caption of the "For reviewers" link (rich text, underlined).</summary>
+        public string ReviewersLink { get; }
+
+        /// <summary>Caption of the album button.</summary>
+        public string AlbumCaption { get; }
+
+        /// <summary>First line of the play button ("Open the shop").</summary>
+        public string PlayTitle { get; }
+
         /// <summary>Commands for the home presenter (navigation lives outside the view model).</summary>
         public IObservable<HomeCommand> Commands => _commands;
 
@@ -118,9 +134,9 @@ namespace Game.Features.Home
             var curve = _curves.Active;
             var next = _curves.NextLevel();
             var hard = _curves.Get(next).IsHard;
-            _shopName.Value = string.IsNullOrEmpty(shopName) ? DefaultShopName : shopName;
-            _subtitle.Value = curve.Subtitle;
-            _playLine.Value = "Level " + next + (hard ? " · Tricky · Rewards ×2" : string.Empty);
+            _shopName.Value = string.IsNullOrEmpty(shopName) ? _texts.Get(HomeTexts.DefaultShopName) : shopName;
+            _subtitle.Value = _texts.Get(curve.SubtitleKey);
+            _playLine.Value = _texts.Format(hard ? HomeTexts.PlayLineTricky : HomeTexts.PlayLine, next);
             _isPlayTricky.Value = hard;
             var isOpen = curve.IsOriginal || _progress.Levels.IsCompleted(AlbumFromLevel);
             _isAlbumLocked.Value = !isOpen;

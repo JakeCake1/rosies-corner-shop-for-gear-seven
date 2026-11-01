@@ -5,6 +5,7 @@ using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
 using Game.Services.Flow;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
@@ -29,6 +30,7 @@ namespace Game.Features.Gameplay
         private readonly ILevelCurveService _curves;
         private readonly IOverlayService _overlay;
         private readonly IAudioService _audio;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the prompt.
@@ -40,9 +42,12 @@ namespace Game.Features.Gameplay
         /// <param name="curves">Whether the level is tricky.</param>
         /// <param name="overlay">"Not enough coins" toast.</param>
         /// <param name="audio">Coin and click sounds.</param>
+        /// <param name="texts">Card and toggle texts.</param>
         public StartBoostersPrompt(IDialogService dialogs, IBoosterInventory boosters, IWalletService wallet,
-            IOnboardingService onboarding, ILevelCurveService curves, IOverlayService overlay, IAudioService audio)
+            IOnboardingService onboarding, ILevelCurveService curves, IOverlayService overlay, IAudioService audio,
+            ILocalizationService texts)
         {
+            _texts = texts;
             _dialogs = dialogs;
             _boosters = boosters;
             _wallet = wallet;
@@ -81,19 +86,22 @@ namespace Game.Features.Gameplay
             var useBasket = false;
             var useQuick = false;
             var play = false;
-            var dialog = new DialogViewModel(isHard ? "Tricky level " + level : "Level " + level,
-                isHard ? RibbonStyle.Berry : RibbonStyle.Green)
+            var title = _texts.Format(isHard ? GameplayTexts.StartTrickyTitle : GameplayTexts.StartTitle, level);
+            var dialog = new DialogViewModel(title, isHard ? RibbonStyle.Berry : RibbonStyle.Green)
             {
-                Text = isFirst
-                    ? "New: start boosters! Rosie gives you two of each. Pick what you want to begin the level with."
-                    : isHard ? "A tricky one. A start booster helps!" : "Get ready. Pick a start booster if you like.",
+                Text = _texts.Get(isFirst ? GameplayTexts.StartFirst
+                    : isHard ? GameplayTexts.StartTricky : GameplayTexts.StartNormal),
             };
-            dialog.Toggles.Add(new DialogToggle(Label("Extra basket", "start with three baskets", BoosterIds.StartBasket,
-                ExtraBasketPrice), false, on => useBasket = Select(on, BoosterIds.StartBasket, ExtraBasketPrice)));
-            dialog.Toggles.Add(new DialogToggle(Label("Quick Pick", "one extra for this level", BoosterIds.StartQuick,
-                QuickPickPrice), false, on => useQuick = Select(on, BoosterIds.StartQuick, QuickPickPrice)));
-            dialog.Buttons.Add(new DialogButton("Play", ButtonStyle.Green, () => play = true));
-            dialog.Buttons.Add(new DialogButton("Back to the shop", ButtonStyle.WoodSmall, null));
+            var basketLabel = Label(GameplayTexts.StartBasketName, GameplayTexts.StartBasketInfo, BoosterIds.StartBasket,
+                ExtraBasketPrice);
+            dialog.Toggles.Add(new DialogToggle(basketLabel, false,
+                on => useBasket = Select(on, BoosterIds.StartBasket, ExtraBasketPrice)));
+            var quickLabel = Label(GameplayTexts.StartQuickName, GameplayTexts.StartQuickInfo, BoosterIds.StartQuick,
+                QuickPickPrice);
+            dialog.Toggles.Add(new DialogToggle(quickLabel, false,
+                on => useQuick = Select(on, BoosterIds.StartQuick, QuickPickPrice)));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartPlay), ButtonStyle.Green, () => play = true));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartBack), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, ct);
             if (!play) return null;
 
@@ -102,11 +110,13 @@ namespace Game.Features.Gameplay
             return new StartBoosters(useBasket, useQuick);
         }
 
-        private string Label(string name, string sub, string id, int price)
+        private string Label(string nameKey, string infoKey, string id, int price)
         {
             var owned = _boosters.GetStart(id);
-            var cost = owned > 0 ? $"{owned} left" : $"{price} coins";
-            return $"<b>{name}</b>\n<size=75%>{sub} · {cost}</size>";
+            var cost = owned > 0
+                ? _texts.Format(GameplayTexts.StartOwned, owned)
+                : _texts.Format(GameplayTexts.StartPrice, price);
+            return _texts.Format(GameplayTexts.StartToggle, _texts.Get(nameKey), _texts.Get(infoKey), cost);
         }
 
         private bool Select(bool isOn, string id, int price)
@@ -120,7 +130,7 @@ namespace Game.Features.Gameplay
 
             if (!_wallet.TrySpend(price))
             {
-                _overlay.Toast("Not enough coins", true);
+                _overlay.Toast(_texts.Get(GameplayTexts.NotEnoughCoins), true);
                 return false;
             }
 

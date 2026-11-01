@@ -1,10 +1,9 @@
 using System.Linq;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using Game.Services.Album;
 using Game.Services.Content;
 using Game.Services.Wallet;
 using Game.Tests.EditMode.Features.Gameplay;
+using Game.Tests.EditMode.Services.Content;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -20,9 +19,9 @@ namespace Game.Tests.EditMode.Services.Album
         public void SetUp()
         {
             _catalog = ScriptableObject.CreateInstance<ItemCatalog>();
-            _catalog.SetContent(TestContent.Items.ToList(), TestContent.Families.ToList(), TestContent.Families.ToList());
+            _catalog.SetContent(TestContent.Items.ToList(), TestContent.Families.ToList());
             _wallet = new WalletService();
-            _album = new AlbumService(new FakeContent(_catalog), _wallet);
+            _album = new AlbumService(new FakeContentService(_catalog), _wallet);
         }
 
         [TearDown]
@@ -58,18 +57,6 @@ namespace Game.Tests.EditMode.Services.Album
 
             Assert.That(_album.NewCount, Is.Zero);
             Assert.That(_album.Found, Is.EqualTo(new[] { id }));
-        }
-
-        private sealed class FakeContent : IContentService
-        {
-            public FakeContent(ItemCatalog catalog)
-            {
-                Catalog = catalog;
-            }
-
-            public ItemCatalog Catalog { get; }
-
-            public UniTask LoadAsync(CancellationToken ct) => UniTask.CompletedTask;
         }
     }
 }

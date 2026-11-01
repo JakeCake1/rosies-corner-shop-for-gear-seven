@@ -31,7 +31,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Tap an item. It goes to the basket that wants it, otherwise to the counter.
+    _tipKey: tip.tap_item
   - _sizes: 0100000002000000
     _seed: 41001
     _jarsPerRow: 2
@@ -50,7 +50,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Empty a shelf and it folds away. Everything above slides down.
+    _tipKey: tip.fold
   - _sizes: 01000000
     _seed: 42001
     _jarsPerRow: 3
@@ -69,7 +69,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 'Wider shelves now: three items in every row.'
+    _tipKey: tip.wider
   - _sizes: 010000000200000003000000
     _seed: 277178
     _jarsPerRow: 3
@@ -88,7 +88,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Tall shelves fold only when every row is empty.
+    _tipKey: tip.tall
   - _sizes: 01000000
     _seed: 39832583
     _jarsPerRow: 3
@@ -107,7 +107,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Empty the shelf with the brass key to untie the tied one.
+    _tipKey: tip.brass_key
   - _sizes: 0100000002000000
     _seed: 3579401
     _jarsPerRow: 3
@@ -126,7 +126,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: A nailed shelf! Tap the hammer to pull the boards off.
+    _tipKey: tip.nailed
   - _sizes: 0100000002000000
     _seed: 6596540
     _jarsPerRow: 3
@@ -145,7 +145,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 'Frozen shelf: it thaws as you pack baskets.'
+    _tipKey: tip.frozen
   - _sizes: 01000000
     _seed: 10912395
     _jarsPerRow: 3
@@ -164,7 +164,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Paper bags hide what's inside. Take one to find out.
+    _tipKey: tip.paper_bags
   - _sizes: 010000000200000003000000
     _seed: 41883604
     _jarsPerRow: 3
@@ -183,7 +183,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Some shelves have a second row hiding behind the first.
+    _tipKey: tip.second_row
   - _sizes: 0200000003000000
     _seed: 2937962
     _jarsPerRow: 3
@@ -202,8 +202,8 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 1
     _family: 
-    _tip: 'Tricky: tall shelves only. Dig where the next basket''s items are hiding.'
+    _tipKey: tip.tricky_tall
   _id: orig
-  _label: "Original \xB7 10"
-  _subtitle: "Original prototype \xB7 10 levels"
+  _labelKey: curve.orig.label
+  _subtitleKey: curve.orig.subtitle
   _isOriginal: 1
