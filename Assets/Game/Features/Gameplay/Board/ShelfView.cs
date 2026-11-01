@@ -60,14 +60,18 @@ namespace Game.Features.Gameplay.Board
         /// <param name="width">Shelf width (column width).</param>
         /// <param name="rowHeight">Row height.</param>
         /// <param name="itemSize">Item cell size.</param>
-        public void Setup(int blockId, int rows, int perRow, float width, float rowHeight, Vector2 itemSize)
+        /// <param name="rowsText">
+        /// Caption of the rows badge ("3 rows"); shown only when <paramref name="rows"/> &gt; 1, may be null otherwise.
+        /// </param>
+        public void Setup(int blockId, int rows, int perRow, float width, float rowHeight, Vector2 itemSize,
+            string rowsText)
         {
             BlockId = blockId;
             _rows = rows;
             _perRow = perRow;
             EnsureParts(rows * perRow, rows);
             _rowsBadge.SetVisible(rows > 1);
-            if (rows > 1) _rowsText.text = rows + " rows";
+            if (rows > 1) _rowsText.text = rowsText;
             Resize(width, rowHeight, itemSize);
         }
 
