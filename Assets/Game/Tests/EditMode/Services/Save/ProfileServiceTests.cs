@@ -37,7 +37,6 @@ namespace Game.Tests.EditMode.Services.Save
             _wallet.Dispose();
             _settings.Dispose();
             _experiments.Dispose();
-            _save.Dispose();
         }
 
         [Test]
@@ -121,8 +120,19 @@ namespace Game.Tests.EditMode.Services.Save
         }
 
         [Test]
+        public void SaveAll_BeforeLoad_DoesNotOverwriteStoredChunks()
+        {
+            _profile.SaveAll();
+            _wallet.Add(10);
+
+            Assert.That(_save.Saved, Is.Empty);
+        }
+
+        [Test]
         public void SaveAll_SavesEveryChunk()
         {
+            _profile.Load();
+
             _profile.SaveAll();
 
             Assert.That(_save.Saved, Is.EqualTo(new[] { "wallet", "settings", "experiments" }));

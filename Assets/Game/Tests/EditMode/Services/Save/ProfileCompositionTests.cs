@@ -23,12 +23,13 @@ namespace Game.Tests.EditMode.Services.Save
             builder.Register<SettingsService>(Lifetime.Singleton).AsImplementedInterfaces();
             var container = builder.Build();
 
-            container.Resolve<IProfileService>().SaveAll();
+            var profile = container.Resolve<IProfileService>();
+            profile.Load();
+            profile.SaveAll();
             container.Resolve<IWalletService>().Add(1);
 
             Assert.That(save.Saved, Is.EquivalentTo(new[] { "wallet", "settings", "wallet" }));
             container.Dispose();
-            save.Dispose();
         }
     }
 }

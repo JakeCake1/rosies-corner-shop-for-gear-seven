@@ -38,11 +38,7 @@ namespace Game.Tests.EditMode.Services.Save
         }
 
         [TearDown]
-        public void TearDown()
-        {
-            _chunk.Dispose();
-            _service.Dispose();
-        }
+        public void TearDown() => _chunk.Dispose();
 
         [Test]
         public void TryLoad_WithoutSave_ReturnsFalseAndKeepsDefaults()
