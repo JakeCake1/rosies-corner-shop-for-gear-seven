@@ -9,8 +9,11 @@
         <ui:Label name="shop-name" text="Rosie&apos;s Corner Shop" class="home-sign__name display-font" />
         <ui:Label text="GROCERIES · BAKERY · SWEETS" class="home-sign__tagline" />
     </ui:VisualElement>
-    <ui:Label name="subtitle" text="Prototype" class="home-subtitle" />
-    <ui:Button name="reviewers" text="&lt;u&gt;For reviewers&lt;/u&gt;" class="btn home-reviewers" />
+    <ui:VisualElement class="home-subtitle-row" picking-mode="Ignore">
+        <ui:Label name="subtitle" text="Prototype" class="home-subtitle" />
+        <ui:Label text=" · " class="home-subtitle" />
+        <ui:Button name="reviewers" text="&lt;u&gt;For reviewers&lt;/u&gt;" class="btn home-reviewers" />
+    </ui:VisualElement>
     <ui:VisualElement class="home-showcase" picking-mode="Ignore">
         <ui:VisualElement name="showcase-items" class="home-showcase__items" picking-mode="Ignore">
             <ui:VisualElement class="home-showcase__item" />

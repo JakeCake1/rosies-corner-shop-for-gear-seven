@@ -49,31 +49,36 @@
     -unity-text-align: middle-center;
 }
 
-.home-subtitle {
+.home-subtitle-row {
     position: absolute;
-    top: 166px;
+    top: 160px;
     left: 0;
     right: 0;
-    height: 20px;
+    height: 22px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-subtitle {
     font-size: 13px;
     color: var(--ink-2);
     -unity-text-align: middle-center;
+    padding: 0;
+    margin: 0;
 }
 
 .home-reviewers {
-    position: absolute;
-    top: 186px;
-    left: 50%;
-    width: 140px;
-    height: 24px;
-    margin-left: -70px;
-    font-size: 14px;
+    height: 22px;
+    padding: 0;
+    margin: 0 0 0 3px;
+    font-size: 13px;
     color: var(--walnut);
 }
 
 .home-showcase {
     position: absolute;
-    top: 230px;
+    top: 210px;
     left: 50%;
     width: 370px;
     height: 96px;
@@ -109,7 +114,7 @@
 
 .home-coins {
     position: absolute;
-    top: 342px;
+    top: 326px;
     left: 16px;
     width: 118px;
     height: 40px;
@@ -131,7 +136,7 @@
 
 .home-album {
     position: absolute;
-    top: 338px;
+    top: 322px;
     right: 16px;
     width: 150px;
     height: 48px;

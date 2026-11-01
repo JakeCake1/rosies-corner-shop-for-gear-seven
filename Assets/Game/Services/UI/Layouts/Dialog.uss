@@ -17,12 +17,21 @@
     padding: 40px 20px 12px 20px;
 }
 
-.dialog-ribbon {
+/* The ribbon hugs its title, as in the mockups ("Settings" ~130px, "Tricky level complete" ~240px). */
+.dialog-ribbon-row {
     position: absolute;
     top: -23px;
-    left: 25px;
-    width: 280px;
+    left: 0;
+    right: 0;
     height: 46px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.dialog-ribbon {
+    height: 46px;
+    min-width: 130px;
+    max-width: 310px;
     justify-content: center;
 }
 
@@ -31,7 +40,7 @@
     -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
-    margin: 0 26px 8px 26px;
+    margin: 0 30px 8px 30px;
     white-space: nowrap;
 }
 
