@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook || python \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook"
+          }
+        ]
+      }
+    ]
+  }
+}

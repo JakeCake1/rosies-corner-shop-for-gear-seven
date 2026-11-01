@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/Services/UI/Layouts/Dialog.uss" />
+    <!-- The body is filled from DialogViewModel by DialogWindow. -->
+    <ui:VisualElement name="frame" class="dialog-frame" picking-mode="Ignore">
+        <ui:VisualElement name="card" class="dialog-card kit-card">
+            <ui:VisualElement name="ribbon" class="dialog-ribbon kit-ribbon-berry">
+                <ui:Label name="title" text="Title" class="dialog-ribbon__title" />
+            </ui:VisualElement>
+            <ui:VisualElement name="body" class="dialog-body" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

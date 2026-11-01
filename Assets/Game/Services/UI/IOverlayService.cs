@@ -1,62 +1,62 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Non-window overlay feedback shared by all features: toasts, coach bubbles, the tutorial hand, particle
-    /// bursts, praise words and the background tint.
+    /// Toasts, coach tips, effects and the shop background.
     /// </summary>
     public interface IOverlayService
     {
         /// <summary>
-        /// Shows a short message pill; a newer toast replaces the current one.
+        /// Shows a short message under the HUD.
         /// </summary>
-        /// <param name="message">Text (rich text allowed).</param>
-        /// <param name="isWarning">Berry color for problems.</param>
+        /// <param name="message">Text.</param>
+        /// <param name="isWarning">Red warning style.</param>
         void Toast(string message, bool isWarning = false);
 
         /// <summary>
         /// Shows a coach bubble next to an element.
         /// </summary>
         /// <param name="message">Rich text.</param>
-        /// <param name="anchor">Element the bubble refers to.</param>
-        /// <param name="isAbove">Place above instead of below.</param>
-        /// <param name="seconds">Auto-hide delay; 0 keeps it until <see cref="ClearCoach"/>.</param>
-        void Coach(string message, RectTransform anchor, bool isAbove, float seconds);
+        /// <param name="anchor">Element to point at.</param>
+        /// <param name="isAbove">Place the bubble above the anchor.</param>
+        /// <param name="seconds">Seconds before it fades; 0 keeps it until <see cref="ClearCoach"/>.</param>
+        void Coach(string message, VisualElement anchor, bool isAbove, float seconds);
 
         /// <summary>
-        /// Shows the tutorial hand pointing at an element.
+        /// Shows the pulsing tutorial hand over an element.
         /// </summary>
         /// <param name="target">Element to tap.</param>
-        void PointAt(RectTransform target);
+        void PointAt(VisualElement target);
 
         /// <summary>
-        /// Hides the coach bubble and the hand.
+        /// Removes the coach bubble and the hand.
         /// </summary>
         void ClearCoach();
 
         /// <summary>
-        /// Emits a particle burst at a world position.
+        /// Bursts particles.
         /// </summary>
-        /// <param name="worldPosition">Center in world space.</param>
+        /// <param name="panelPosition">Origin in panel space (<c>worldBound.center</c> of an element).</param>
         /// <param name="kind">Particle look.</param>
-        /// <param name="count">Particle count.</param>
-        /// <param name="colors">Optional palette override.</param>
-        void Burst(Vector3 worldPosition, EffectKind kind, int count, Color[] colors = null);
+        /// <param name="count">Number of particles.</param>
+        /// <param name="colors">Palette override.</param>
+        void Burst(Vector2 panelPosition, EffectKind kind, int count, Color[] colors = null);
 
         /// <summary>
-        /// Floats a praise word up from a world position.
+        /// Floats a praise word.
         /// </summary>
-        /// <param name="worldPosition">Start position.</param>
-        /// <param name="text">The word.</param>
-        /// <param name="isCombo">Bigger gold style for combo words.</param>
-        void Praise(Vector3 worldPosition, string text, bool isCombo);
+        /// <param name="panelPosition">Origin in panel space.</param>
+        /// <param name="text">Word.</param>
+        /// <param name="isCombo">Combo style.</param>
+        void Praise(Vector2 panelPosition, string text, bool isCombo);
 
         /// <summary>
-        /// Background state for the current screen.
+        /// Sets the background mood.
         /// </summary>
-        /// <param name="isTricky">Red wash for tricky levels.</param>
-        /// <param name="hasBunting">Bunting along the top (home, album).</param>
+        /// <param name="isTricky">Red tint of tricky levels.</param>
+        /// <param name="hasBunting">Show the bunting.</param>
         void SetBackground(bool isTricky, bool hasBunting);
     }
 }

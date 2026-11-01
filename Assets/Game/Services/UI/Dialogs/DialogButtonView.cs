@@ -1,51 +1,80 @@
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+using Game.Services.UI.Elements;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI.Dialogs
 {
     /// <summary>
-    /// A pressable dialog button: background by style, label, optional second line and "AD"/coin badge.
+    /// One dialog button: wooden/berry/green/gold background, label, optional sub label, ad or coin badge.
     /// </summary>
-    public sealed class DialogButtonView : MonoBehaviour
+    public sealed class DialogButtonView : ElementView
     {
-        [SerializeField] private Button _button;
-        [SerializeField] private Image _background;
-        [SerializeField] private TMP_Text _label;
-        [SerializeField] private TMP_Text _subLabel;
-        [SerializeField] private GameObject _adBadge;
-        [SerializeField] private GameObject _coinBadge;
-        [SerializeField] private TMP_Text _price;
-        [SerializeField] private LayoutElement _layout;
-        [SerializeField] private float _height = 58f;
-        [SerializeField] private float _smallHeight = 44f;
-        [SerializeField] private Color _lightText = Color.white;
-        [SerializeField] private Color _darkText = new Color(0.23f, 0.16f, 0.11f);
+        private const string ButtonClass = "dialog-button";
+        private const string SmallClass = "dialog-button--small";
+        private const string TallClass = "dialog-button--tall";
+        private const string ContentClass = "dialog-button__content";
+        private const string LabelsClass = "dialog-button__labels";
+        private const string LabelClass = "dialog-button__label";
+        private const string SubClass = "dialog-button__sub";
+        private const string AdClass = "dialog-button__ad";
+        private const string AdTextClass = "dialog-button__ad-text";
+        private const string CoinClass = "dialog-button__coin";
+        private const string CoinIconClass = "dialog-button__coin-icon";
+        private const string PriceClass = "dialog-button__price";
 
-        /// <summary>The button; the dialog subscribes to its clicks.</summary>
-        public Button Button => _button;
+        private static readonly string[] StyleClasses = { "kit-btn-berry", "kit-btn-green", "kit-btn-wood", "kit-btn-gold", "kit-btn-wood" };
+
+        /// <summary>The button element.</summary>
+        public Button Button { get; private set; }
 
         /// <summary>
-        /// Shows <paramref name="model"/>.
+        /// Creates the button for a model.
         /// </summary>
-        /// <param name="model">Button content.</param>
-        /// <param name="background">Sprite for the button style.</param>
-        public void Setup(DialogButton model, Sprite background)
+        /// <param name="model">Button model.</param>
+        /// <returns>The view (its <see cref="ElementView.Root"/> is the button).</returns>
+        public static DialogButtonView Create(DialogButton model)
         {
-            _background.sprite = background;
-            _label.SetText(model.Label);
+            var view = new DialogButtonView();
+            view.Attach(new Button());
+            view.Setup(model);
+            return view;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnAttached()
+        {
+            Button = (Button)Root;
+            Button.AddToClassList(ButtonClass);
+            Button.AddToClassList("btn");
+        }
+
+        private void Setup(DialogButton model)
+        {
             var hasSub = !string.IsNullOrEmpty(model.SubLabel);
-            _subLabel.gameObject.SetActive(hasSub);
-            if (hasSub) _subLabel.SetText(model.SubLabel);
-            _adBadge.SetActive(model.Badge == ButtonBadge.Ad);
-            _coinBadge.SetActive(model.Badge == ButtonBadge.Coins);
-            if (model.Badge == ButtonBadge.Coins) _price.SetText("{0}", model.Price);
-            var isSmall = model.Style == ButtonStyle.WoodSmall;
-            _layout.preferredHeight = isSmall ? _smallHeight : hasSub ? _height + 12f : _height;
-            _label.fontSize = isSmall ? 18f : 22f;
-            var isLight = model.Style == ButtonStyle.Berry || model.Style == ButtonStyle.Green;
-            _label.color = isLight ? _lightText : _darkText;
-            _subLabel.color = _label.color;
+            Button.AddToClassList(StyleClasses[(int)model.Style]);
+            Button.EnableInClassList(SmallClass, model.Style == ButtonStyle.WoodSmall);
+            Button.EnableInClassList(TallClass, hasSub);
+
+            var content = CreateElement(ContentClass);
+            content.pickingMode = PickingMode.Ignore;
+            Button.Add(content);
+            if (model.Badge == ButtonBadge.Ad)
+            {
+                var ad = CreateElement(AdClass, "kit-rounded-white");
+                ad.Add(CreateLabel("AD", AdTextClass));
+                content.Add(ad);
+            }
+            else if (model.Badge == ButtonBadge.Coins)
+            {
+                var coin = CreateElement(CoinClass);
+                coin.Add(CreateElement(CoinIconClass, "icon-coin"));
+                coin.Add(CreateLabel(model.Price.ToString(), PriceClass));
+                content.Add(coin);
+            }
+
+            var labels = CreateElement(LabelsClass);
+            labels.Add(CreateLabel(model.Label, LabelClass));
+            if (hasSub) labels.Add(CreateLabel(model.SubLabel, SubClass));
+            content.Add(labels);
         }
     }
 }

@@ -31,6 +31,8 @@ namespace Game.Services.Audio
             _progress = progress;
             _host = new GameObject("[Audio]");
             Object.DontDestroyOnLoad(_host);
+            // The scenes' cameras have no listener: the game is 2D UI and all sounds come from this persistent host.
+            _host.AddComponent<AudioListener>();
             for (var i = 0; i < Voices; i++)
             {
                 _voices[i] = _host.AddComponent<AudioSource>();
