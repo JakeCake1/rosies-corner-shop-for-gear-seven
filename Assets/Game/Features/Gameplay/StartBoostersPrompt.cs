@@ -1,12 +1,14 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
 using Game.Services.Flow;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
+using Game.Services.Wallet;
 
 namespace Game.Features.Gameplay
 {
@@ -18,9 +20,12 @@ namespace Game.Features.Gameplay
     {
         private const int ExtraBasketPrice = GameplayBalance.ExtraBasketPrice;
         private const int QuickPickPrice = GameplayBalance.BoosterPrice;
+        private const int StartGift = 2;
 
         private readonly IDialogService _dialogs;
-        private readonly IProgressService _progress;
+        private readonly IBoosterInventory _boosters;
+        private readonly IWalletService _wallet;
+        private readonly IOnboardingService _onboarding;
         private readonly ILevelCurveService _curves;
         private readonly IOverlayService _overlay;
         private readonly IAudioService _audio;
@@ -29,15 +34,19 @@ namespace Game.Features.Gameplay
         /// Creates the prompt.
         /// </summary>
         /// <param name="dialogs">Dialog cards.</param>
-        /// <param name="progress">Owned start boosters, coins, flags.</param>
+        /// <param name="boosters">Owned start boosters.</param>
+        /// <param name="wallet">Pays for start boosters the player doesn't own.</param>
+        /// <param name="onboarding">First-time gift and popup flags.</param>
         /// <param name="curves">Whether the level is tricky.</param>
         /// <param name="overlay">"Not enough coins" toast.</param>
         /// <param name="audio">Coin and click sounds.</param>
-        public StartBoostersPrompt(IDialogService dialogs, IProgressService progress, ILevelCurveService curves,
-            IOverlayService overlay, IAudioService audio)
+        public StartBoostersPrompt(IDialogService dialogs, IBoosterInventory boosters, IWalletService wallet,
+            IOnboardingService onboarding, ILevelCurveService curves, IOverlayService overlay, IAudioService audio)
         {
             _dialogs = dialogs;
-            _progress = progress;
+            _boosters = boosters;
+            _wallet = wallet;
+            _onboarding = onboarding;
             _curves = curves;
             _overlay = overlay;
             _audio = audio;
@@ -59,16 +68,15 @@ namespace Game.Features.Gameplay
         /// <exception cref="System.OperationCanceledException">The prompt was cancelled.</exception>
         public async UniTask<StartBoosters> AskAsync(int level, CancellationToken ct)
         {
-            var pre = _progress.Data.PreBoosters;
-            if (!_progress.HasFlag(Flags.StartBoosterGift))
+            if (!_onboarding.HasFlag(Flags.StartBoosterGift))
             {
-                pre[BoosterIds.StartBasket] = Owned(BoosterIds.StartBasket) + 2;
-                pre[BoosterIds.StartQuick] = Owned(BoosterIds.StartQuick) + 2;
-                _progress.SetFlag(Flags.StartBoosterGift);
+                _boosters.AddStart(BoosterIds.StartBasket, StartGift);
+                _boosters.AddStart(BoosterIds.StartQuick, StartGift);
+                _onboarding.SetFlag(Flags.StartBoosterGift);
             }
 
-            var isFirst = !_progress.HasFlag(Flags.StartBoostersSeen);
-            _progress.SetFlag(Flags.StartBoostersSeen);
+            var isFirst = !_onboarding.HasFlag(Flags.StartBoostersSeen);
+            _onboarding.SetFlag(Flags.StartBoostersSeen);
             var isHard = _curves.Get(level).IsHard;
             var useBasket = false;
             var useQuick = false;
@@ -89,17 +97,14 @@ namespace Game.Features.Gameplay
             await _dialogs.ShowAsync(dialog, ct);
             if (!play) return null;
 
-            if (useBasket) pre[BoosterIds.StartBasket]--;
-            if (useQuick) pre[BoosterIds.StartQuick]--;
-            _progress.NotifyChanged();
+            if (useBasket) _boosters.AddStart(BoosterIds.StartBasket, -1);
+            if (useQuick) _boosters.AddStart(BoosterIds.StartQuick, -1);
             return new StartBoosters(useBasket, useQuick);
         }
 
-        private int Owned(string id) => _progress.Data.PreBoosters.TryGetValue(id, out var n) ? n : 0;
-
         private string Label(string name, string sub, string id, int price)
         {
-            var owned = Owned(id);
+            var owned = _boosters.GetStart(id);
             var cost = owned > 0 ? $"{owned} left" : $"{price} coins";
             return $"<b>{name}</b>\n<size=75%>{sub} · {cost}</size>";
         }
@@ -107,20 +112,19 @@ namespace Game.Features.Gameplay
         private bool Select(bool isOn, string id, int price)
         {
             if (!isOn) return false;
-            if (Owned(id) > 0)
+            if (_boosters.GetStart(id) > 0)
             {
                 _audio.Play(SoundId.Clink);
                 return true;
             }
 
-            if (!_progress.TrySpend(price))
+            if (!_wallet.TrySpend(price))
             {
                 _overlay.Toast("Not enough coins", true);
                 return false;
             }
 
-            _progress.Data.PreBoosters[id] = 1;
-            _progress.NotifyChanged();
+            _boosters.AddStart(id, 1);
             _audio.Play(SoundId.Coin);
             return true;
         }

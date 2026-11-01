@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Model;
+using Game.Services.Album;
 using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Haptics;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Wallet;
 using UniRx;
 
 namespace Game.Features.Gameplay.Session
@@ -34,7 +36,10 @@ namespace Game.Features.Gameplay.Session
 
         private readonly ILevelCurveService _curves;
         private readonly IContentService _content;
-        private readonly IProgressService _progress;
+        private readonly IWalletService _wallet;
+        private readonly IBoosterInventory _boosters;
+        private readonly IAlbumService _album;
+        private readonly ILevelProgressService _levels;
         private readonly IAudioService _audio;
         private readonly IHapticsService _haptics;
         private readonly Subject<BoardChange> _changed = new Subject<BoardChange>();
@@ -59,15 +64,22 @@ namespace Game.Features.Gameplay.Session
         /// </summary>
         /// <param name="curves">Active level curve.</param>
         /// <param name="content">Item catalog.</param>
-        /// <param name="progress">Coins, album and flags.</param>
+        /// <param name="wallet">Level rewards.</param>
+        /// <param name="boosters">Owned boosters.</param>
+        /// <param name="album">Found items.</param>
+        /// <param name="levels">Stars and lost levels.</param>
         /// <param name="audio">Sound effects.</param>
         /// <param name="haptics">Vibration.</param>
-        public LevelSession(ILevelCurveService curves, IContentService content, IProgressService progress,
-            IAudioService audio, IHapticsService haptics)
+        public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
+            IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
+            IHapticsService haptics)
         {
             _curves = curves;
             _content = content;
-            _progress = progress;
+            _wallet = wallet;
+            _boosters = boosters;
+            _album = album;
+            _levels = levels;
             _audio = audio;
             _haptics = haptics;
         }
@@ -129,7 +141,7 @@ namespace Game.Features.Gameplay.Session
             ResetEpoch();
             Definition = _curves.Get(level);
             var generator = new LevelGenerator(_content.Catalog.Items, _content.Catalog.Families);
-            State = generator.Generate(level, Definition, new HashSet<int>(_progress.Data.Found));
+            State = generator.Generate(level, Definition, new HashSet<int>(_album.Found));
             _snapshot = null;
             _combo = -1;
             _isWarned = false;
@@ -233,7 +245,7 @@ namespace Game.Features.Gameplay.Session
         public bool UseQuickPick()
         {
             if (State == null || IsOver) return false;
-            if (_bonusPick.Value <= 0 && _progress.GetBooster(BoosterIds.Pick) <= 0) return false;
+            if (_bonusPick.Value <= 0 && _boosters.Get(BoosterIds.Pick) <= 0) return false;
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
@@ -242,7 +254,7 @@ namespace Game.Features.Gameplay.Session
 
             SetSnapshot(snapshot);
             if (_bonusPick.Value > 0) _bonusPick.Value--;
-            else _progress.AddBooster(BoosterIds.Pick, -1);
+            else _boosters.Add(BoosterIds.Pick, -1);
             _audio.Play(SoundId.Magic);
             _changed.OnNext(new BoardChange(BoardChangeKind.QuickPick, events, fromStock));
             ScanDone();
@@ -255,7 +267,7 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when the counter is empty or no Tidy Up is owned.</returns>
         public bool UseTidy()
         {
-            if (State == null || _progress.GetBooster(BoosterIds.Tidy) <= 0) return false;
+            if (State == null || _boosters.Get(BoosterIds.Tidy) <= 0) return false;
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
@@ -263,7 +275,7 @@ namespace Game.Features.Gameplay.Session
             if (LevelRules.Tidy(State, events, out var column, back) == 0) return false;
 
             SetSnapshot(snapshot);
-            _progress.AddBooster(BoosterIds.Tidy, -1);
+            _boosters.Add(BoosterIds.Tidy, -1);
             IsOver = false;
             _audio.Play(SoundId.Magic);
             _changed.OnNext(new BoardChange(BoardChangeKind.Tidy, events, null, back.ToDictionary(id => id, _ => column)));
@@ -277,14 +289,14 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when nothing can move or no Shuffle is owned.</returns>
         public bool UseShuffle()
         {
-            if (State == null || IsOver || _progress.GetBooster(BoosterIds.Shuffle) <= 0) return false;
+            if (State == null || IsOver || _boosters.Get(BoosterIds.Shuffle) <= 0) return false;
 
             var snapshot = State.Clone();
             var seed = (uint)(DateTime.UtcNow.Ticks % 100000);
             if (!LevelRules.Shuffle(State, new Mulberry32(seed))) return false;
 
             SetSnapshot(snapshot);
-            _progress.AddBooster(BoosterIds.Shuffle, -1);
+            _boosters.Add(BoosterIds.Shuffle, -1);
             _audio.Play(SoundId.Magic);
             _changed.OnNext(new BoardChange(BoardChangeKind.Shuffle));
             CheckEnd();
@@ -409,7 +421,7 @@ namespace Game.Features.Gameplay.Session
                 var type = LevelRules.CompleteBasket(State, slot, events);
                 if (type.HasValue)
                 {
-                    var family = _progress.RegisterFound(type.Value);
+                    var family = _album.RegisterFound(type.Value);
                     if (family != null)
                     {
                         _audio.Play(SoundId.Coin);
@@ -470,8 +482,7 @@ namespace Game.Features.Gameplay.Session
 
             if (!IsOver) return;
 
-            _progress.Data.FailedLevels.Add(LevelNumber);
-            _progress.NotifyChanged();
+            _levels.MarkFailed(LevelNumber);
             _audio.Play(SoundId.Fail);
             _haptics.Pulse(HapticKind.Fail);
             _finished.OnNext(LevelOutcome.Lost(State.Total - State.Collected));
@@ -484,8 +495,8 @@ namespace Game.Features.Gameplay.Session
             IsOver = true;
             var stars = GameplayBalance.StarsFor(State.Peak, LevelNumber);
             var reward = stars * GameplayBalance.CoinsPerStar * (IsTricky ? 2 : 1);
-            _progress.CompleteLevel(LevelNumber, stars);
-            _progress.AddCoins(reward);
+            _levels.Complete(LevelNumber, stars);
+            _wallet.Add(reward);
             _audio.Play(SoundId.Win);
             _haptics.Pulse(HapticKind.Win);
             _finished.OnNext(LevelOutcome.Won(stars, reward));

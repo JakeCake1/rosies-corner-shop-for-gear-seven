@@ -1,8 +1,9 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Save;
 using Game.Services.UI.Dialogs;
 
 namespace Game.Features.Reviewers
@@ -14,7 +15,9 @@ namespace Game.Features.Reviewers
     public sealed class ReviewersScreen : IReviewersScreen
     {
         private readonly IDialogService _dialogs;
-        private readonly IProgressService _progress;
+        private readonly IProfileService _profile;
+        private readonly ILevelProgressService _levels;
+        private readonly IExperimentsService _experiments;
         private readonly ILevelCurveService _curves;
         private readonly IGameFlow _flow;
 
@@ -22,13 +25,18 @@ namespace Game.Features.Reviewers
         /// Creates the screen.
         /// </summary>
         /// <param name="dialogs">Dialog cards.</param>
-        /// <param name="progress">Stars, variants, reset.</param>
+        /// <param name="profile">Reset progress.</param>
+        /// <param name="levels">Levels marked cleared when jumping ahead.</param>
+        /// <param name="experiments">Rewarded offer variant.</param>
         /// <param name="curves">Level curves.</param>
         /// <param name="flow">Starts the chosen level or returns home.</param>
-        public ReviewersScreen(IDialogService dialogs, IProgressService progress, ILevelCurveService curves, IGameFlow flow)
+        public ReviewersScreen(IDialogService dialogs, IProfileService profile, ILevelProgressService levels,
+            IExperimentsService experiments, ILevelCurveService curves, IGameFlow flow)
         {
             _dialogs = dialogs;
-            _progress = progress;
+            _profile = profile;
+            _levels = levels;
+            _experiments = experiments;
             _curves = curves;
             _flow = flow;
         }
@@ -72,14 +80,11 @@ namespace Game.Features.Reviewers
                 dialog.Close();
             }));
             dialog.Segments.Add(new DialogSegments("Rewarded offer on a loss", new[] { "+1 customer", "+1 counter spot" },
-                _progress.Data.LossOffer == "slot" ? 1 : 0, index =>
-                {
-                    _progress.Data.LossOffer = index == 1 ? "slot" : "basket";
-                    _progress.NotifyChanged();
-                }));
+                _experiments.LossOffer == "slot" ? 1 : 0,
+                index => _experiments.SetLossOffer(index == 1 ? "slot" : "basket")));
             dialog.Buttons.Add(new DialogButton("Reset progress", ButtonStyle.WoodSmall, () =>
             {
-                _progress.ResetProgress();
+                _profile.ResetProgress();
                 _flow.GoHomeAsync().Forget();
             }));
             dialog.Buttons.Add(new DialogButton("Close", ButtonStyle.Berry, null));
@@ -95,10 +100,9 @@ namespace Game.Features.Reviewers
             // Levels before the chosen one count as cleared so progression and milestones stay consistent.
             for (var k = 1; k < level; k++)
             {
-                if (!_progress.Data.Stars.ContainsKey(k)) _progress.Data.Stars[k] = 1;
+                if (!_levels.IsCompleted(k)) _levels.Complete(k, 1);
             }
 
-            _progress.NotifyChanged();
             _flow.PlayLevelAsync(level).Forget();
         }
     }

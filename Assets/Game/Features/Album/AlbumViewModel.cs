@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Services.Album;
 using Game.Services.Content;
-using Game.Services.Progress;
 using Game.Services.UI;
 using UniRx;
 using UnityEngine;
@@ -19,21 +19,21 @@ namespace Game.Features.Album
         /// Builds the album content from the catalog and the found items.
         /// </summary>
         /// <param name="content">Item catalog.</param>
-        /// <param name="progress">Found items and completed departments.</param>
-        public AlbumViewModel(IContentService content, IProgressService progress)
+        /// <param name="album">Found items and completed departments.</param>
+        public AlbumViewModel(IContentService content, IAlbumService album)
         {
             Disposables.Add(_closeRequested);
             var catalog = content.Catalog;
-            var found = new HashSet<int>(progress.Data.Found);
+            var found = new HashSet<int>(album.Found);
             var got = 0;
             foreach (var family in catalog.Families)
             {
                 var items = catalog.Items.Where(i => i.Family == family).ToList();
                 var n = items.Count(i => found.Contains(i.Id));
                 got += n;
-                var isDone = progress.Data.CompletedFamilies.Contains(family);
+                var isDone = album.IsFamilyCompleted(family);
                 Sections.Add(new AlbumSection(catalog.FamilyName(family),
-                    $"{n} / {items.Count} · " + (isDone ? $"collected, +{ProgressService.FamilyBonus}" : $"{ProgressService.FamilyBonus} coins when complete"),
+                    $"{n} / {items.Count} · " + (isDone ? $"collected, +{AlbumService.FamilyBonus}" : $"{AlbumService.FamilyBonus} coins when complete"),
                     isDone,
                     items.Select(i => new AlbumEntry(i.Sprite, found.Contains(i.Id) ? i.Name : "?", found.Contains(i.Id))).ToList()));
             }
