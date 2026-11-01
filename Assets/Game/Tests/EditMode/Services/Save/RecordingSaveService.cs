@@ -29,7 +29,5 @@ namespace Game.Tests.EditMode.Services.Save
             Saved.Add(chunk.Key);
             return UniTask.CompletedTask;
         }
-
-        public void Dispose() => _inner.Dispose();
     }
 }

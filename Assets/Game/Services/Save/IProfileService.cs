@@ -23,6 +23,8 @@ namespace Game.Services.Save
         /// <summary>
         /// Requests a save of every chunk (app paused or losing focus).
         /// </summary>
+        /// <remarks>Does nothing before <see cref="Load"/>: chunk changes before loading aren't saved either, so
+        /// a new player's defaults never overwrite the stored profile.</remarks>
         void SaveAll();
 
         /// <summary>

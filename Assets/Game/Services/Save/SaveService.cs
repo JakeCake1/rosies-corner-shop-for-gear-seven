@@ -14,7 +14,9 @@ namespace Game.Services.Save
     /// Default <see cref="ISaveService"/>. Each chunk is a JSON object with a <c>version</c> field next to the
     /// chunk's own fields, stored under <c>profile_&lt;key&gt;</c>.
     /// </summary>
-    public sealed class SaveService : ISaveService, IDisposable
+    /// <remarks>Not disposable on purpose: a write may still be running on the thread pool when the app
+    /// shuts down, and the write lock (no wait handle) needs no disposal.</remarks>
+    public sealed class SaveService : ISaveService
     {
         /// <summary>
         /// Storage key of the single-file profile written by builds before the profile was split into chunks.
@@ -128,9 +130,6 @@ namespace Game.Services.Save
                 await UniTask.SwitchToMainThread();
             }
         }
-
-        /// <inheritdoc/>
-        public void Dispose() => _writeLock.Dispose();
 
         /// <summary>
         /// Parses, migrates and deserializes stored chunk text.

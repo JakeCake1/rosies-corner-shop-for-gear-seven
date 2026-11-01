@@ -18,6 +18,7 @@ namespace Game.Services.Save
         private readonly Subject<Unit> _changed = new Subject<Unit>();
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
+        private bool _isLoaded;
 
         /// <summary>
         /// Creates the service and follows the chunks' changes; call <see cref="Load"/> before use.
@@ -52,6 +53,7 @@ namespace Game.Services.Save
             }
 
             if (!isAnyStored) _save.TryMigrateLegacy(_chunks);
+            _isLoaded = true;
             _changed.OnNext(Unit.Default);
         }
 
@@ -92,6 +94,13 @@ namespace Game.Services.Save
             _changed.OnNext(Unit.Default);
         }
 
-        private void Save(IProfileChunk chunk) => _save.SaveAsync(chunk, _lifetime.Token).Forget();
+        private void Save(IProfileChunk chunk)
+        {
+            // Until Load ran the chunks hold a new player's defaults; saving them (e.g. the app losing focus at
+            // startup) would overwrite the stored profile before it is read.
+            if (!_isLoaded) return;
+
+            _save.SaveAsync(chunk, _lifetime.Token).Forget();
+        }
     }
 }
