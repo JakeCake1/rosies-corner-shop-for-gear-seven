@@ -10,9 +10,10 @@ Applies to this repository only (`Tools/Workflow/`, installed into `.claude/` an
 | Session starts | `SessionStart` hook | Reconnects to the active attempt (if any), resends queued usage. No status changes. |
 | `/impl-start EVG-12` | `wf.sh start` | Issue → In Progress, issue branch, new attempt (issue id + attempt UUID), attempt opened in Langfuse. |
 | Every reply / subagent / compaction | `Stop`, `SubagentStop`, `PreCompact` hooks | Usage of replies inside the attempt window copied to `.agent-workflow/usage/<attempt>.json`, keyed by message id. |
+| End of each agent reply | `Stop` hook | If the issue branch has commits not on GitHub yet: push and create a **draft** PR when none is open. Status, attempt and Langfuse are not touched. Turn off with `"auto_draft_pr": false` in `Tools/Workflow/config.json`. |
 | Code edit without an attempt | `PreToolUse` guard | Edits under `Assets/`, `Packages/`, `ProjectSettings/` and Unity MCP script edits are denied. |
 | `git commit` | git `commit-msg`, `pre-commit` | Message must contain the active issue id; `.env` files, workflow state and key-like strings are blocked. |
-| `/handoff` | `wf.sh handoff` | Checks → push → create/update PR → In Review → usage to Langfuse → attempt closed. Stops at the first failed step. |
+| `/handoff` | `wf.sh handoff` | Checks → push → create/update PR (draft → ready for review) → In Review → usage to Langfuse → attempt closed. Stops at the first failed step. |
 | `/impl-start EVG-12` after review | `wf.sh start` | Back to In Progress, new attempt linked to the same issue and PR. |
 | PR merged on GitHub | `.github/workflows/linear-done-on-merge.yml` | Issue → Done, unless another PR for it is still open. Closing without merge does nothing. |
 
@@ -72,7 +73,7 @@ this workflow.
 - Offline scenario tests (fake Linear, Langfuse and `gh`): `python Tools/Workflow/tests/test_scenarios.py` and
   `python Tools/Workflow/tests/test_done_on_merge.py`. They cover start, repeated start, restart with a new
   transcript, duplicate hooks, Langfuse down then flush, a failed PR step and re-run without a second PR, return from
-  review, missing usage, guards and git hooks.
+  review, missing usage, guards and git hooks, automatic draft PRs after agent replies.
 - Live: open the project in Claude Desktop; the first message shows `[workflow] No active implementation attempt`.
   Run `/impl-start <ISSUE>`, check the issue status and branch, run `sh Tools/Workflow/wf.sh status`.
 - Langfuse: the trace `<ISSUE> implementation` appears with the session = issue id.

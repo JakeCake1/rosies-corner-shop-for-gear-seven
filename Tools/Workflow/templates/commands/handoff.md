@@ -10,7 +10,7 @@ Hand off the active implementation attempt.
 3. Run the checks you can: if the project is open in the Unity Editor, run the EditMode tests through Unity MCP
    (`run_tests`) and check the console for compile errors.
 4. Run `sh Tools/Workflow/wf.sh handoff` and pass each check you ran yourself as
-   `--check-result "<name>: <result>"`. The script pushes, creates or updates the PR (never a second one),
+   `--check-result "<name>: <result>"`. The script pushes, creates or updates the PR (never a second one; the automatic draft PR is marked ready for review),
    moves the issue to In Review only after the PR step succeeded, sends usage to Langfuse and closes the attempt.
 5. Report every step from the output. If a step failed, say exactly which one is unfinished; the data is kept,
    and running the command again continues from there (`flush` resends usage only).
