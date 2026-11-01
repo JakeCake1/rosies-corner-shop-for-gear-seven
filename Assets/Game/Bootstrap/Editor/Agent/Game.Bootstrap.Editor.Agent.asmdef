@@ -1,0 +1,14 @@
+{
+    "name": "Game.Bootstrap.Editor.Agent",
+    "rootNamespace": "Game.Bootstrap.Editor.Agent",
+    "references": [],
+    "includePlatforms": ["Editor"],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

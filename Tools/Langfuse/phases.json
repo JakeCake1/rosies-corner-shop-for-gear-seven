@@ -1,0 +1,32 @@
+{
+  "task": "Porting from Claude artifact to Unity project",
+  "issue": "EVG-7",
+  "transcriptGlob": "~/.claude/projects/-home-claude/**/28e12c35-08ec-5f29-9409-58a04f4c8d01*.jsonl",
+  "phases": [
+    {
+      "name": "1. Inputs, rules, mockups",
+      "start": "2026-10-31T20:07:21.233Z",
+      "end": "2026-10-31T20:17:30.000Z"
+    },
+    {
+      "name": "3. Langfuse instrumentation",
+      "start": "2026-10-31T20:17:30.000Z",
+      "end": "2026-10-31T20:20:22.469Z"
+    },
+    {
+      "name": "1. Unity project scaffold",
+      "start": "2026-10-31T20:20:22.469Z",
+      "end": "2026-10-31T20:25:32.620Z"
+    },
+    {
+      "name": "4. Implementation",
+      "start": "2026-10-31T20:25:32.620Z",
+      "end": "2026-11-01T06:06:48.592Z"
+    },
+    {
+      "name": "5. Report",
+      "start": "2026-11-01T06:06:48.592Z",
+      "end": null
+    }
+  ]
+}

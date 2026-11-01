@@ -1,0 +1,147 @@
+[
+  {
+    "seed": 40001,
+    "jps": 2,
+    "vis": 3,
+    "sizes": [
+      1
+    ],
+    "types": 3,
+    "per": 6,
+    "locks": 0,
+    "look": 0,
+    "tip": "Tap an item. It goes to the basket that wants it, otherwise to the counter."
+  },
+  {
+    "seed": 41001,
+    "jps": 2,
+    "vis": 3,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 4,
+    "per": 6,
+    "locks": 0,
+    "look": 0,
+    "tip": "Empty a shelf and it folds away. Everything above slides down."
+  },
+  {
+    "seed": 42001,
+    "jps": 3,
+    "vis": 3,
+    "sizes": [
+      1
+    ],
+    "types": 5,
+    "per": 6,
+    "locks": 0,
+    "look": 0,
+    "tip": "Wider shelves now: three items in every row."
+  },
+  {
+    "seed": 277178,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2,
+      3
+    ],
+    "types": 9,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "tip": "Tall shelves fold only when every row is empty."
+  },
+  {
+    "seed": 39832583,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      1
+    ],
+    "types": 9,
+    "per": 9,
+    "locks": 1,
+    "look": 0,
+    "tip": "Empty the shelf with the brass key to untie the tied one."
+  },
+  {
+    "seed": 3579401,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 9,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "brd": 1,
+    "hm": 0,
+    "tip": "A nailed shelf! Tap the hammer to pull the boards off."
+  },
+  {
+    "seed": 6596540,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 9,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "frz": 1,
+    "thaw": 3,
+    "tip": "Frozen shelf: it thaws as you pack baskets."
+  },
+  {
+    "seed": 10912395,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      1
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "wrap": 0.25,
+    "tip": "Paper bags hide what's inside. Take one to find out."
+  },
+  {
+    "seed": 41883604,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      1,
+      2,
+      3
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "deep": 0.25,
+    "tip": "Some shelves have a second row hiding behind the first."
+  },
+  {
+    "seed": 2937962,
+    "jps": 3,
+    "vis": 6,
+    "sizes": [
+      2,
+      3
+    ],
+    "types": 9,
+    "per": 9,
+    "locks": 0,
+    "look": 0,
+    "hard": true,
+    "tip": "Tricky: tall shelves only. Dig where the next basket's items are hiding."
+  }
+]

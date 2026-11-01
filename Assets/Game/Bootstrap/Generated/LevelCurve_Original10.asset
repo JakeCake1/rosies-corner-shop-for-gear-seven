@@ -1,0 +1,209 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd740bfebd7f0f448a9d3717efab97f, type: 3}
+  m_Name: LevelCurve_Original10
+  m_EditorClassIdentifier: Game.Services::Game.Services.Levels.LevelCurveConfig
+  _levels:
+  - _sizes: 01000000
+    _seed: 40001
+    _jarsPerRow: 2
+    _visibleRows: 3
+    _types: 3
+    _perType: 6
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Tap an item. It goes to the basket that wants it, otherwise to the counter.
+  - _sizes: 0100000002000000
+    _seed: 41001
+    _jarsPerRow: 2
+    _visibleRows: 3
+    _types: 4
+    _perType: 6
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Empty a shelf and it folds away. Everything above slides down.
+  - _sizes: 01000000
+    _seed: 42001
+    _jarsPerRow: 3
+    _visibleRows: 3
+    _types: 5
+    _perType: 6
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: 'Wider shelves now: three items in every row.'
+  - _sizes: 010000000200000003000000
+    _seed: 277178
+    _jarsPerRow: 3
+    _visibleRows: 5
+    _types: 9
+    _perType: 9
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Tall shelves fold only when every row is empty.
+  - _sizes: 01000000
+    _seed: 39832583
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 9
+    _perType: 9
+    _locks: 1
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Empty the shelf with the brass key to untie the tied one.
+  - _sizes: 0100000002000000
+    _seed: 3579401
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 9
+    _perType: 9
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 1
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: A nailed shelf! Tap the hammer to pull the boards off.
+  - _sizes: 0100000002000000
+    _seed: 6596540
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 9
+    _perType: 9
+    _locks: 0
+    _frozen: 1
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: 'Frozen shelf: it thaws as you pack baskets.'
+  - _sizes: 01000000
+    _seed: 10912395
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 8
+    _perType: 9
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0.25
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Paper bags hide what's inside. Take one to find out.
+  - _sizes: 010000000200000003000000
+    _seed: 41883604
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 7
+    _perType: 9
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0.25
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 0
+    _family: 
+    _tip: Some shelves have a second row hiding behind the first.
+  - _sizes: 0200000003000000
+    _seed: 2937962
+    _jarsPerRow: 3
+    _visibleRows: 6
+    _types: 9
+    _perType: 9
+    _locks: 0
+    _frozen: 0
+    _thaw: 3
+    _boarded: 0
+    _hammerMode: 0
+    _wrap: 0
+    _deep: 0
+    _look: 0
+    _capacity: 0
+    _baskets: 0
+    _isHard: 1
+    _family: 
+    _tip: 'Tricky: tall shelves only. Dig where the next basket''s items are hiding.'
+  _id: orig
+  _label: "Original \xB7 10"
+  _subtitle: "Original prototype \xB7 10 levels"
+  _isOriginal: 1
