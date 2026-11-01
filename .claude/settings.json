@@ -8,6 +8,60 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook || python \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook session-start",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|mcp__unityMCP__(create_script|delete_script|apply_text_edits|script_apply_edits|manage_script)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook guard",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }
