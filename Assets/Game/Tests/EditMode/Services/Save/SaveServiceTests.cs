@@ -1,6 +1,9 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using Game.Services.Save;
+using Game.Services.Settings;
+using Game.Services.Wallet;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -8,66 +11,105 @@ using UnityEngine.TestTools;
 namespace Game.Tests.EditMode.Services.Save
 {
     /// <summary>
-    /// Save/load round trip, recovery from a broken file and refusal of saves from a newer build.
+    /// Per-chunk round trip, migrations, recovery from broken files and splitting the old single-file profile.
     /// </summary>
     public sealed class SaveServiceTests
     {
+        private const string TestKey = SaveService.ChunkKeyPrefix + "test";
+
+        // A profile.json written by builds before the profile was split into chunks.
+        private const string LegacyProfileV1 = @"{
+  ""version"": 1, ""coins"": 420, ""stars"": { ""1"": 3, ""2"": 1 }, ""found"": [17, 4], ""boost"": { ""pick"": 2 },
+  ""pre"": { ""basket"": 1 }, ""got"": [""undo""], ""failedLv"": [2], ""tips"": [""counter""], ""famDone"": [],
+  ""flags"": [""freeBasket""], ""albumNew"": 2, ""shopName"": ""Maple"", ""curve"": ""orig"", ""offer"": ""slot"",
+  ""sound"": false, ""music"": true, ""haptic"": false
+}";
+
         private InMemorySaveStorage _storage;
         private SaveService _service;
+        private TestChunk _chunk;
 
         [SetUp]
         public void SetUp()
         {
             _storage = new InMemorySaveStorage();
             _service = new SaveService(_storage);
+            _chunk = new TestChunk();
         }
 
         [TearDown]
-        public void TearDown() => _service.Dispose();
+        public void TearDown()
+        {
+            _chunk.Dispose();
+            _service.Dispose();
+        }
 
         [Test]
-        public void Load_WithoutSave_ReturnsFreshProfile()
+        public void TryLoad_WithoutSave_ReturnsFalseAndKeepsDefaults()
         {
-            var data = _service.Load();
+            var isLoaded = _service.TryLoad(_chunk);
 
-            Assert.That(data.Coins, Is.EqualTo(PlayerProfileData.StartingCoins));
-            Assert.That(data.Version, Is.EqualTo(PlayerProfileData.CurrentVersion));
-            Assert.That(data.Curve, Is.EqualTo("new"));
+            Assert.That(isLoaded, Is.False);
+            Assert.That(_chunk.Name, Is.EqualTo("none"));
         }
 
         [UnityTest]
-        public IEnumerator SaveAsync_ThenLoad_RestoresData() => UniTask.ToCoroutine(async () =>
+        public IEnumerator SaveAsync_ThenTryLoad_RestoresChunk() => UniTask.ToCoroutine(async () =>
         {
-            var data = PlayerProfileData.CreateNew();
-            data.Coins = 420;
-            data.Stars[3] = 2;
-            data.Found.Add(17);
+            _chunk.Set("shop", 7);
 
-            await _service.SaveAsync(data, default);
-            var loaded = _service.Load();
+            await _service.SaveAsync(_chunk, default);
+            var loaded = new TestChunk();
+            _service.TryLoad(loaded);
 
-            Assert.That(loaded.Coins, Is.EqualTo(420));
-            Assert.That(loaded.Stars[3], Is.EqualTo(2));
-            Assert.That(loaded.Found, Is.EqualTo(new[] { 17 }));
+            Assert.That(loaded.Name, Is.EqualTo("shop"));
+            Assert.That(loaded.Count, Is.EqualTo(7));
+            Assert.That(_storage.Main[TestKey], Does.Contain("\"version\": 2"));
+            loaded.Dispose();
+        });
+
+        [UnityTest]
+        public IEnumerator SaveAsync_WhenDiskIsFull_KeepsPreviousSaveAndLogs() => UniTask.ToCoroutine(async () =>
+        {
+            _storage.Main[TestKey] = "{\"version\":2,\"name\":\"old\"}";
+            _storage.IsFull = true;
+            LogAssert.Expect(LogType.Error, new Regex("failed; the previous save is kept"));
+            _chunk.Set("new", 1);
+
+            await _service.SaveAsync(_chunk, default);
+
+            Assert.That(_storage.Main[TestKey], Does.Contain("old"));
         });
 
         [Test]
-        public void Load_WhenMainIsBroken_UsesBackupAndQuarantinesMain()
+        public void TryLoad_WhenSaveIsOlder_MigratesIt()
         {
-            _storage.Main["profile"] = "{ not json";
-            _storage.Backup["profile"] = "{\"version\":1,\"coins\":77}";
-            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("Profile is broken"));
+            _storage.Main[TestKey] = "{\"version\":1,\"title\":\"legacy\",\"count\":3}";
 
-            var data = _service.Load();
+            _service.TryLoad(_chunk);
 
-            Assert.That(data.Coins, Is.EqualTo(77));
-            Assert.That(_storage.Quarantined, Is.EqualTo(1));
+            Assert.That(_chunk.Name, Is.EqualTo("legacy"));
+            Assert.That(_chunk.Count, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void TryLoad_WhenMainIsBroken_UsesBackupAndQuarantinesMain()
+        {
+            _storage.Main[TestKey] = "{ not json";
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"backup\"}";
+            LogAssert.Expect(LogType.Error, new Regex("is broken, trying the backup"));
+
+            var isLoaded = _service.TryLoad(_chunk);
+
+            Assert.That(isLoaded, Is.True);
+            Assert.That(_chunk.Name, Is.EqualTo("backup"));
+            Assert.That(_storage.Quarantined, Is.EqualTo(new[] { TestKey }));
         }
 
         [Test]
         public void TryParse_WhenSaveIsFromNewerBuild_Refuses()
         {
-            var data = SaveService.TryParse("{\"version\":99,\"coins\":5}", out var error);
+            var data = SaveService.TryParse(_chunk, "{\"version\":99,\"name\":\"future\"}", out var error);
 
             Assert.That(data, Is.Null);
             Assert.That(error, Does.Contain("newer"));
@@ -76,11 +118,50 @@ namespace Game.Tests.EditMode.Services.Save
         [Test]
         public void TryParse_WhenFieldsAreMissing_UsesDefaults()
         {
-            var data = SaveService.TryParse("{\"coins\":12}", out _);
+            var data = (TestChunk.Payload)SaveService.TryParse(_chunk, "{\"count\":12}", out _);
 
-            Assert.That(data.Coins, Is.EqualTo(12));
-            Assert.That(data.IsMusicOn, Is.True);
-            Assert.That(data.Stars, Is.Empty);
+            Assert.That(data.Count, Is.EqualTo(12));
+            Assert.That(data.Name, Is.EqualTo("none"));
+        }
+
+        [Test]
+        public void TryMigrateLegacy_SplitsOldProfileIntoChunksAndDeletesIt()
+        {
+            _storage.Main[SaveService.LegacyKey] = LegacyProfileV1;
+            var wallet = new WalletService();
+            var settings = new SettingsService();
+
+            var isMigrated = _service.TryMigrateLegacy(new IProfileChunk[] { wallet, settings });
+
+            Assert.That(isMigrated, Is.True);
+            Assert.That(wallet.Coins.Value, Is.EqualTo(420));
+            Assert.That(settings.IsSoundOn, Is.False);
+            Assert.That(settings.IsHapticsOn, Is.False);
+            Assert.That(_storage.Main.Keys, Is.EquivalentTo(new[] { "profile_wallet", "profile_settings" }));
+            Assert.That(_storage.Deleted, Is.EqualTo(new[] { SaveService.LegacyKey }));
+            wallet.Dispose();
+            settings.Dispose();
+        }
+
+        [Test]
+        public void TryMigrateLegacy_WhenWritingFails_KeepsOldProfile()
+        {
+            _storage.Main[SaveService.LegacyKey] = LegacyProfileV1;
+            _storage.IsFull = true;
+            LogAssert.Expect(LogType.Error, new Regex("Splitting the old profile failed"));
+
+            var isMigrated = _service.TryMigrateLegacy(new IProfileChunk[] { _chunk });
+
+            Assert.That(isMigrated, Is.True);
+            Assert.That(_storage.Main.ContainsKey(SaveService.LegacyKey), Is.True);
+        }
+
+        [Test]
+        public void TryMigrateLegacy_WithoutOldProfile_ReturnsFalse()
+        {
+            var isMigrated = _service.TryMigrateLegacy(new IProfileChunk[] { _chunk });
+
+            Assert.That(isMigrated, Is.False);
         }
     }
 }

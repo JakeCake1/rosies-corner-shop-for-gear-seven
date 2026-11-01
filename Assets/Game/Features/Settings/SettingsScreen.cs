@@ -3,7 +3,9 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Audio;
 using Game.Services.Flow;
-using Game.Services.Progress;
+using Game.Services.Onboarding;
+using Game.Services.Save;
+using Game.Services.Settings;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
 
@@ -16,7 +18,9 @@ namespace Game.Features.Settings
     public sealed class SettingsScreen : ISettingsScreen
     {
         private readonly IDialogService _dialogs;
-        private readonly IProgressService _progress;
+        private readonly ISettingsService _settings;
+        private readonly IProfileService _profile;
+        private readonly IOnboardingService _onboarding;
         private readonly IAudioService _audio;
         private readonly IGameFlow _flow;
         private readonly IShopNamePrompt _namePrompt;
@@ -26,17 +30,22 @@ namespace Game.Features.Settings
         /// Creates the screen.
         /// </summary>
         /// <param name="dialogs">Dialog cards.</param>
-        /// <param name="progress">Settings and progress.</param>
+        /// <param name="settings">Sound, music, vibration.</param>
+        /// <param name="profile">Reset progress.</param>
+        /// <param name="onboarding">Whether the shop was named (rename button).</param>
         /// <param name="audio">Applies sound and music settings.</param>
         /// <param name="flow">Back to the shop.</param>
         /// <param name="namePrompt">Rename the shop.</param>
         /// <param name="overlay">Reset confirmation toast.</param>
-        public SettingsScreen(IDialogService dialogs, IProgressService progress, IAudioService audio, IGameFlow flow,
-            IShopNamePrompt namePrompt, IOverlayService overlay)
+        public SettingsScreen(IDialogService dialogs, ISettingsService settings, IProfileService profile,
+            IOnboardingService onboarding, IAudioService audio, IGameFlow flow, IShopNamePrompt namePrompt,
+            IOverlayService overlay)
         {
             _overlay = overlay;
             _dialogs = dialogs;
-            _progress = progress;
+            _settings = settings;
+            _profile = profile;
+            _onboarding = onboarding;
             _audio = audio;
             _flow = flow;
             _namePrompt = namePrompt;
@@ -45,26 +54,22 @@ namespace Game.Features.Settings
         /// <inheritdoc/>
         public async UniTask OpenAsync(Action restartLevel)
         {
-            var data = _progress.Data;
             var dialog = new DialogViewModel("Settings", RibbonStyle.Green) { IsClosedByBlocker = true };
-            dialog.Toggles.Add(new DialogToggle("Sound", data.IsSoundOn, on =>
+            dialog.Toggles.Add(new DialogToggle("Sound", _settings.IsSoundOn, on =>
             {
-                data.IsSoundOn = on;
-                _progress.NotifyChanged();
+                _settings.SetSoundOn(on);
                 _audio.Play(SoundId.Clink);
                 return on;
             }));
-            dialog.Toggles.Add(new DialogToggle("Music", data.IsMusicOn, on =>
+            dialog.Toggles.Add(new DialogToggle("Music", _settings.IsMusicOn, on =>
             {
-                data.IsMusicOn = on;
-                _progress.NotifyChanged();
+                _settings.SetMusicOn(on);
                 _audio.ApplySettings();
                 return on;
             }));
-            dialog.Toggles.Add(new DialogToggle("Vibration", data.IsHapticsOn, on =>
+            dialog.Toggles.Add(new DialogToggle("Vibration", _settings.IsHapticsOn, on =>
             {
-                data.IsHapticsOn = on;
-                _progress.NotifyChanged();
+                _settings.SetHapticsOn(on);
                 return on;
             }));
             if (restartLevel != null)
@@ -73,7 +78,7 @@ namespace Game.Features.Settings
                 dialog.Buttons.Add(new DialogButton("Back to the shop", ButtonStyle.Wood, () => _flow.GoHomeAsync().Forget()));
             }
 
-            if (_progress.HasFlag(Flags.NameAsked))
+            if (_onboarding.HasFlag(Flags.NameAsked))
             {
                 dialog.Buttons.Add(new DialogButton("Rename the shop", ButtonStyle.WoodSmall,
                     () => _namePrompt.AskAsync(CancellationToken.None).Forget()));
@@ -91,7 +96,7 @@ namespace Game.Features.Settings
                 }
 
                 dialog.Close();
-                _progress.ResetProgress();
+                _profile.ResetProgress();
                 _flow.GoHomeAsync().Forget();
             }, false);
             dialog.Buttons.Add(reset);

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Game.Services.Progress;
+using Game.Services.Experiments;
 
 namespace Game.Services.Levels
 {
@@ -10,21 +10,25 @@ namespace Game.Services.Levels
     public sealed class LevelCurveService : ILevelCurveService
     {
         private readonly IReadOnlyList<LevelCurveConfig> _curves;
-        private readonly IProgressService _progress;
+        private readonly IExperimentsService _experiments;
+        private readonly ILevelProgressService _levels;
 
         /// <summary>
         /// Creates the service.
         /// </summary>
         /// <param name="curves">All curves; the first one is the default.</param>
-        /// <param name="progress">Holds the chosen curve id and the stars.</param>
-        public LevelCurveService(IReadOnlyList<LevelCurveConfig> curves, IProgressService progress)
+        /// <param name="experiments">Holds the chosen curve id.</param>
+        /// <param name="levels">Completed levels.</param>
+        public LevelCurveService(IReadOnlyList<LevelCurveConfig> curves, IExperimentsService experiments,
+            ILevelProgressService levels)
         {
             _curves = curves;
-            _progress = progress;
+            _experiments = experiments;
+            _levels = levels;
         }
 
         /// <inheritdoc/>
-        public LevelCurveConfig Active => _curves.FirstOrDefault(c => c.Id == _progress.Data.Curve) ?? _curves[0];
+        public LevelCurveConfig Active => _curves.FirstOrDefault(c => c.Id == _experiments.Curve) ?? _curves[0];
 
         /// <inheritdoc/>
         public IReadOnlyList<LevelCurveConfig> Curves => _curves;
@@ -41,7 +45,7 @@ namespace Game.Services.Levels
             var next = 1;
             for (var i = 1; i <= Count; i++)
             {
-                if (!_progress.Data.Stars.ContainsKey(i)) break;
+                if (!_levels.IsCompleted(i)) break;
 
                 next = i + 1;
             }
@@ -52,9 +56,8 @@ namespace Game.Services.Levels
         /// <inheritdoc/>
         public void SwitchCurve(string id)
         {
-            _progress.Data.Curve = id;
-            _progress.Data.Stars.Clear();
-            _progress.NotifyChanged();
+            _experiments.SetCurve(id);
+            _levels.ClearStars();
         }
     }
 }
