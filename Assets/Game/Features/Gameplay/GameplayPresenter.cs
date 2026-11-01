@@ -17,6 +17,7 @@ using Game.Services.UI;
 using Game.Services.UI.Dialogs;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VContainer.Unity;
 
 namespace Game.Features.Gameplay
@@ -44,9 +45,9 @@ namespace Game.Features.Gameplay
 
         private readonly LevelSession _session;
         private readonly BoardView _board;
+        private readonly GameplayScreen _screen;
         private readonly HudView _hud;
-        private readonly BoosterButtonView[] _boosterViews;
-        private readonly LevelBannerView _banner;
+        private readonly List<BoosterButtonView> _boosterViews = new List<BoosterButtonView>();
         private readonly GameplayArt _art;
         private readonly GameplayRequest _request;
         private readonly IDialogService _dialogs;
@@ -61,8 +62,8 @@ namespace Game.Features.Gameplay
         private readonly IAudioService _audio;
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly List<BoosterViewModel> _boosters = new List<BoosterViewModel>();
-        private readonly Queue<(string Text, RectTransform Anchor, bool IsAbove)> _tipQueue =
-            new Queue<(string, RectTransform, bool)>();
+        private readonly Queue<(string Text, VisualElement Anchor, bool IsAbove)> _tipQueue =
+            new Queue<(string, VisualElement, bool)>();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
         private HudViewModel _hudModel;
         private string _pendingGift;
@@ -74,19 +75,17 @@ namespace Game.Features.Gameplay
         /// Creates the presenter; VContainer calls <see cref="Start"/> once the gameplay scope is built.
         /// </summary>
         /// <param name="session">Level rules and state.</param>
-        /// <param name="board">Board view of the scene.</param>
-        /// <param name="views">HUD, booster buttons and banner of the scene.</param>
+        /// <param name="screen">The gameplay screen: board, HUD, booster bar and banner.</param>
         /// <param name="art">Booster and basket sprites.</param>
         /// <param name="request">Which level to start.</param>
         /// <param name="services">Shared services used by the gameplay UI.</param>
-        public GameplayPresenter(LevelSession session, BoardView board, GameplayViews views, GameplayArt art,
+        public GameplayPresenter(LevelSession session, GameplayScreen screen, GameplayArt art,
             GameplayRequest request, GameplayServices services)
         {
             _session = session;
-            _board = board;
-            _hud = views.Hud;
-            _boosterViews = views.Boosters;
-            _banner = views.Banner;
+            _screen = screen;
+            _board = screen.Board;
+            _hud = screen.Hud;
             _art = art;
             _request = request;
             _dialogs = services.Dialogs;
@@ -121,7 +120,13 @@ namespace Game.Features.Gameplay
             _progress.Changed.Subscribe(_ => RefreshBoosters()).AddTo(_disposables);
             _board.ItemTapped.Subscribe(OnItemTapped).AddTo(_disposables);
             _board.ExtraBasketClicked.Subscribe(_ => OfferExtraBasketAsync().Forget()).AddTo(_disposables);
+            StartWhenLaidOutAsync().Forget();
+        }
 
+        private async UniTaskVoid StartWhenLaidOutAsync()
+        {
+            // The board sizes itself from the screen, so the first level waits for the first layout pass.
+            await _screen.WhenLaidOutAsync(Ct);
             StartLevel(_request.Level, _request.StartBoosters);
         }
 
@@ -146,6 +151,7 @@ namespace Game.Features.Gameplay
             _lifetime.Dispose();
             _disposables.Dispose();
             DisposeHud();
+            ClearBoosterViews();
         }
 
         private void StartLevel(int level, StartBoosters startBoosters)
@@ -210,7 +216,7 @@ namespace Game.Features.Gameplay
                     break;
             }
 
-            _banner.Show(title, tip, _session.IsTricky, _board.Counter);
+            _screen.Banner.Show(title, tip, _session.IsTricky, _board.Counter);
         }
 
         private void OnChanged(BoardChange change)
@@ -277,7 +283,7 @@ namespace Game.Features.Gameplay
             }
         }
 
-        private void QueueTip(string key, string text, RectTransform anchor, bool isAbove)
+        private void QueueTip(string key, string text, VisualElement anchor, bool isAbove)
         {
             if (Level > GameplayBalance.CoachTipsUntilLevel || _progress.Data.SeenTips.Contains(key)) return;
 
@@ -355,7 +361,7 @@ namespace Game.Features.Gameplay
 
             vm.SetGift(true);
             var index = _boosters.IndexOf(vm);
-            _overlay.Coach(Gifts[id], (RectTransform)_boosterViews[index].transform, true, 4f);
+            _overlay.Coach(Gifts[id], _boosterViews[index].Root, true, 4f);
         }
 
         private void BuildBoosters()
@@ -366,30 +372,36 @@ namespace Game.Features.Gameplay
             }
 
             _boosters.Clear();
+            ClearBoosterViews();
             var all = new[]
             {
                 (BoosterIds.Undo, "Undo"), (BoosterIds.Pick, "Quick Pick"), (BoosterIds.Tidy, "Tidy Up"),
                 (BoosterIds.Shuffle, "Shuffle"),
             };
-            var i = 0;
             foreach (var (id, title) in all)
             {
                 if (!_session.IsUnlocked(id)) continue;
 
                 var vm = new BoosterViewModel(id, title, UseBooster);
                 _boosters.Add(vm);
-                _boosterViews[i].SetIcon(_art.IconOf(id));
-                _boosterViews[i].Bind(vm);
-                i++;
-            }
-
-            for (; i < _boosterViews.Length; i++)
-            {
-                _boosterViews[i].Unbind();
-                _boosterViews[i].gameObject.SetActive(false);
+                var view = _screen.AddBooster();
+                view.SetIcon(_art.IconOf(id));
+                view.Bind(vm);
+                _boosterViews.Add(view);
             }
 
             RefreshBoosters();
+        }
+
+        private void ClearBoosterViews()
+        {
+            foreach (var view in _boosterViews)
+            {
+                view.Unbind();
+                _screen.RemoveBooster(view);
+            }
+
+            _boosterViews.Clear();
         }
 
         private void RefreshBoosters()
@@ -579,9 +591,9 @@ namespace Game.Features.Gameplay
                 return;
             }
 
-            _overlay.Burst(_board.Counter.position + Vector3.left * 80f, EffectKind.Confetti, 60);
+            _overlay.Burst(_board.Counter.worldBound.center + Vector2.left * 80f, EffectKind.Confetti, 60);
             await UniTask.Delay(220, cancellationToken: Ct);
-            _overlay.Burst(_board.BasketArea.position + Vector3.right * 80f, EffectKind.Confetti, 60);
+            _overlay.Burst(_board.BasketArea.worldBound.center + Vector2.right * 80f, EffectKind.Confetti, 60);
             await UniTask.Delay(CompleteDelayMs - 220, cancellationToken: Ct);
             await ShowCompleteAsync(outcome);
         }

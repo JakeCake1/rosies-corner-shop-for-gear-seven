@@ -19,3 +19,6 @@
 /Tools/Langfuse/langfuse_batch.json
 /.codebase-memory/
 /Assets/Screenshots/
+/_inputs/
+/Assets/**/.idea/
+/Assets/Screenshots.meta

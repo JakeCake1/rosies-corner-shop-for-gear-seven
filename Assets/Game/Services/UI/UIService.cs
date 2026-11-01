@@ -4,34 +4,37 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Assets;
+using Game.Services.UI.Elements;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UIElements;
 using VContainer;
 using VContainer.Unity;
-using Object = UnityEngine.Object;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Default <see cref="IUIService"/>: one stack per layer, a shared popup blocker, Addressables prefabs
-    /// instantiated through the container so windows get their <c>[Inject]</c> methods called.
+    /// Window factory and per-layer stacks. A window's layout (UXML) is loaded through Addressables and its
+    /// elements are created when the window opens and removed from the panel when it closes.
     /// </summary>
     public sealed class UIService : IUIService, ITickable, IDisposable
     {
         private const string AddressPrefix = "ui/";
+        private const string WindowClass = "window";
 
         private readonly UIRoot _root;
         private readonly IAssetProvider _assets;
         private readonly IObjectResolver _resolver;
         private readonly Dictionary<UILayer, List<OpenWindow>> _stacks = new Dictionary<UILayer, List<OpenWindow>>();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
+        private readonly EventCallback<ClickEvent> _onBlockerClicked;
 
         /// <summary>
         /// Creates the service.
         /// </summary>
-        /// <param name="root">Layer containers and the popup blocker.</param>
-        /// <param name="assets">Loads window prefabs.</param>
-        /// <param name="resolver">Instantiates prefabs with injection; allowed here as UI infrastructure.</param>
+        /// <param name="root">Layer containers.</param>
+        /// <param name="assets">Loads window layouts.</param>
+        /// <param name="resolver">Injects window views.</param>
         public UIService(UIRoot root, IAssetProvider assets, IObjectResolver resolver)
         {
             _root = root;
@@ -42,7 +45,8 @@ namespace Game.Services.UI
                 _stacks[layer] = new List<OpenWindow>();
             }
 
-            _root.Blocker.onClick.AddListener(OnBlockerClicked);
+            _onBlockerClicked = _ => Back();
+            _root.Blocker.RegisterCallback(_onBlockerClicked);
             UpdateBlocker();
         }
 
@@ -51,22 +55,26 @@ namespace Game.Services.UI
 
         /// <inheritdoc/>
         public async UniTask<TWindow> OpenAsync<TWindow, TViewModel>(TViewModel viewModel, CancellationToken ct)
-            where TWindow : WindowView<TViewModel>
+            where TWindow : WindowView<TViewModel>, new()
             where TViewModel : ViewModel
         {
             await CloseAsync<TWindow>();
-            var prefab = await _assets.LoadAsync<GameObject>(AddressPrefix + typeof(TWindow).Name, ct);
-            var go = _resolver.Instantiate(prefab, _root.GetLayer(UILayer.Overlay));
-            var window = go.GetComponent<TWindow>();
-            go.transform.SetParent(_root.GetLayer(window.Layer), false);
-            Stretch((RectTransform)go.transform);
+            var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
+            var element = layout.Instantiate();
+            element.AddToClassList(WindowClass);
+            element.pickingMode = PickingMode.Ignore;
+            element.Stretch();
+
+            var window = new TWindow();
+            _resolver.Inject(window);
+            window.Attach(element);
+            _root.GetLayer(window.Layer).Add(element);
 
             var entry = new OpenWindow(window, viewModel);
             entry.CloseSubscription = window.CloseRequested.Subscribe(w => CloseAsync(w).Forget());
             _stacks[window.Layer].Add(entry);
             window.Bind(viewModel);
             UpdateBlocker();
-
             using (var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _lifetime.Token))
             {
                 await window.ShowAsync(linked.Token);
@@ -91,14 +99,14 @@ namespace Game.Services.UI
             }
             catch (OperationCanceledException)
             {
-                // App shutdown: destroy without the transition.
+                // App shutdown: remove without the transition.
             }
 
             stack.Remove(entry);
             entry.CloseSubscription?.Dispose();
+            window.Root.RemoveFromHierarchy();
             window.Release();
             entry.ViewModel.Dispose();
-            if (window.Root != null) Object.Destroy(window.Root);
             UpdateBlocker();
         }
 
@@ -132,9 +140,7 @@ namespace Game.Services.UI
             if (top.Window.IsClosedByBlocker) CloseAsync(top.Window).Forget();
         }
 
-        /// <summary>
-        /// Maps Escape / the Android back button to <see cref="Back"/>; called every frame by VContainer.
-        /// </summary>
+        /// <inheritdoc/>
         public void Tick()
         {
             if (Input.GetKeyDown(KeyCode.Escape)) Back();
@@ -145,29 +151,17 @@ namespace Game.Services.UI
         {
             _lifetime.Cancel();
             _lifetime.Dispose();
-            if (_root != null) _root.Blocker.onClick.RemoveListener(OnBlockerClicked);
+            if (_root != null) _root.Blocker.UnregisterCallback(_onBlockerClicked);
         }
-
-        private static void Stretch(RectTransform rt)
-        {
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-            rt.localScale = Vector3.one;
-        }
-
-        private void OnBlockerClicked() => Back();
 
         private void UpdateBlocker()
         {
             var popups = _stacks[UILayer.Popups];
-            var blocker = _root.Blocker.transform;
-            _root.Blocker.gameObject.SetActive(popups.Count > 0);
+            _root.Blocker.SetVisible(popups.Count > 0);
             if (popups.Count == 0) return;
 
-            blocker.SetAsLastSibling();
-            popups[popups.Count - 1].Window.Root.transform.SetAsLastSibling();
+            _root.Blocker.BringToFront();
+            popups[popups.Count - 1].Window.Root.BringToFront();
         }
 
         private sealed class OpenWindow

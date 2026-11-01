@@ -22,16 +22,9 @@ namespace Game.Services.UI.Dialogs
         /// <inheritdoc/>
         public async UniTask ShowAsync(DialogViewModel dialog, CancellationToken ct)
         {
-            var closed = new UniTaskCompletionSource();
             var window = await _ui.OpenAsync<DialogWindow, DialogViewModel>(dialog, ct);
-            // Closing by button, blocker or back all end with the window being destroyed.
-            using (window.GetCancellationTokenOnDestroy().Register(() => closed.TrySetResult()))
-            {
-                using (ct.Register(() => closed.TrySetCanceled()))
-                {
-                    await closed.Task;
-                }
-            }
+            // Closing by button, blocker or back all end with the window being released.
+            await window.Closed.AttachExternalCancellation(ct);
         }
 
         /// <inheritdoc/>

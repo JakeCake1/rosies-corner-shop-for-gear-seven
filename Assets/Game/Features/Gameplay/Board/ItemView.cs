@@ -1,137 +1,148 @@
 using System;
 using DG.Tweening;
 using Game.Services.Pooling;
+using Game.Services.UI.Elements;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay.Board
 {
     /// <summary>
-    /// One grocery item (or the hammer, or a paper bag) on a shelf, on the counter or in a basket. Pooled by the
-    /// board; parented to the cell it currently sits in.
+    /// One item on the board (shelf, counter, basket or in flight). Tapping it reports its jar id.
     /// </summary>
-    public sealed class ItemView : MonoBehaviour, IPointerDownHandler, IPoolable
+    public sealed class ItemView : PooledElementView
     {
+        private const string ItemClass = "item";
+        private const string GlowClass = "item__glow";
+        private const string ImageClass = "item__image";
         private const float HintPulseSeconds = 0.5f;
 
-        [SerializeField] private RectTransform _rect;
-        [SerializeField] private Image _image;
-        [Tooltip("Soft gold glow shown behind the item for the hidden hint and the tutorial.")]
-        [SerializeField] private Image _glow;
-
+        private VisualElement _glow;
+        private VisualElement _image;
         private Action<ItemView> _tapped;
         private Tween _hintTween;
 
-        /// <summary>The item's rect; the board moves it between cells.</summary>
-        public RectTransform Rect => _rect;
-
-        /// <summary>Jar id this view shows; 0 while pooled.</summary>
+        /// <summary>Jar id shown by this view (0 when pooled).</summary>
         public int JarId { get; private set; }
 
-        /// <summary>True while it shows a paper bag instead of its item.</summary>
+        /// <summary>Whether the paper bag still hides the item.</summary>
         public bool IsWrapped { get; private set; }
 
-        /// <summary>The cell the item belongs to now (set before a flight ends); null while pooled.</summary>
-        public RectTransform Destination { get; set; }
+        /// <summary>Cell the item sits in or flies to.</summary>
+        public VisualElement Destination { get; set; }
 
         /// <summary>
-        /// Prepares a pooled view for a jar. Called by the board right after taking it from the pool.
+        /// Creates a pooled item view.
+        /// </summary>
+        /// <returns>New view.</returns>
+        public static ItemView Create()
+        {
+            var view = new ItemView();
+            view.Attach(new VisualElement());
+            return view;
+        }
+
+        /// <summary>
+        /// Shows a jar.
         /// </summary>
         /// <param name="jarId">Jar id.</param>
-        /// <param name="sprite">Item, hammer or paper bag art.</param>
-        /// <param name="isWrapped">Shows a paper bag.</param>
-        /// <param name="tapped">Called on pointer down; the board forwards it to the session.</param>
+        /// <param name="sprite">Item, hammer or paper-bag picture.</param>
+        /// <param name="isWrapped">Hidden under a paper bag.</param>
+        /// <param name="tapped">Tap callback.</param>
         public void Setup(int jarId, Sprite sprite, bool isWrapped, Action<ItemView> tapped)
         {
             JarId = jarId;
             IsWrapped = isWrapped;
-            _image.sprite = sprite;
+            _image.SetSprite(sprite);
             _tapped = tapped;
             SetHint(false);
         }
 
         /// <summary>
-        /// Opens the paper bag: swaps the art with a small "land" pop.
+        /// Takes the paper bag off.
         /// </summary>
-        /// <param name="sprite">The real item art.</param>
+        /// <param name="sprite">Item picture.</param>
         public void Unwrap(Sprite sprite)
         {
             IsWrapped = false;
-            _image.sprite = sprite;
-            _rect.DOKill(true);
-            _rect.localScale = Vector3.one * 0.8f;
-            _rect.DOScale(1f, 0.25f).SetEase(Ease.OutBack).SetLink(gameObject);
+            _image.SetSprite(sprite);
+            _image.Kill(true);
+            VisualElementTweens.SetScale(_image, Vector2.one * 0.8f);
+            _image.DOScale(1f, 0.25f).SetEase(Ease.OutBack);
         }
 
         /// <summary>
-        /// Switches the pulsing hint glow.
+        /// Turns the soft gold hint glow on or off.
         /// </summary>
-        /// <param name="isOn">True to glow.</param>
+        /// <param name="isOn">Glow.</param>
         public void SetHint(bool isOn)
         {
             _hintTween?.Kill();
-            _glow.gameObject.SetActive(isOn);
+            _glow.SetVisible(isOn);
             if (!isOn) return;
 
-            _glow.color = new Color(1f, 0.86f, 0.4f, 0.9f);
-            _hintTween = _glow.DOFade(0.25f, HintPulseSeconds).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
+            _glow.style.opacity = 0.9f;
+            _hintTween = _glow.DOFade(0.25f, HintPulseSeconds).SetLoops(-1, LoopType.Yoyo);
         }
 
         /// <summary>
-        /// Shakes the item when the counter is full ("nope").
+        /// Shakes the item ("no").
         /// </summary>
         public void Nope()
         {
-            _image.rectTransform.DOKill(true);
-            _image.rectTransform.DOShakeAnchorPos(0.35f, new Vector2(6f, 0f), 14, 0f).SetLink(gameObject);
+            _image.Kill(true);
+            _image.DOShake(0.35f, new Vector2(6f, 0f), 14);
         }
 
         /// <summary>
-        /// Places the item inside a cell at rest (no flight).
+        /// Puts the item into a cell and stretches it over the cell.
         /// </summary>
         /// <param name="cell">Shelf, counter or basket cell.</param>
-        public void Snap(RectTransform cell)
+        public void Snap(VisualElement cell)
         {
             Destination = cell;
-            _rect.DOKill();
-            _rect.SetParent(cell, false);
+            Root.Kill();
+            cell.Add(Root);
             Fill();
         }
 
         /// <summary>
-        /// Stretches the item over its parent cell.
+        /// Stretches the item over its parent and clears flight transforms.
         /// </summary>
         public void Fill()
         {
-            _rect.anchorMin = Vector2.zero;
-            _rect.anchorMax = Vector2.one;
-            _rect.offsetMin = Vector2.zero;
-            _rect.offsetMax = Vector2.zero;
-            _rect.localScale = Vector3.one;
-            _rect.localRotation = Quaternion.identity;
+            Root.Stretch();
+            Root.style.width = StyleKeyword.Null;
+            Root.style.height = StyleKeyword.Null;
+            ResetTransform(Root);
         }
 
         /// <inheritdoc/>
-        public void OnPointerDown(PointerEventData eventData) => _tapped?.Invoke(this);
-
-        /// <inheritdoc/>
-        public void OnSpawned()
+        public override void OnDespawned()
         {
-        }
-
-        /// <inheritdoc/>
-        public void OnDespawned()
-        {
-            _rect.DOKill();
-            _image.rectTransform.DOKill();
+            base.OnDespawned();
+            _image.Kill();
+            ResetTransform(_image);
             _hintTween?.Kill();
-            _glow.gameObject.SetActive(false);
+            _glow.SetVisible(false);
             _tapped = null;
             Destination = null;
             JarId = 0;
             IsWrapped = false;
-            _image.rectTransform.anchoredPosition = Vector2.zero;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnAttached()
+        {
+            Root.AddToClassList(ItemClass);
+            _glow = CreateElement(GlowClass, "kit-circle");
+            _glow.pickingMode = PickingMode.Ignore;
+            _glow.SetVisible(false);
+            _image = CreateElement(ImageClass);
+            _image.pickingMode = PickingMode.Ignore;
+            Root.Add(_glow);
+            Root.Add(_image);
+            Root.RegisterCallback<PointerDownEvent>(_ => _tapped?.Invoke(this));
         }
     }
 }

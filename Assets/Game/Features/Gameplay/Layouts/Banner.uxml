@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <ui:VisualElement class="banner" picking-mode="Ignore">
+        <ui:VisualElement name="ribbon" class="banner__ribbon kit-ribbon-green" picking-mode="Ignore">
+            <ui:Label name="title" text="Level 1" class="banner__title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="tip" class="banner__tip kit-card" picking-mode="Ignore">
+            <ui:Label name="tip-text" text="Tip" class="banner__tip-text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,253 +1,233 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Services.Pooling;
-using TMPro;
+using Game.Services.UI.Elements;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay.Board
 {
     /// <summary>
-    /// A shelf in a cabinet column: wooden frame with one floor plank per row, item cells, and the state overlays
-    /// (twine and seal, brass key, ice, boards, "2 rows" badge). Pooled; laid out by <see cref="BoardView"/>.
+    /// One shelf block in a cabinet column (<c>Shelf.uxml</c>): floors per row, item cells with back-row ghosts,
+    /// and the lock (twine), key tag, ice and nailed-boards states.
     /// </summary>
-    public sealed class ShelfView : MonoBehaviour, IPoolable
+    public sealed class ShelfView : PooledElementView
     {
+        private const string ContentName = "content";
+        private const string FloorsName = "floors";
+        private const string CellsName = "cells";
+        private const string RowsBadgeName = "rows-badge";
+        private const string RowsTextName = "rows-text";
+        private const string TiesName = "ties";
+        private const string KeyTagName = "key-tag";
+        private const string IceName = "ice";
+        private const string IceTextName = "ice-text";
+        private const string BoardsName = "boards";
+        private const string BoardClass = "shelf__board";
         private const float FloorHeight = 8f;
         private const float PostWidth = 5f;
-        private const float CapHeight = 6f;
-        private const float GhostAlpha = 0.5f;
-        private static readonly Vector2 GhostOffset = new Vector2(7f, 5f);
+        private const float CellLift = 5f;
 
-        [SerializeField] private RectTransform _rect;
-        [SerializeField] private RectTransform _floors;
-        [SerializeField] private RectTransform _cells;
-        [SerializeField] private Image _floorPrefab;
-        [SerializeField] private GameObject _rowsBadge;
-        [SerializeField] private TMP_Text _rowsText;
-        [SerializeField] private GameObject _ties;
-        [SerializeField] private RectTransform _keyTag;
-        [SerializeField] private GameObject _ice;
-        [SerializeField] private TMP_Text _iceText;
-        [SerializeField] private RectTransform _boards;
-        [SerializeField] private CanvasGroup _contentGroup;
-
-        private readonly List<RectTransform> _cellList = new List<RectTransform>();
-        private readonly List<Image> _ghosts = new List<Image>();
-        private readonly List<Image> _floorList = new List<Image>();
-        private readonly List<(Vector2 Pos, Quaternion Rot)> _boardRest = new List<(Vector2, Quaternion)>();
+        private readonly List<VisualElement> _cells = new List<VisualElement>();
+        private readonly List<VisualElement> _ghosts = new List<VisualElement>();
+        private readonly List<VisualElement> _floors = new List<VisualElement>();
+        private readonly List<VisualElement> _boards = new List<VisualElement>();
+        private VisualElement _content;
+        private VisualElement _floorLayer;
+        private VisualElement _cellLayer;
+        private VisualElement _rowsBadge;
+        private Label _rowsText;
+        private VisualElement _ties;
+        private VisualElement _keyTag;
+        private VisualElement _ice;
+        private Label _iceText;
+        private VisualElement _boardLayer;
         private int _rows;
         private int _perRow;
 
-        /// <summary>The shelf's rect; the board positions it from the column bottom.</summary>
-        public RectTransform Rect => _rect;
-
-        /// <summary>Shelf id; 0 while pooled.</summary>
+        /// <summary>Block id shown by this view (0 when pooled).</summary>
         public int BlockId { get; private set; }
 
-        /// <summary>
-        /// When the shelf's drop or slide animation ends (unscaled time); items wait for it before landing.
-        /// </summary>
+        /// <summary>Time (unscaled) when the shelf stops moving; items wait for it before flying in.</summary>
         public float SettledAt { get; set; }
 
         /// <summary>
-        /// Builds the cells for a shelf of <paramref name="rows"/> × <paramref name="perRow"/>.
+        /// Prepares the shelf for a block.
         /// </summary>
-        /// <param name="blockId">Shelf id.</param>
-        /// <param name="rows">Height in rows.</param>
+        /// <param name="blockId">Block id.</param>
+        /// <param name="rows">Rows in the block.</param>
         /// <param name="perRow">Items per row.</param>
-        /// <param name="rowHeight">Row height in canvas units.</param>
-        /// <param name="itemSize">Item cell size (40:64 aspect).</param>
-        public void Setup(int blockId, int rows, int perRow, float rowHeight, Vector2 itemSize)
+        /// <param name="width">Shelf width (column width).</param>
+        /// <param name="rowHeight">Row height.</param>
+        /// <param name="itemSize">Item cell size.</param>
+        public void Setup(int blockId, int rows, int perRow, float width, float rowHeight, Vector2 itemSize)
         {
             BlockId = blockId;
             _rows = rows;
             _perRow = perRow;
-            EnsureCells(rows * perRow, rows);
-            _rowsBadge.SetActive(rows > 1);
-            if (rows > 1) _rowsText.SetText("{0} rows", rows);
-            Resize(rowHeight, itemSize);
+            EnsureParts(rows * perRow, rows);
+            _rowsBadge.SetVisible(rows > 1);
+            if (rows > 1) _rowsText.text = rows + " rows";
+            Resize(width, rowHeight, itemSize);
         }
 
         /// <summary>
-        /// Lays out floors and cells for a row height; called on setup and when the screen size changes.
+        /// Lays out floors and cells.
         /// </summary>
+        /// <param name="width">Shelf width.</param>
         /// <param name="rowHeight">Row height.</param>
         /// <param name="itemSize">Item cell size.</param>
-        public void Resize(float rowHeight, Vector2 itemSize)
+        public void Resize(float width, float rowHeight, Vector2 itemSize)
         {
-            var width = _rect.rect.width;
             var inner = width - PostWidth * 2f;
             for (var r = 0; r < _rows; r++)
             {
-                var floor = _floorList[r].rectTransform;
-                floor.anchorMin = new Vector2(0f, 0f);
-                floor.anchorMax = new Vector2(1f, 0f);
-                floor.pivot = new Vector2(0.5f, 0f);
-                floor.sizeDelta = new Vector2(0f, FloorHeight);
-                floor.anchoredPosition = new Vector2(0f, r * rowHeight);
+                _floors[r].style.bottom = r * rowHeight;
             }
 
             for (var i = 0; i < _rows * _perRow; i++)
             {
                 var row = i / _perRow;
                 var col = i % _perRow;
-                var cell = _cellList[i];
-                cell.anchorMin = cell.anchorMax = new Vector2(0f, 0f);
-                cell.pivot = new Vector2(0.5f, 0f);
-                cell.sizeDelta = itemSize;
-                var x = PostWidth + inner * (col + 0.5f) / _perRow;
-                cell.anchoredPosition = new Vector2(x, row * rowHeight + FloorHeight - 3f);
+                var cell = _cells[i];
+                cell.style.width = itemSize.x;
+                cell.style.height = itemSize.y;
+                cell.style.left = PostWidth + inner * (col + 0.5f) / _perRow - itemSize.x / 2f;
+                cell.style.bottom = row * rowHeight + FloorHeight - 3f;
             }
         }
 
         /// <summary>
-        /// Returns the cell for a slot index (row-major from the bottom).
+        /// Returns an item cell.
         /// </summary>
-        /// <param name="slot">Slot index.</param>
-        /// <returns>The cell rect items are parented to.</returns>
-        public RectTransform Cell(int slot) => _cellList[slot];
+        /// <param name="slot">Slot index (row-major from the bottom).</param>
+        /// <returns>The cell element.</returns>
+        public VisualElement Cell(int slot) => _cells[slot];
 
         /// <summary>
-        /// Shows or hides the faded second-row item behind a cell.
+        /// Shows the faded back-row item behind a slot.
         /// </summary>
         /// <param name="slot">Slot index.</param>
-        /// <param name="sprite">Second-row item art, or null for none.</param>
+        /// <param name="sprite">Item behind, or null.</param>
         public void SetGhost(int slot, Sprite sprite)
         {
             var g = _ghosts[slot];
-            g.gameObject.SetActive(sprite != null);
-            if (sprite != null) g.sprite = sprite;
+            g.SetVisible(sprite != null);
+            if (sprite != null) g.SetSprite(sprite);
         }
 
         /// <summary>
-        /// Applies the shelf state overlays.
+        /// Applies the block's mechanics.
         /// </summary>
         /// <param name="isLocked">Tied with twine.</param>
-        /// <param name="hasKey">Holds the brass key of a tied shelf.</param>
-        /// <param name="frozen">Baskets until thaw; 0 when not frozen.</param>
-        /// <param name="isBoarded">Nailed shut (contents hidden).</param>
+        /// <param name="hasKey">Holds the key of another shelf.</param>
+        /// <param name="frozen">Moves left until the ice melts.</param>
+        /// <param name="isBoarded">Nailed shut.</param>
         public void SetState(bool isLocked, bool hasKey, int frozen, bool isBoarded)
         {
-            _ties.SetActive(isLocked);
-            _keyTag.gameObject.SetActive(hasKey);
-            _ice.SetActive(frozen > 0);
-            if (frozen > 0) _iceText.SetText("{0}", frozen);
-            _boards.gameObject.SetActive(isBoarded);
-            _contentGroup.alpha = isLocked ? 0.7f : 1f;
-            _cells.gameObject.SetActive(!isBoarded);
+            _ties.SetVisible(isLocked);
+            _keyTag.SetVisible(hasKey);
+            _ice.SetVisible(frozen > 0);
+            if (frozen > 0) _iceText.text = frozen.ToString();
+            _boardLayer.SetVisible(isBoarded);
+            _content.style.opacity = isLocked ? 0.7f : 1f;
+            _cellLayer.SetVisible(!isBoarded);
         }
 
         /// <summary>
-        /// Plays the boards flying off (the hammer hit) before hiding them.
+        /// Knocks the nailed boards off.
         /// </summary>
         /// <returns>The animation.</returns>
         public Tween KnockBoardsOff()
         {
-            var seq = DOTween.Sequence().SetLink(gameObject);
-            for (var i = 0; i < _boards.childCount; i++)
+            var seq = DOTween.Sequence().SetId(this);
+            for (var i = 0; i < _boards.Count; i++)
             {
-                var b = (RectTransform)_boards.GetChild(i);
+                var b = _boards[i];
                 var dir = i % 2 == 0 ? -1f : 1f;
-                seq.Join(b.DOAnchorPos(b.anchoredPosition + new Vector2(dir * 60f, -40f), 0.45f).SetEase(Ease.InQuad));
-                seq.Join(b.DORotate(new Vector3(0, 0, dir * 40f), 0.45f));
+                seq.Join(b.DOTranslate(new Vector2(dir * 60f, 40f), 0.45f).SetEase(Ease.InQuad));
+                seq.Join(b.DORotate(VisualElementTweens.GetRotation(b) + dir * 40f, 0.45f));
+                seq.Join(b.DOFade(0f, 0.45f));
             }
 
             return seq;
         }
 
         /// <summary>
-        /// World position of the key tag (the key flies from here to the tied shelf).
+        /// Centre of the key tag in panel space.
         /// </summary>
-        /// <returns>Key tag position.</returns>
-        public Vector3 KeyPosition() => _keyTag.position;
+        /// <returns>Panel point.</returns>
+        public Vector2 KeyCenter() => _keyTag.worldBound.center;
 
         /// <inheritdoc/>
-        public void OnSpawned()
+        public override void OnDespawned()
         {
-            _rect.localScale = Vector3.one;
-        }
-
-        /// <inheritdoc/>
-        public void OnDespawned()
-        {
-            _rect.DOKill();
-            DOTween.Kill(this);
-            foreach (Transform b in _boards)
-            {
-                b.DOKill();
-            }
-
+            base.OnDespawned();
             BlockId = 0;
             SetState(false, false, 0, false);
-            for (var i = 0; i < _ghosts.Count; i++)
+            foreach (var g in _ghosts)
             {
-                _ghosts[i].gameObject.SetActive(false);
+                g.SetVisible(false);
             }
 
-            ResetBoards();
-        }
-
-        private void Awake()
-        {
-            _floorPrefab.gameObject.SetActive(false);
-            RecordBoardPositions();
-        }
-
-        private void RecordBoardPositions()
-        {
-            _boardRest.Clear();
-            foreach (RectTransform b in _boards)
+            foreach (var b in _boards)
             {
-                _boardRest.Add((b.anchoredPosition, b.localRotation));
+                b.Kill();
+                b.style.translate = StyleKeyword.Null;
+                b.style.rotate = StyleKeyword.Null;
+                b.style.opacity = StyleKeyword.Null;
             }
         }
 
-        private void ResetBoards()
+        /// <inheritdoc/>
+        protected override void OnAttached()
         {
-            for (var i = 0; i < _boards.childCount && i < _boardRest.Count; i++)
-            {
-                var b = (RectTransform)_boards.GetChild(i);
-                b.anchoredPosition = _boardRest[i].Pos;
-                b.localRotation = _boardRest[i].Rot;
-            }
+            _content = Q(ContentName);
+            _floorLayer = Q(FloorsName);
+            _cellLayer = Q(CellsName);
+            _rowsBadge = Q(RowsBadgeName);
+            _rowsText = Q<Label>(RowsTextName);
+            _ties = Q(TiesName);
+            _keyTag = Q(KeyTagName);
+            _ice = Q(IceName);
+            _iceText = Q<Label>(IceTextName);
+            _boardLayer = Q(BoardsName);
+            _boardLayer.Query(className: BoardClass).ForEach(_boards.Add);
+            SetState(false, false, 0, false);
+            _rowsBadge.SetVisible(false);
         }
 
-        private void EnsureCells(int count, int rows)
+        private void EnsureParts(int cells, int rows)
         {
-            while (_cellList.Count < count)
+            while (_cells.Count < cells)
             {
-                var cell = new GameObject("Cell", typeof(RectTransform)).GetComponent<RectTransform>();
-                cell.SetParent(_cells, false);
-                var ghost = new GameObject("Ghost", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
-                ghost.rectTransform.SetParent(cell, false);
-                ghost.rectTransform.anchorMin = Vector2.zero;
-                ghost.rectTransform.anchorMax = Vector2.one;
-                ghost.rectTransform.offsetMin = GhostOffset;
-                ghost.rectTransform.offsetMax = GhostOffset;
-                ghost.color = new Color(0.85f, 0.85f, 0.85f, GhostAlpha);
-                ghost.raycastTarget = false;
-                ghost.preserveAspect = true;
-                ghost.gameObject.SetActive(false);
-                _cellList.Add(cell);
+                var cell = CreateElement("shelf__cell");
+                cell.pickingMode = PickingMode.Ignore;
+                var ghost = CreateElement("shelf__ghost");
+                ghost.pickingMode = PickingMode.Ignore;
+                ghost.SetVisible(false);
+                cell.Add(ghost);
+                _cells.Add(cell);
                 _ghosts.Add(ghost);
             }
 
-            for (var i = 0; i < _cellList.Count; i++)
+            for (var i = 0; i < _cells.Count; i++)
             {
-                _cellList[i].gameObject.SetActive(i < count);
+                if (i < cells) _cellLayer.Add(_cells[i]);
+                else _cells[i].RemoveFromHierarchy();
             }
 
-            while (_floorList.Count < rows)
+            while (_floors.Count < rows)
             {
-                var floor = Instantiate(_floorPrefab, _floors);
-                floor.gameObject.SetActive(true);
-                _floorList.Add(floor);
+                var floor = CreateElement("shelf__floor", "kit-shelf-floor");
+                floor.pickingMode = PickingMode.Ignore;
+                _floors.Add(floor);
             }
 
-            for (var i = 0; i < _floorList.Count; i++)
+            for (var i = 0; i < _floors.Count; i++)
             {
-                _floorList[i].gameObject.SetActive(i < rows);
+                if (i < rows) _floorLayer.Add(_floors[i]);
+                else _floors[i].RemoveFromHierarchy();
             }
         }
     }

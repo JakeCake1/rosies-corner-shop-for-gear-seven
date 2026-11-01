@@ -1,50 +1,28 @@
-using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using TMPro;
+using Game.Services.UI.Elements;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI.Dialogs
 {
     /// <summary>
-    /// The modal card used for every popup in the game: builds its blocks from a <see cref="DialogViewModel"/>
-    /// by cloning the disabled templates inside the prefab.
+    /// Generic modal card: ribbon title and a body assembled from <see cref="DialogViewModel"/>
+    /// (icon, stars, headline, stats, text, progress, items, reward, toggles, input, grid, segments, note, buttons).
     /// </summary>
     public sealed class DialogWindow : WindowView<DialogViewModel>
     {
+        private const string RibbonName = "ribbon";
+        private const string TitleName = "title";
+        private const string BodyName = "body";
+        private const string RibbonGreenClass = "kit-ribbon-green";
+        private const string RibbonBerryClass = "kit-ribbon-berry";
         private const float StarDelay = 0.22f;
 
-        [Header("Frame")]
-        [SerializeField] private Image _ribbon;
-        [SerializeField] private Sprite _ribbonBerry;
-        [SerializeField] private Sprite _ribbonGreen;
-        [SerializeField] private TMP_Text _title;
-        [SerializeField] private RectTransform _body;
-        [Header("Templates (disabled in the prefab)")]
-        [SerializeField] private Image _iconTemplate;
-        [SerializeField] private RectTransform _starsTemplate;
-        [SerializeField] private Sprite _starOn;
-        [SerializeField] private Sprite _starOff;
-        [SerializeField] private TMP_Text _headlineTemplate;
-        [SerializeField] private TMP_Text _textTemplate;
-        [SerializeField] private RectTransform _statTemplate;
-        [SerializeField] private RectTransform _progressTemplate;
-        [SerializeField] private RectTransform _itemsTemplate;
-        [SerializeField] private RectTransform _rewardTemplate;
-        [SerializeField] private RectTransform _toggleTemplate;
-        [SerializeField] private RectTransform _inputTemplate;
-        [SerializeField] private RectTransform _gridTemplate;
-        [SerializeField] private RectTransform _segmentsTemplate;
-        [SerializeField] private TMP_Text _noteTemplate;
-        [SerializeField] private RectTransform _rowTemplate;
-        [SerializeField] private DialogButtonView _buttonTemplate;
-        [SerializeField] private Sprite[] _buttonSprites = new Sprite[5];
-        [SerializeField] private Color _segmentOn = new Color(0.37f, 0.6f, 0.27f);
-        [SerializeField] private Color _segmentOff = new Color(0.97f, 0.93f, 0.82f);
-
-        private readonly List<GameObject> _spawned = new List<GameObject>();
+        private VisualElement _ribbon;
+        private Label _title;
+        private VisualElement _body;
         private bool _isClosedByBlocker;
 
         /// <inheritdoc/>
@@ -54,29 +32,47 @@ namespace Game.Services.UI.Dialogs
         public override bool IsClosedByBlocker => _isClosedByBlocker;
 
         /// <inheritdoc/>
+        protected override void OnLayoutAttached()
+        {
+            _ribbon = Q(RibbonName);
+            _title = Q<Label>(TitleName);
+            _body = Q(BodyName);
+        }
+
+        /// <inheritdoc/>
         protected override void OnBind(DialogViewModel vm)
         {
             _isClosedByBlocker = vm.IsClosedByBlocker;
-            _title.SetText(vm.Title);
-            _ribbon.sprite = vm.Style == RibbonStyle.Green ? _ribbonGreen : _ribbonBerry;
+            _title.text = vm.Title;
+            _ribbon.EnableInClassList(RibbonGreenClass, vm.Style == RibbonStyle.Green);
+            _ribbon.EnableInClassList(RibbonBerryClass, vm.Style != RibbonStyle.Green);
             vm.CloseRequested.Subscribe(_ => RequestClose()).AddTo(Bindings);
 
-            if (vm.Icon != null) Spawn(_iconTemplate).sprite = vm.Icon;
-            if (vm.Stars.HasValue) BuildStars(vm.Stars.Value);
-            if (!string.IsNullOrEmpty(vm.Headline)) Spawn(_headlineTemplate).SetText(vm.Headline);
-            foreach (var (label, value) in vm.Stats)
+            if (vm.Icon != null)
             {
-                var row = Spawn(_statTemplate);
-                var texts = row.GetComponentsInChildren<TMP_Text>(true);
-                texts[0].SetText(label);
-                texts[1].SetText(value);
+                var icon = Spawn(_body, CreateElement("dialog-icon"));
+                icon.SetSprite(vm.Icon);
             }
 
-            if (!string.IsNullOrEmpty(vm.Text)) Spawn(_textTemplate).SetText(vm.Text);
+            if (vm.Stars.HasValue) BuildStars(vm.Stars.Value);
+            if (!string.IsNullOrEmpty(vm.Headline)) Spawn(_body, CreateLabel(vm.Headline, "dialog-headline"));
+            foreach (var (label, value) in vm.Stats)
+            {
+                var row = Spawn(_body, CreateElement("dialog-stat", "kit-rounded-white"));
+                row.Add(CreateLabel(label, "dialog-stat__label"));
+                row.Add(CreateLabel(value, "dialog-stat__value"));
+            }
 
+            if (!string.IsNullOrEmpty(vm.Text)) Spawn(_body, CreateLabel(vm.Text, "dialog-text"));
             if (vm.Progress.HasValue) BuildProgress(vm.Progress.Value, vm.ProgressCaption);
             if (vm.Items.Count > 0) BuildItems(vm.Items);
-            if (!string.IsNullOrEmpty(vm.Reward)) Spawn(_rewardTemplate).GetComponentInChildren<TMP_Text>(true).SetText(vm.Reward);
+            if (!string.IsNullOrEmpty(vm.Reward))
+            {
+                var reward = Spawn(_body, CreateElement("dialog-reward"));
+                reward.Add(CreateElement("dialog-reward__coin", "icon-coin"));
+                reward.Add(CreateLabel(vm.Reward, "dialog-reward__amount"));
+            }
+
             foreach (var t in vm.Toggles)
             {
                 BuildToggle(t);
@@ -89,83 +85,65 @@ namespace Game.Services.UI.Dialogs
                 BuildSegments(s);
             }
 
-            if (!string.IsNullOrEmpty(vm.Note)) Spawn(_noteTemplate).SetText(vm.Note);
+            if (!string.IsNullOrEmpty(vm.Note)) Spawn(_body, CreateLabel(vm.Note, "dialog-note"));
             BuildButtons(vm);
-        }
-
-        /// <inheritdoc/>
-        protected override void OnUnbind()
-        {
-            foreach (var go in _spawned)
-            {
-                if (go != null) Destroy(go);
-            }
-
-            _spawned.Clear();
-        }
-
-        private T Spawn<T>(T template) where T : Component
-        {
-            var clone = Instantiate(template, _body);
-            clone.gameObject.SetActive(true);
-            _spawned.Add(clone.gameObject);
-            return clone;
         }
 
         private void BuildStars(int earned)
         {
-            var row = Spawn(_starsTemplate);
-            for (var i = 0; i < row.childCount; i++)
+            var row = Spawn(_body, CreateElement("dialog-stars"));
+            for (var i = 0; i < 3; i++)
             {
-                var star = row.GetChild(i).GetComponent<Image>();
                 var isOn = i < earned;
-                star.sprite = isOn ? _starOn : _starOff;
+                var star = CreateElement("dialog-star", isOn ? "icon-star-on" : "icon-star-off");
+                star.EnableInClassList("dialog-star--big", i == 1);
+                row.Add(star);
                 if (!isOn) continue;
 
-                star.transform.localScale = Vector3.zero;
-                star.transform.DOScale(1f, 0.35f).SetDelay(0.15f + i * StarDelay).SetEase(Ease.OutBack, 2f)
-                    .SetUpdate(true).SetLink(star.gameObject).SetId(this);
+                VisualElementTweens.SetScale(star, Vector2.zero);
+                star.DOScale(1f, 0.35f).SetDelay(0.15f + i * StarDelay).SetEase(Ease.OutBack, 2f).SetUpdate(true).SetId(this);
             }
         }
 
         private void BuildProgress(float fraction, string caption)
         {
-            var block = Spawn(_progressTemplate);
-            block.GetComponentInChildren<TMP_Text>(true).SetText(caption ?? string.Empty);
-            var fill = block.Find("Track/Fill") as RectTransform;
-            if (fill != null) fill.anchorMax = new Vector2(Mathf.Clamp01(fraction), 1f);
+            var block = Spawn(_body, CreateElement("dialog-progress"));
+            block.Add(CreateLabel(caption ?? string.Empty, "dialog-progress__caption"));
+            var track = CreateElement("dialog-progress__track", "kit-bar-track");
+            var fill = CreateElement("dialog-progress__fill", "kit-bar-fill");
+            fill.style.width = Length.Percent(Mathf.Clamp01(fraction) * 100f);
+            track.Add(fill);
+            block.Add(track);
         }
 
         private void BuildItems(List<Sprite> sprites)
         {
-            var row = Spawn(_itemsTemplate);
-            var template = row.GetChild(0).GetComponent<Image>();
-            template.gameObject.SetActive(false);
+            var row = Spawn(_body, CreateElement("dialog-items"));
             foreach (var s in sprites)
             {
-                var img = Instantiate(template, row);
-                img.sprite = s;
-                img.gameObject.SetActive(true);
+                var item = CreateElement("dialog-items__item");
+                item.SetSprite(s);
+                row.Add(item);
             }
         }
 
         private void BuildToggle(DialogToggle toggle)
         {
-            var row = Spawn(_toggleTemplate);
-            row.GetComponentInChildren<TMP_Text>(true).SetText(toggle.Label);
-            var button = row.GetComponentInChildren<Button>(true);
-            var knob = button.transform.Find("Knob") as RectTransform;
-            var track = button.GetComponent<Image>();
+            var row = Spawn(_body, CreateElement("dialog-toggle", "kit-rounded-white"));
+            row.Add(CreateLabel(toggle.Label, "dialog-toggle__label"));
+            var track = new Button();
+            track.AddToClassList("btn");
+            track.AddToClassList("dialog-switch");
+            track.AddToClassList("kit-pill-white");
+            var knob = CreateElement("dialog-switch__knob", "kit-circle");
+            track.Add(knob);
+            row.Add(track);
             var isOn = toggle.IsOn;
 
-            void Apply()
-            {
-                track.color = isOn ? _segmentOn : new Color(0.75f, 0.7f, 0.64f);
-                if (knob != null) knob.anchoredPosition = new Vector2(isOn ? 11f : -11f, 0f);
-            }
+            void Apply() => track.EnableInClassList("dialog-switch--on", isOn);
 
             Apply();
-            button.OnClickAsObservable().Subscribe(_ =>
+            track.OnClickAsObservable().Subscribe(_ =>
             {
                 isOn = toggle.Changed(!isOn);
                 Apply();
@@ -174,83 +152,85 @@ namespace Game.Services.UI.Dialogs
 
         private void BuildInput(DialogViewModel vm)
         {
-            var block = Spawn(_inputTemplate);
-            var field = block.GetComponentInChildren<TMP_InputField>(true);
-            field.characterLimit = vm.Input.MaxLength;
-            if (field.placeholder is TMP_Text placeholder) placeholder.SetText(vm.Input.Placeholder);
-            field.text = vm.InputText.Value;
-            field.onValueChanged.AsObservable().Subscribe(v => vm.InputText.Value = v).AddTo(Bindings);
-            var ideas = block.Find("Ideas");
-            var chip = ideas.GetChild(0).GetComponent<Button>();
-            chip.gameObject.SetActive(false);
+            var block = Spawn(_body, CreateElement("dialog-input"));
+            var field = new TextField { maxLength = vm.Input.MaxLength, value = vm.InputText.Value };
+            field.AddToClassList("dialog-input__field");
+            field.textEdition.placeholder = vm.Input.Placeholder;
+            field.RegisterValueChangedCallback(e => vm.InputText.Value = e.newValue);
+            block.Add(field);
+            var ideas = CreateElement("dialog-input__ideas");
+            block.Add(ideas);
             foreach (var idea in vm.Input.Ideas)
             {
-                var c = Instantiate(chip, ideas);
-                c.gameObject.SetActive(true);
-                c.GetComponentInChildren<TMP_Text>(true).SetText(idea);
+                var chip = new Button { text = idea };
+                chip.AddToClassList("btn");
+                chip.AddToClassList("dialog-chip");
+                chip.AddToClassList("kit-chip");
                 var text = idea;
-                c.OnClickAsObservable().Subscribe(_ => field.text = text).AddTo(Bindings);
+                chip.OnClickAsObservable().Subscribe(_ => field.value = text).AddTo(Bindings);
+                ideas.Add(chip);
             }
         }
 
         private void BuildGrid(DialogViewModel vm)
         {
-            var grid = Spawn(_gridTemplate);
-            var cell = grid.GetChild(0).GetComponent<Button>();
-            cell.gameObject.SetActive(false);
+            var grid = Spawn(_body, CreateElement("dialog-grid"));
             foreach (var b in vm.Grid)
             {
-                var c = Instantiate(cell, grid);
-                c.gameObject.SetActive(true);
-                c.GetComponentInChildren<TMP_Text>(true).SetText(b.Label);
-                c.GetComponent<Image>().color = b.IsHighlighted ? new Color(0.78f, 0.24f, 0.31f) : new Color(0.91f, 0.72f, 0.49f);
+                var cell = new Button { text = b.Label };
+                cell.AddToClassList("btn");
+                cell.AddToClassList("dialog-grid__cell");
+                cell.AddToClassList("kit-rounded-white");
+                cell.EnableInClassList("dialog-grid__cell--current", b.IsHighlighted);
                 var button = b;
-                c.OnClickAsObservable().ThrottleFirst(TimeSpan.FromMilliseconds(300))
-                    .Subscribe(_ => vm.Press(button)).AddTo(Bindings);
+                cell.OnTapAsObservable().Subscribe(_ => vm.Press(button)).AddTo(Bindings);
+                grid.Add(cell);
             }
         }
 
         private void BuildSegments(DialogSegments segments)
         {
-            var row = Spawn(_segmentsTemplate);
-            row.GetComponentInChildren<TMP_Text>(true).SetText(segments.Label);
-            var options = row.Find("Options");
-            var template = options.GetChild(0).GetComponent<Button>();
-            template.gameObject.SetActive(false);
-            var images = new List<Image>();
+            var block = Spawn(_body, CreateElement("dialog-segments"));
+            block.Add(CreateLabel(segments.Label, "dialog-segments__label"));
+            var options = CreateElement("dialog-segments__options");
+            block.Add(options);
+            var buttons = new List<Button>();
             for (var i = 0; i < segments.Options.Count; i++)
             {
-                var b = Instantiate(template, options);
-                b.gameObject.SetActive(true);
-                b.GetComponentInChildren<TMP_Text>(true).SetText(segments.Options[i]);
-                images.Add(b.GetComponent<Image>());
+                var option = new Button { text = segments.Options[i] };
+                option.AddToClassList("btn");
+                option.AddToClassList("dialog-segment");
+                option.AddToClassList("kit-rounded-white");
+                buttons.Add(option);
+                options.Add(option);
                 var index = i;
-                b.OnClickAsObservable().Subscribe(_ =>
+                option.OnClickAsObservable().Subscribe(_ =>
                 {
-                    for (var k = 0; k < images.Count; k++)
-                    {
-                        images[k].color = k == index ? _segmentOn : _segmentOff;
-                    }
-
+                    Select(buttons, index);
                     segments.SelectedChanged(index);
                 }).AddTo(Bindings);
             }
 
-            for (var k = 0; k < images.Count; k++)
+            Select(buttons, segments.Selected);
+        }
+
+        private static void Select(List<Button> buttons, int index)
+        {
+            for (var k = 0; k < buttons.Count; k++)
             {
-                images[k].color = k == segments.Selected ? _segmentOn : _segmentOff;
+                buttons[k].EnableInClassList("dialog-segment--on", k == index);
             }
         }
 
         private void BuildButtons(DialogViewModel vm)
         {
-            RectTransform row = null;
+            VisualElement row = null;
             foreach (var b in vm.Buttons)
             {
-                Transform parent = _body;
+                var parent = _body;
                 if (b.IsInRow)
                 {
-                    if (row == null) row = Spawn(_rowTemplate);
+                    if (row == null) row = Spawn(_body, CreateElement("dialog-row"));
                     parent = row;
                 }
                 else
@@ -258,14 +238,12 @@ namespace Game.Services.UI.Dialogs
                     row = null;
                 }
 
-                var view = Instantiate(_buttonTemplate, parent);
-                view.gameObject.SetActive(true);
-                if (parent == _body) _spawned.Add(view.gameObject);
-                view.Setup(b, _buttonSprites[(int)b.Style]);
+                var view = DialogButtonView.Create(b);
+                if (parent == _body) Spawn(_body, view.Root);
+                else parent.Add(view.Root);
                 var button = b;
-                view.Button.OnClickAsObservable().ThrottleFirst(TimeSpan.FromMilliseconds(300))
-                    .Subscribe(_ => vm.Press(button)).AddTo(Bindings);
-                b.IsEnabled.Subscribe(x => view.Button.interactable = x).AddTo(Bindings);
+                view.Button.OnTapAsObservable().Subscribe(_ => vm.Press(button)).AddTo(Bindings);
+                b.IsEnabled.Subscribe(x => view.Button.SetEnabled(x)).AddTo(Bindings);
             }
         }
     }

@@ -1,109 +1,163 @@
 using DG.Tweening;
-using TMPro;
+using Game.Services.UI.Elements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Cream speech bubble anchored next to a UI element, plus the tutorial pointing hand. Used for coach tips,
-    /// booster gifts and the level 1 tutorial.
+    /// Coach bubble pointing at an element, and the pulsing tutorial hand. Both follow their target while visible
+    /// (shelves drop in, items fly) and exist in the panel only while shown.
     /// </summary>
-    public sealed class CoachView : MonoBehaviour
+    public sealed class CoachView : ElementView
     {
+        private const string BubbleClass = "coach-bubble";
+        private const string TextClass = "coach-bubble__text";
+        private const string HandClass = "coach-hand";
         private const float Gap = 10f;
         private const float EdgeMargin = 12f;
+        private static readonly Vector2 HandSize = new Vector2(54f, 62f);
+        private static readonly Vector2 HandOffset = new Vector2(8f, 18f);
 
-        [SerializeField] private RectTransform _bubble;
-        [SerializeField] private CanvasGroup _bubbleGroup;
-        [SerializeField] private TMP_Text _text;
-        [SerializeField] private RectTransform _hand;
-
+        private VisualElement _bubble;
+        private Label _text;
+        private VisualElement _hand;
+        private VisualElement _bubbleAnchor;
+        private VisualElement _handTarget;
+        private bool _isAbove;
         private Tween _bubbleTween;
         private Tween _handTween;
+        private IVisualElementScheduledItem _follow;
 
         /// <summary>
-        /// Shows the bubble next to <paramref name="anchor"/>, clamped inside the screen.
+        /// Shows a bubble next to <paramref name="anchor"/>.
         /// </summary>
-        /// <param name="message">Rich text (bold for booster names).</param>
-        /// <param name="anchor">Element the bubble points at.</param>
-        /// <param name="isAbove">Place above the anchor instead of below.</param>
-        /// <param name="seconds">Auto-hide delay; 0 keeps it until <see cref="HideBubble"/>.</param>
-        public void ShowBubble(string message, RectTransform anchor, bool isAbove, float seconds)
+        /// <param name="message">Rich text.</param>
+        /// <param name="anchor">Element to point at.</param>
+        /// <param name="isAbove">Above the anchor (otherwise below).</param>
+        /// <param name="seconds">Seconds before it fades; 0 keeps it until cleared.</param>
+        public void ShowBubble(string message, VisualElement anchor, bool isAbove, float seconds)
         {
             _bubbleTween?.Kill();
-            _text.SetText(message);
-            _bubble.gameObject.SetActive(true);
-            Canvas.ForceUpdateCanvases();
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(_bubble);
+            if (_bubble == null)
+            {
+                _bubble = CreateElement(BubbleClass);
+                _bubble.pickingMode = PickingMode.Ignore;
+                _text = CreateLabel(string.Empty, TextClass);
+                _bubble.Add(_text);
+            }
 
-            var parent = (RectTransform)_bubble.parent;
-            var bounds = AnchorBounds(anchor, parent);
-            var size = _bubble.rect.size;
-            var x = Mathf.Clamp(bounds.center.x, parent.rect.xMin + size.x / 2 + EdgeMargin,
-                parent.rect.xMax - size.x / 2 - EdgeMargin);
-            var y = isAbove ? bounds.yMax + Gap + size.y / 2 : bounds.yMin - Gap - size.y / 2;
-            _bubble.localPosition = new Vector3(x, y, 0f);
+            _bubbleAnchor = anchor;
+            _isAbove = isAbove;
+            _text.text = message;
+            Root.Add(_bubble);
+            _bubble.BringToFront();
+            _bubble.style.opacity = 0f;
+            PlaceBubble();
+            var seq = DOTween.Sequence().Append(_bubble.DOFade(1f, 0.2f));
+            if (seconds > 0f)
+            {
+                seq.AppendInterval(seconds).Append(_bubble.DOFade(0f, 0.4f)).OnComplete(HideBubble);
+            }
 
-            _bubbleGroup.alpha = 0f;
-            var seq = DOTween.Sequence().SetLink(gameObject).Append(_bubbleGroup.DOFade(1f, 0.2f));
-            if (seconds > 0f) seq.AppendInterval(seconds).Append(_bubbleGroup.DOFade(0f, 0.4f));
             _bubbleTween = seq;
+            StartFollowing();
         }
 
         /// <summary>
-        /// Hides the bubble now.
+        /// Hides the bubble.
         /// </summary>
         public void HideBubble()
         {
             _bubbleTween?.Kill();
-            _bubbleGroup.alpha = 0f;
-            _bubble.gameObject.SetActive(false);
+            _bubbleAnchor = null;
+            _bubble?.RemoveFromHierarchy();
         }
 
         /// <summary>
-        /// Shows the tutorial hand tapping at <paramref name="target"/>.
+        /// Shows the pulsing hand over <paramref name="target"/>.
         /// </summary>
-        /// <param name="target">Element to point at (the first item to tap on level 1).</param>
-        public void ShowHand(RectTransform target)
+        /// <param name="target">Element to tap.</param>
+        public void ShowHand(VisualElement target)
         {
             _handTween?.Kill();
-            var parent = (RectTransform)_hand.parent;
-            var b = AnchorBounds(target, parent);
-            _hand.gameObject.SetActive(true);
-            _hand.localPosition = new Vector3(b.center.x + 8f, b.center.y - 18f, 0f);
-            _hand.localScale = Vector3.one;
-            _handTween = _hand.DOScale(0.88f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine)
-                .SetLink(gameObject);
+            if (_hand == null)
+            {
+                _hand = CreateElement(HandClass);
+                _hand.pickingMode = PickingMode.Ignore;
+            }
+
+            _handTarget = target;
+            Root.Add(_hand);
+            _hand.BringToFront();
+            PlaceHand();
+            VisualElementTweens.SetScale(_hand, Vector2.one);
+            _handTween = _hand.DOScale(0.88f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+            StartFollowing();
         }
 
         /// <summary>
-        /// Hides bubble and hand (on any tap, level change or popup).
+        /// Removes the bubble and the hand.
         /// </summary>
         public void Clear()
         {
             HideBubble();
             _handTween?.Kill();
-            _hand.gameObject.SetActive(false);
+            _handTarget = null;
+            _hand?.RemoveFromHierarchy();
+            _follow?.Pause();
         }
 
-        private static Rect AnchorBounds(RectTransform anchor, RectTransform space)
+        /// <inheritdoc/>
+        protected override void OnAttached()
         {
-            var corners = new Vector3[4];
-            anchor.GetWorldCorners(corners);
-            var min = space.InverseTransformPoint(corners[0]);
-            var max = space.InverseTransformPoint(corners[2]);
+        }
+
+        private void StartFollowing()
+        {
+            if (_follow == null) _follow = Root.schedule.Execute(Follow).Every(0);
+            else _follow.Resume();
+        }
+
+        private void Follow()
+        {
+            if (_bubbleAnchor == null && _handTarget == null)
+            {
+                _follow.Pause();
+                return;
+            }
+
+            if (_bubbleAnchor != null) PlaceBubble();
+            if (_handTarget != null) PlaceHand();
+        }
+
+        private void PlaceBubble()
+        {
+            if (_bubbleAnchor == null || _bubbleAnchor.panel == null) return;
+
+            var bounds = Bounds(_bubbleAnchor);
+            var space = Root.layout.size;
+            var size = _bubble.layout.size;
+            if (float.IsNaN(size.x) || size.x <= 0f) size = new Vector2(270f, 60f);
+            var x = Mathf.Clamp(bounds.center.x - size.x / 2f, EdgeMargin, space.x - size.x - EdgeMargin);
+            var y = _isAbove ? bounds.yMin - Gap - size.y : bounds.yMax + Gap;
+            VisualElementTweens.SetPosition(_bubble, new Vector2(x, y));
+        }
+
+        private void PlaceHand()
+        {
+            if (_handTarget == null || _handTarget.panel == null) return;
+
+            var center = Bounds(_handTarget).center + HandOffset;
+            _hand.PlaceCentered(center, HandSize);
+        }
+
+        private Rect Bounds(VisualElement element)
+        {
+            var world = element.worldBound;
+            var min = Root.WorldToLocal(world.min);
+            var max = Root.WorldToLocal(world.max);
             return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
-        }
-
-        private void Awake()
-        {
-            Clear();
-        }
-
-        private void OnDestroy()
-        {
-            _bubbleTween?.Kill();
-            _handTween?.Kill();
         }
     }
 }

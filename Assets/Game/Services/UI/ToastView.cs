@@ -1,55 +1,58 @@
 using DG.Tweening;
-using TMPro;
+using Game.Services.UI.Elements;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Short message pill near the top of the screen ("The counter is full", "+50 coins"); one at a time, the
-    /// newest replaces the previous.
+    /// Short message pill under the HUD. The element exists only while a toast is on screen.
     /// </summary>
-    public sealed class ToastView : MonoBehaviour
+    public sealed class ToastView : ElementView
     {
+        private const string ToastClass = "toast";
+        private const string TextClass = "toast__text";
+        private const string WarningClass = "toast--warning";
         private const float ShowSeconds = 1.8f;
         private const float FadeSeconds = 0.2f;
 
-        [SerializeField] private CanvasGroup _group;
-        [SerializeField] private Image _background;
-        [SerializeField] private TMP_Text _text;
-        [SerializeField] private Color _normalColor = new Color(0.23f, 0.16f, 0.11f, 0.92f);
-        [SerializeField] private Color _warningColor = new Color(0.78f, 0.24f, 0.31f, 0.95f);
-
+        private VisualElement _toast;
+        private Label _text;
         private Sequence _sequence;
 
         /// <summary>
-        /// Shows a message; called by <see cref="ToastService"/>.
+        /// Shows a toast, replacing the current one.
         /// </summary>
-        /// <param name="message">Text, rich text allowed.</param>
-        /// <param name="isWarning">Berry background for problems (counter full, not enough coins).</param>
+        /// <param name="message">Text.</param>
+        /// <param name="isWarning">Red warning style.</param>
         public void Show(string message, bool isWarning)
         {
             _sequence?.Kill();
-            _text.SetText(message);
-            _background.color = isWarning ? _warningColor : _normalColor;
-            var rt = (RectTransform)transform;
-            rt.localScale = Vector3.one * 0.9f;
-            _sequence = DOTween.Sequence().SetUpdate(true).SetLink(gameObject)
-                .Append(_group.DOFade(1f, FadeSeconds))
-                .Join(rt.DOScale(1f, FadeSeconds).SetEase(Ease.OutBack))
+            if (_toast == null)
+            {
+                _toast = CreateElement(ToastClass);
+                _toast.pickingMode = PickingMode.Ignore;
+                _text = CreateLabel(string.Empty, TextClass);
+                _toast.Add(_text);
+            }
+
+            Root.Add(_toast);
+            _toast.BringToFront();
+            _text.text = message;
+            _toast.EnableInClassList(WarningClass, isWarning);
+            _toast.style.opacity = 0f;
+            VisualElementTweens.SetScale(_toast, Vector2.one * 0.9f);
+            _sequence = DOTween.Sequence().SetUpdate(true)
+                .Append(_toast.DOFade(1f, FadeSeconds))
+                .Join(_toast.DOScale(1f, FadeSeconds).SetEase(Ease.OutBack))
                 .AppendInterval(ShowSeconds)
-                .Append(_group.DOFade(0f, FadeSeconds));
+                .Append(_toast.DOFade(0f, FadeSeconds))
+                .OnComplete(() => _toast.RemoveFromHierarchy());
         }
 
-        private void Awake()
+        /// <inheritdoc/>
+        protected override void OnAttached()
         {
-            _group.alpha = 0f;
-            _group.blocksRaycasts = false;
-        }
-
-        private void OnDestroy()
-        {
-            _sequence?.Kill();
         }
     }
 }
