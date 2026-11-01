@@ -76,7 +76,7 @@ Members of a type are ordered by **kind**, then by **access modifier**, then by 
 
 ### 3. By type category (fields and properties, inside each access group)
 
-1. **Class** (reference types): classes, interfaces, delegates, arrays, collections, `UnityEngine.Object` types (`Transform`, `Button`, `GameObject`, prefabs, configs), UniRx types (`ReactiveProperty<T>`, `Subject<T>`, `CompositeDisposable`).
+1. **Class** (reference types): classes, interfaces, delegates, arrays, collections, `UnityEngine.Object` types (`Transform`, `GameObject`, prefabs, configs, `VisualTreeAsset`), UI Toolkit elements (`VisualElement`, `Label`, `Button`), UniRx types (`ReactiveProperty<T>`, `Subject<T>`, `CompositeDisposable`).
 2. **Struct** (non-primitive value types): `Vector3`, `Quaternion`, `Color`, `LayerMask`, `CancellationToken`, `DateTime`, `TimeSpan`, custom structs.
 3. **Primitive**: `bool`, `byte`, `short`, `int`, `long`, `float`, `double`, `decimal`, `char`, `string`, enums.
 
@@ -96,6 +96,15 @@ Members of a type are ordered by **kind**, then by **access modifier**, then by 
 - **WHEN** checking a `UnityEngine.Object` for null → **DO** use `== null` / `!= null` or implicit bool (`if (target)`). **DO NOT** use `?.`, `??` or `is null` on `UnityEngine.Object`: they bypass Unity's destroyed-object check.
 - **WHEN** subscribing to events or streams → **DO** pair every subscription with an unsubscription/dispose in the same class (`OnDisable`/`OnDestroy`/`Dispose`/`Unbind`).
 - **WHEN** a `MonoBehaviour` requires components → **DO** reference them through `[SerializeField]` fields; use `[RequireComponent]` when a component must exist on the same GameObject.
+
+### UI Toolkit (C#, UXML, USS)
+
+- **WHEN** a view refers to an element by name → **DO** declare `private const string <Element>Name = "kebab-name";` (`PlayName = "play"`, `CoinsName = "coins-value"`) and query it once; never repeat the string literal.
+- **WHEN** a view toggles a USS class → **DO** declare `private const string <Meaning>Class = "class-name";` (`LockedAlbumClass = "kit-btn-grey"`, `WarningClass = "toast--warning"`).
+- **WHEN** naming elements in UXML → **DO** use kebab-case `name` attributes, and give a name only to elements the code queries.
+- **WHEN** naming USS classes → **DO** use BEM-like kebab-case scoped to the feature: block `home-play`, element `home-play__title`, modifier `toast--warning`; shared kit classes start with `kit-` (`kit-btn-wood`), icons with `icon-` (`icon-coin`).
+- **WHEN** writing USS → **DO** start each file with a one-line comment saying what it styles and which mockup it follows; sizes are in prototype CSS pixels (`px`); colors come from the shared variables in `Game.uss` (`var(--ink)`) instead of repeated literals.
+- **WHEN** a UXML element is decoration or a container that isn't tapped → **DO** set `picking-mode="Ignore"` on it.
 
 ---
 
