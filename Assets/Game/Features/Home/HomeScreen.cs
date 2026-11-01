@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Onboarding;
 using Game.Services.UI;
 using UniRx;
 
@@ -22,7 +22,7 @@ namespace Game.Features.Home
 
         private readonly IUIService _ui;
         private readonly IOverlayService _overlay;
-        private readonly IProgressService _progress;
+        private readonly HomeProgress _progress;
         private readonly ILevelCurveService _curves;
         private readonly IContentService _content;
         private readonly IGameFlow _flow;
@@ -38,7 +38,7 @@ namespace Game.Features.Home
         /// </summary>
         /// <param name="ui">Windows.</param>
         /// <param name="overlay">Background and toasts.</param>
-        /// <param name="progress">Progress.</param>
+        /// <param name="progress">Profile chunks the home screen shows.</param>
         /// <param name="curves">Next level.</param>
         /// <param name="content">Catalog.</param>
         /// <param name="flow">Starts levels.</param>
@@ -46,7 +46,7 @@ namespace Game.Features.Home
         /// <param name="namePrompt">Shop naming.</param>
         /// <param name="album">Album screen.</param>
         /// <param name="reviewers">Reviewers panel.</param>
-        public HomeScreen(IUIService ui, IOverlayService overlay, IProgressService progress, ILevelCurveService curves,
+        public HomeScreen(IUIService ui, IOverlayService overlay, HomeProgress progress, ILevelCurveService curves,
             IContentService content, IGameFlow flow, ISettingsScreen settings, IShopNamePrompt namePrompt,
             IAlbumScreen album, IReviewersScreen reviewers)
         {
@@ -120,9 +120,10 @@ namespace Game.Features.Home
         {
             if (_curves.Active.IsOriginal) return;
 
-            var stars = _progress.Data.Stars;
-            var album = stars.ContainsKey(AlbumFromLevel) && !_progress.HasFlag(Flags.AlbumIntro);
-            var name = stars.ContainsKey(NameShopAfterLevel) && !_progress.HasFlag(Flags.NameAsked);
+            var levels = _progress.Levels;
+            var onboarding = _progress.Onboarding;
+            var album = levels.IsCompleted(AlbumFromLevel) && !onboarding.HasFlag(Flags.AlbumIntro);
+            var name = levels.IsCompleted(NameShopAfterLevel) && !onboarding.HasFlag(Flags.NameAsked);
             if (!album && !name) return;
 
             await UniTask.Delay(MilestoneDelayMs, cancellationToken: ct);

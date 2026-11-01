@@ -1,7 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Audio;
-using Game.Services.Progress;
+using Game.Services.Save;
 
 namespace Game.Flow.States
 {
@@ -10,19 +10,19 @@ namespace Game.Flow.States
     /// </summary>
     public sealed class LoadProgressState : IGameState
     {
-        private readonly IProgressService _progress;
+        private readonly IProfileService _profile;
         private readonly IAudioService _audio;
         private readonly GameStateMachine _states;
 
         /// <summary>
         /// Creates the state.
         /// </summary>
-        /// <param name="progress">Profile.</param>
+        /// <param name="profile">Loads every profile chunk.</param>
         /// <param name="audio">Starts the music if enabled.</param>
         /// <param name="states">Moves on to Home.</param>
-        public LoadProgressState(IProgressService progress, IAudioService audio, GameStateMachine states)
+        public LoadProgressState(IProfileService profile, IAudioService audio, GameStateMachine states)
         {
-            _progress = progress;
+            _profile = profile;
             _audio = audio;
             _states = states;
         }
@@ -30,7 +30,7 @@ namespace Game.Flow.States
         /// <inheritdoc/>
         public UniTask Enter(CancellationToken ct)
         {
-            _progress.Load();
+            _profile.Load();
             _audio.ApplySettings();
             _states.Enter<HomeState>(ct).Forget();
             return UniTask.CompletedTask;

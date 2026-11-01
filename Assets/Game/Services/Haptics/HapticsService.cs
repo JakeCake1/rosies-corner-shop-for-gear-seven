@@ -1,4 +1,4 @@
-using Game.Services.Progress;
+using Game.Services.Settings;
 using UnityEngine;
 
 namespace Game.Services.Haptics
@@ -9,22 +9,22 @@ namespace Game.Services.Haptics
     /// </summary>
     public sealed class HapticsService : IHapticsService
     {
-        private readonly IProgressService _progress;
+        private readonly ISettingsService _settings;
 
         /// <summary>
         /// Creates the service.
         /// </summary>
-        /// <param name="progress">Holds the vibration setting.</param>
-        public HapticsService(IProgressService progress)
+        /// <param name="settings">Vibration on/off.</param>
+        public HapticsService(ISettingsService settings)
         {
-            _progress = progress;
+            _settings = settings;
         }
 
         /// <inheritdoc/>
         public void Pulse(HapticKind kind)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            if (!_progress.Data.IsHapticsOn || kind == HapticKind.Tap) return;
+            if (!_settings.IsHapticsOn || kind == HapticKind.Tap) return;
 
             Handheld.Vibrate();
 #endif

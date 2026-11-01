@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Services.Content;
-using Game.Services.Progress;
 using Game.Services.UI;
 using UniRx;
 using UnityEngine;

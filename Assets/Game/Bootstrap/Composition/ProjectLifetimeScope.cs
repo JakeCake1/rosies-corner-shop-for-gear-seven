@@ -2,21 +2,26 @@ using System.Collections.Generic;
 using Game.Features.Ads;
 using Game.Features.Album;
 using Game.Features.Gameplay;
+using Game.Features.Gameplay.Boosters;
 using Game.Features.Home;
 using Game.Features.Reviewers;
 using Game.Features.Settings;
 using Game.Flow;
 using Game.Flow.States;
+using Game.Services.Album;
 using Game.Services.Assets;
 using Game.Services.Audio;
 using Game.Services.Content;
+using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Haptics;
 using Game.Services.Levels;
-using Game.Services.Progress;
+using Game.Services.Onboarding;
 using Game.Services.Save;
+using Game.Services.Settings;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
+using Game.Services.Wallet;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -42,7 +47,8 @@ namespace Game.Bootstrap.Composition
             builder.Register<ISaveStorage>(_ => new FileSaveStorage(Application.persistentDataPath), Lifetime.Singleton);
             builder.Register<SaveService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ContentService>(Lifetime.Singleton).AsImplementedInterfaces();
-            builder.Register<ProgressService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<ProfileService>(Lifetime.Singleton).AsImplementedInterfaces();
+            RegisterProfileChunks(builder);
             builder.Register<LevelCurveService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<AudioService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<HapticsService>(Lifetime.Singleton).AsImplementedInterfaces();
@@ -55,6 +61,7 @@ namespace Game.Bootstrap.Composition
             builder.Register<ShopNamePrompt>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<AlbumScreen>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ReviewersScreen>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<HomeProgress>(Lifetime.Singleton);
             builder.Register<HomeScreen>(Lifetime.Singleton).AsSelf().AsImplementedInterfaces();
             builder.Register<StartBoostersPrompt>(Lifetime.Singleton);
 
@@ -70,6 +77,19 @@ namespace Game.Bootstrap.Composition
             builder.RegisterComponentOnNewGameObject<AppLifecycleListener>(Lifetime.Singleton, "[AppLifecycle]")
                 .DontDestroyOnLoad();
             builder.RegisterEntryPoint<GameEntryPoint>();
+        }
+
+        private static void RegisterProfileChunks(IContainerBuilder builder)
+        {
+            // Every owner is also an IProfileChunk; ProfileService receives them all as a collection.
+            builder.Register<WalletService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<LevelProgressService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<AlbumService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<BoosterInventory>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<OnboardingService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<ShopProfile>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<SettingsService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<ExperimentsService>(Lifetime.Singleton).AsImplementedInterfaces();
         }
     }
 }
