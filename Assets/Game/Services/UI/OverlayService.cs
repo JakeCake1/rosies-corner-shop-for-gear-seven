@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// <see cref="IOverlayService"/> that forwards to the overlay widgets held by <see cref="UIRoot"/>.
+    /// Forwards overlay requests to the views held by <see cref="UIRoot"/>.
     /// </summary>
     public sealed class OverlayService : IOverlayService
     {
@@ -12,7 +13,7 @@ namespace Game.Services.UI
         /// <summary>
         /// Creates the service.
         /// </summary>
-        /// <param name="root">Holds the toast, coach, effects and background widgets.</param>
+        /// <param name="root">UI root with the overlay views.</param>
         public OverlayService(UIRoot root)
         {
             _root = root;
@@ -22,13 +23,13 @@ namespace Game.Services.UI
         public void Toast(string message, bool isWarning = false) => _root.Toast.Show(message, isWarning);
 
         /// <inheritdoc/>
-        public void Coach(string message, RectTransform anchor, bool isAbove, float seconds)
+        public void Coach(string message, VisualElement anchor, bool isAbove, float seconds)
         {
             if (anchor != null) _root.Coach.ShowBubble(message, anchor, isAbove, seconds);
         }
 
         /// <inheritdoc/>
-        public void PointAt(RectTransform target)
+        public void PointAt(VisualElement target)
         {
             if (target != null) _root.Coach.ShowHand(target);
         }
@@ -37,12 +38,12 @@ namespace Game.Services.UI
         public void ClearCoach() => _root.Coach.Clear();
 
         /// <inheritdoc/>
-        public void Burst(Vector3 worldPosition, EffectKind kind, int count, Color[] colors = null) =>
-            _root.Effects.Burst(worldPosition, kind, count, colors);
+        public void Burst(Vector2 panelPosition, EffectKind kind, int count, Color[] colors = null) =>
+            _root.Effects.Burst(panelPosition, kind, count, colors);
 
         /// <inheritdoc/>
-        public void Praise(Vector3 worldPosition, string text, bool isCombo) =>
-            _root.Effects.Praise(worldPosition, text, isCombo);
+        public void Praise(Vector2 panelPosition, string text, bool isCombo) =>
+            _root.Effects.Praise(panelPosition, text, isCombo);
 
         /// <inheritdoc/>
         public void SetBackground(bool isTricky, bool hasBunting)

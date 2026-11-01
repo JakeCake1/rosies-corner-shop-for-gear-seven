@@ -26,6 +26,11 @@
     {
       "name": "5. Report",
       "start": "2026-11-01T06:06:48.592Z",
+      "end": "2026-11-01T07:20:46.446Z"
+    },
+    {
+      "name": "EVG-8 UI Toolkit rework",
+      "start": "2026-11-01T07:20:46.446Z",
       "end": null
     }
   ]

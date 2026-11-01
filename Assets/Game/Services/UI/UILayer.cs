@@ -1,20 +1,23 @@
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Stacking layers of the UI root, bottom to top; each is its own container with a fixed order.
+    /// UI layers, bottom to top.
     /// </summary>
     public enum UILayer
     {
-        /// <summary>Always-visible overlays of a screen (unused while the board has its own HUD).</summary>
+        /// <summary>The scene's own UI (the gameplay board), under everything else.</summary>
+        Scene,
+
+        /// <summary>Persistent HUD.</summary>
         HUD,
 
-        /// <summary>Full-screen screens: home, album.</summary>
+        /// <summary>Full-screen windows (home, album).</summary>
         Screens,
 
-        /// <summary>Modal popups with a dimmed blocker behind the top one.</summary>
+        /// <summary>Modal popups with the dimmed blocker.</summary>
         Popups,
 
-        /// <summary>Toasts, banners, coach bubbles, the rewarded-ad placeholder.</summary>
+        /// <summary>Toasts, coach tips and effects.</summary>
         Overlay,
     }
 }

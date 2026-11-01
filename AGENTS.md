@@ -2,7 +2,7 @@
 
 Read this file first. It explains which rule file to load for a task and which rule wins when files disagree. All rule files are in `Docs/Code Rules/`.
 
-Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween**, **Addressables**, **uGUI** (TextMeshPro).
+Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween**, **Addressables**, **UI Toolkit** (UXML/USS).
 
 ---
 
@@ -43,7 +43,7 @@ The topic files were written to be stack-agnostic, so they mention alternatives.
 | R3, custom `ObservableProperty<T>`, C# events for UI state | UniRx (`ReactiveProperty<T>`, `IReadOnlyReactiveProperty<T>`, `CompositeDisposable`) |
 | `Animator` for UI transitions, tweens in general | DOTween |
 | `Resources`, direct `Instantiate` of prefabs | Addressables via `IAssetProvider`, instantiate via `IObjectResolver` |
-| UI Toolkit | uGUI + TextMeshPro |
+| uGUI, `Canvas`, TextMeshPro, `MonoBehaviour` views | UI Toolkit: UXML/USS + plain C# `ElementView`s |
 
 Code style (`unity-code-style-rules.md`) doesn't conflict with other files: it governs how code is written, the others govern what is written. It applies to all C# code, including code adapted from skeletons.
 
@@ -70,9 +70,10 @@ Reference skeletons in the topic files show structure only. When writing real co
 - **Code index:** use the `codebase-memory-mcp` MCP server (configured in `.mcp.json`) to find symbols, callers and
   package APIs before reading files. Re-index after large changes: `codebase-memory-mcp cli index_repository --repo-path <project root>
   --name rosies-corner-shop --persistence true`; the graph is stored in `.codebase-memory/graph.db.zst`.
-- **Generated assets:** prefabs, scenes, configs, fonts, VContainer settings and Addressables groups are produced by
-  `Tools/Rosie/2. Build Project` (`Game.Bootstrap.Editor.Builder.ProjectBuilder`). Change the builder, not the
-  generated assets, and rebuild. Run `Tools/Rosie/1. Import TMP Essentials` once on a fresh clone first.
+- **UI and scenes are authored assets** (EVG-8): scenes in `Assets/Game/Scenes`, UXML/USS next to each feature
+  (`Features/*/Layouts`, `Services/UI/Layouts`), configs next to their services. Edit them directly; there is no
+  editor code that builds scenes or UI. USS sizes are prototype CSS pixels (panel reference 390×844), and every
+  layout is checked against the mockups in `screens.rar`.
 - **Agent bridge:** `Game.Bootstrap.Editor.Agent.AgentBridge` logs every compilation to `AgentBridge/compile.log`
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.

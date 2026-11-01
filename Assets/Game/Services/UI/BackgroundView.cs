@@ -1,36 +1,44 @@
 using DG.Tweening;
-using UnityEngine;
-using UnityEngine.UI;
+using Game.Services.UI.Elements;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// The shop interior behind every screen: wallpaper, wainscot, bunting (home only) and the red tint of tricky
-    /// levels.
+    /// Full-screen shop background behind every layer: wallpaper, wainscot, bunting and the red tint of tricky levels.
     /// </summary>
-    public sealed class BackgroundView : MonoBehaviour
+    public sealed class BackgroundView : ElementView
     {
+        private const string TintName = "tricky-tint";
+        private const string BuntingName = "bunting";
         private const float TintSeconds = 0.4f;
+        private const float TrickyOpacity = 0.16f;
 
-        [SerializeField] private Image _trickyTint;
-        [SerializeField] private GameObject _bunting;
-        [Tooltip("Alpha of the red wash on tricky levels.")]
-        [SerializeField] private float _trickyAlpha = 0.16f;
+        private VisualElement _tint;
+        private VisualElement _bunting;
 
         /// <summary>
-        /// Switches the red tricky-level wash on or off.
+        /// Fades the tricky-level tint in or out.
         /// </summary>
-        /// <param name="isTricky">True on tricky levels.</param>
+        /// <param name="isTricky">Tricky level.</param>
         public void SetTricky(bool isTricky)
         {
-            _trickyTint.DOKill();
-            _trickyTint.DOFade(isTricky ? _trickyAlpha : 0f, TintSeconds).SetLink(gameObject);
+            _tint.Kill();
+            _tint.DOFade(isTricky ? TrickyOpacity : 0f, TintSeconds);
         }
 
         /// <summary>
-        /// Shows the bunting along the top edge (home and album only).
+        /// Shows or hides the bunting (home screen only).
         /// </summary>
-        /// <param name="isVisible">Whether the bunting is visible.</param>
-        public void SetBunting(bool isVisible) => _bunting.SetActive(isVisible);
+        /// <param name="isVisible">Show it.</param>
+        public void SetBunting(bool isVisible) => _bunting.SetVisible(isVisible);
+
+        /// <inheritdoc/>
+        protected override void OnAttached()
+        {
+            _tint = Q(TintName);
+            _bunting = Q(BuntingName);
+            _tint.style.opacity = 0f;
+        }
     }
 }

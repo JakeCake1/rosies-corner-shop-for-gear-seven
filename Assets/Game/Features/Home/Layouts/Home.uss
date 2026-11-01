@@ -1,0 +1,210 @@
+/* Home window. Positions follow the prototype mockup (01_home.png), in prototype CSS pixels. */
+
+.home-settings {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    width: 42px;
+    height: 44px;
+}
+
+.home-settings__icon {
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    top: 12px;
+    bottom: 8px;
+}
+
+.home-sign {
+    position: absolute;
+    top: 62px;
+    left: 50%;
+    width: 340px;
+    height: 92px;
+    margin-left: -170px;
+}
+
+.home-sign__name {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 8px;
+    bottom: 30px;
+    font-size: 40px;
+    color: var(--cream);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+.home-sign__tagline {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 12px;
+    height: 20px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #E2C38A;
+    -unity-text-align: middle-center;
+}
+
+.home-subtitle-row {
+    position: absolute;
+    top: 160px;
+    left: 0;
+    right: 0;
+    height: 22px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-subtitle {
+    font-size: 13px;
+    color: var(--ink-2);
+    -unity-text-align: middle-center;
+    padding: 0;
+    margin: 0;
+}
+
+.home-reviewers {
+    height: 22px;
+    padding: 0;
+    margin: 0 0 0 3px;
+    font-size: 13px;
+    color: var(--walnut);
+}
+
+.home-showcase {
+    position: absolute;
+    top: 210px;
+    left: 50%;
+    width: 370px;
+    height: 96px;
+    margin-left: -185px;
+}
+
+.home-showcase__items {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 0;
+    bottom: 16px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.home-showcase__item {
+    width: 44px;
+    height: 74px;
+    margin: 0 3px;
+    -unity-background-scale-mode: scale-to-fit;
+    background-position-y: bottom;
+}
+
+.home-showcase__plank {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20px;
+}
+
+.home-coins {
+    position: absolute;
+    top: 326px;
+    left: 16px;
+    width: 118px;
+    height: 40px;
+}
+
+.home-coins__icon {
+    width: 28px;
+    height: 28px;
+    margin-left: 8px;
+}
+
+.home-coins__value {
+    margin-left: 6px;
+    padding-bottom: 3px;
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: var(--ink);
+}
+
+.home-album {
+    position: absolute;
+    top: 322px;
+    right: 16px;
+    width: 150px;
+    height: 48px;
+}
+
+.home-album__text {
+    position: absolute;
+    left: 0;
+    right: 22px;
+    top: 0;
+    bottom: 6px;
+    font-size: 20px;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.home-album__lock {
+    position: absolute;
+    right: 14px;
+    top: 12px;
+    width: 18px;
+    height: 20px;
+}
+
+.home-album__badge {
+    position: absolute;
+    right: -6px;
+    top: -8px;
+    width: 24px;
+    height: 24px;
+    -unity-background-image-tint-color: var(--berry);
+    justify-content: center;
+}
+
+.home-album__badge-text {
+    font-size: 13px;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.home-play {
+    position: absolute;
+    bottom: 250px;
+    left: 50%;
+    width: 350px;
+    height: 82px;
+    margin-left: -175px;
+}
+
+.home-play__title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    bottom: 34px;
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.home-play__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 44px;
+    bottom: 12px;
+    font-size: 17px;
+    color: white;
+    -unity-text-align: middle-center;
+}
