@@ -1,0 +1,323 @@
+
+const fs=require('fs');
+const raw=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+const ITEMS=raw.map(x=>({id:x.id,name:x.name,fam:x.family,shape:x.shape,sil:x.silhouette,bk:x.colorBucket}));
+let save={found:{}};
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function shuffleIn(a,r){for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const clone=o=>JSON.parse(JSON.stringify(o));
+const LEVELS=[
+  {look:0,seed:51013,jps:2,vis:3,sizes:[1],types:3,per:6,locks:0,tip:""},
+  {look:0,seed:253292,jps:2,vis:2,sizes:[1],types:4,per:6,locks:0,tip:""},
+  {look:0,seed:463312,jps:3,vis:2,sizes:[1],types:5,per:6,locks:0,tip:""},
+  {look:0,seed:97275,jps:3,vis:5,sizes:[1, 1, 1, 2, 2],types:8,per:9,locks:0,hard:true,tip:"Rewards ×2. Bigger shelves today: plan before you tap."},
+  {look:0,seed:140216,jps:3,vis:5,sizes:[1],types:6,per:9,locks:1,tip:"Empty the shelf with the brass key to untie the tied one."},
+  {look:0,seed:548279,jps:3,vis:5,sizes:[1, 2],types:7,per:9,locks:0,tip:""},
+  {look:0,seed:250616,jps:3,vis:5,sizes:[1, 2],types:6,per:9,locks:0,tip:"A calm day at the shop."},
+  {look:0,seed:112291,jps:3,vis:5,sizes:[1, 2],types:7,per:9,locks:0,frz:2,thaw:3,tip:"Frozen shelf: it thaws as you pack baskets."},
+  {look:0,seed:221678,jps:3,vis:5,sizes:[1, 2],types:7,per:9,locks:0,tip:"Keep room on the counter for the next basket."},
+  {look:0,seed:183986,jps:3,vis:5,sizes:[1, 1, 2, 2, 3],types:8,per:9,locks:0,hard:true,tip:"Rewards ×2."},
+  {look:0,seed:572049,jps:3,vis:5,sizes:[1, 2],types:6,per:9,locks:0,brd:1,hm:0,tip:"A nailed shelf! Tap the hammer to pull the boards off."},
+  {look:0,seed:69897,jps:3,vis:5,sizes:[1],types:7,per:9,locks:1,brd:1,hm:0,tip:"Find the hammer and the key."},
+  {look:0,seed:496665,jps:3,vis:5,sizes:[1],types:7,per:9,locks:0,wrap:0.25,tip:"Paper bags hide what's inside. Take one to find out."},
+  {look:0,seed:575088,jps:3,vis:5,sizes:[1, 2],types:7,per:9,locks:0,frz:1,thaw:3,wrap:0.25,tip:"Bags and ice on the same shelves."},
+  {look:0,seed:196792,jps:3,vis:5,sizes:[1, 2],types:8,per:9,locks:0,brd:1,hm:0,hard:true,tip:"Rewards ×2. Plan before you tap."},
+  {look:0,seed:298438,jps:3,vis:5,sizes:[1, 2],types:6,per:9,locks:0,fam:"bakery",tip:"New department: the Bakery."},
+  {look:0,seed:283969,jps:3,vis:5,sizes:[1, 2],types:7,per:9,locks:0,deep:0.25,tip:"Some shelves have a second row hiding behind the first."},
+  {look:0,seed:168867,jps:3,vis:5,sizes:[1, 2, 3],types:7,per:9,locks:0,frz:1,thaw:3,deep:0.25,tip:"Second rows and frozen shelves."},
+  {look:0,seed:580153,jps:3,vis:5,sizes:[1, 1, 2],types:8,per:9,locks:0,wrap:0.25,fam:"sweet",tip:"New department: Sweets."},
+  {look:0,seed:294749,jps:3,vis:5,sizes:[1, 1, 2, 2, 3],types:8,per:9,locks:0,deep:0.25,hard:true,tip:"Rewards ×2."}
+];
+const NEW_LEVELS=LEVELS.slice(),ORIG_LEVELS=[
+  {seed:40001,   jps:2,vis:3,sizes:[1],    types:3, per:6, locks:0, look:0, tip:"Tap an item. It goes to the basket that wants it, otherwise to the counter."},
+  {seed:41001,   jps:2,vis:3,sizes:[1,2],  types:4, per:6, locks:0, look:0, tip:"Empty a shelf and it folds away. Everything above slides down."},
+  {seed:42001,   jps:3,vis:3,sizes:[1],    types:5, per:6, locks:0, look:0, tip:"Wider shelves now: three items in every row."},
+  {seed:277178,  jps:3,vis:5,sizes:[1,2,3],types:9, per:9, locks:0, look:0, tip:"Tall shelves fold only when every row is empty."},
+  {seed:39832583,jps:3,vis:6,sizes:[1],    types:9, per:9, locks:1, look:0, tip:"Empty the shelf with the brass key to untie the tied one."},
+  {seed:3579401, jps:3,vis:6,sizes:[1,2],  types:9, per:9, locks:0, look:0, brd:1,hm:0, tip:"A nailed shelf! Tap the hammer to pull the boards off."},
+  {seed:6596540, jps:3,vis:6,sizes:[1,2],  types:9, per:9, locks:0, look:0, frz:1,thaw:3, tip:"Frozen shelf: it thaws as you pack baskets."},
+  {seed:10912395,jps:3,vis:6,sizes:[1],    types:8, per:9, locks:0, look:0, wrap:0.25, tip:"Paper bags hide what's inside. Take one to find out."},
+  {seed:41883604,jps:3,vis:6,sizes:[1,2,3],types:7, per:9, locks:0, look:0, deep:0.25, tip:"Some shelves have a second row hiding behind the first."},
+  {seed:2937962, jps:3,vis:6,sizes:[2,3],  types:9, per:9, locks:0, look:0, hard:true, tip:"Tricky: tall shelves only. Dig where the next basket's items are hiding."},
+];
+const FAM_ORDER=["dairy","bakery","drink","pantry","sweet","fresh","home"];
+
+/* Items for a level: one per shape (two donut flavours never share a level), spread over families.
+   Uses its own random stream so adding items to the catalog never reshuffles existing layouts' shelves. */
+
+
+const LOOKALIKES=[["Red Apple","Tomato"],["Cherry Soda","Tomato Soup"],["Lime Soda","Pea Soup"],["Orange Soda","Orange Drink"],["Lemonade","Mustard"],
+  ["Milk","Glass Milk"],["Strawberry Yogurt","Strawberry Milk"],["Cheese","Butter"],["Ketchup","Red Vinegar"],["Orange","Peach"],["Lemon","Yellow Pepper"],
+  ["Grapes","Blueberries"],["Cherries","Strawberry"],["Pink Cupcake","Strawberry Ice Cream"],["Cherry Popsicle","Ketchup"],["Grape Juice","Grape Soda"],
+  ["Green Apple","Pear"],["Chocolate Muffin","Chocolate Cupcake"],["Pink Donut","Pink Iced Cookie"],["Corn","Pineapple"]];
+function pickTypes(n,count,r,look,fam){
+  if(look==null) look=count>6?1:0;
+  const byFam={};ITEMS.forEach(it=>(byFam[it.fam]=byFam[it.fam]||[]).push(it));
+  for(const k in byFam) shuffleIn(byFam[k],r);
+  const fams=shuffleIn(FAM_ORDER.slice(),r),out=[],shapes=new Set(),looks=new Set(),hc={};let i=0,guard=0;
+  const maxC=[1,2,3][look];
+  const take=it=>{shapes.add(it.shape);looks.add(it.sil+"|"+it.bk);hc[it.bk]=(hc[it.bk]||0)+1;out.push(it.id);for(const f in byFam){const k=byFam[f].indexOf(it);if(k>-1) byFam[f].splice(k,1);}};
+  if(look===2&&count>=4&&ITEMS[0].bk){
+    // seed the level with one lookalike pair: same colour, same outline, different products
+    const byName=new Map(ITEMS.map(it=>[it.name,it]));
+    const pairs=shuffleIn(LOOKALIKES.slice(),r);
+    for(const [x,y] of pairs){const a=byName.get(x),b=byName.get(y);if(a&&b){take(a);take(b);break;}}
+  }
+  if(fam&&byFam[fam]){let got=0;for(const it of byFam[fam].slice()){if(got>=3||out.length>=count) break;if(!shapes.has(it.shape)&&(!it.bk||(!looks.has(it.sil+"|"+it.bk)&&(hc[it.bk]||0)<maxC))){take(it);got++;}}}
+  while(out.length<count&&guard<5000){
+    guard++;const list=byFam[fams[i%fams.length]];i++;
+    if(!list||!list.length) continue;
+    const okIt=it=>!shapes.has(it.shape)&&(!it.bk||(!looks.has(it.sil+"|"+it.bk)&&(hc[it.bk]||0)<maxC));
+    let seen={};try{seen=save.found||{};}catch(e){}
+    let k=list.findIndex(it=>okIt(it)&&!seen[it.id]);if(k<0) k=list.findIndex(okIt);
+    if(k<0){list.length=0;continue;}
+    take(list[k]);
+  }
+  // safety net: if the look rules ran the catalogue dry, fill up on shape alone
+  if(out.length<count) for(const it of ITEMS){if(out.length>=count) break;if(!out.includes(it.id)&&!shapes.has(it.shape)){shapes.add(it.shape);out.push(it.id);}}
+  return out;
+}
+/* deterministic in-level randomness kept inside the state, so clones replay identically */
+function rnd(st){st.rc=(st.rc||0)+1;return mulberry32(((st.seed>>>0)^Math.imul(st.rc,2654435761))>>>0)();}
+/* A column is a stack of shelves, bottom first. Hidden items wait in the column's stockroom (queue).
+   When space opens at the top, a new shelf is cut from the stockroom with a height that fits the gap. */
+function spawnH(st,c,free){
+  const col=st.cols[c];const rr=mulberry32(((st.seed*31)+c*7919+col.spawn*104729)>>>0);rr();
+  const opts=st.sizes.filter(s=>s<=free);
+  return opts.length?opts[Math.floor(rr()*opts.length)]:free;
+}
+function colUsed(col){return col.blocks.reduce((a,b)=>a+b.h,0);}
+const open=b=>!b.locked&&!(b.frozen>0)&&!b.boarded;
+function fillCols(st,ev){
+  st.cols.forEach((col,c)=>{
+    let used=colUsed(col);
+    while(col.queue.length&&used<st.vis){
+      const free=st.vis-used;let hh=spawnH(st,c,free);
+      const slots=[];
+      for(let k=0;k<hh*st.jps;k++){
+        if(!col.queue.length){slots.push(null);continue;}
+        let j=col.queue.shift();
+        if(!j.tool){
+          if(st.mech.wrap&&rnd(st)<st.mech.wrap) j={...j,wrap:true};
+          if(st.mech.deep&&col.queue.length&&!col.queue[0].tool&&rnd(st)<st.mech.deep) j={...j,back:col.queue.shift()};
+        }
+        slots.push(j);
+      }
+      let last=-1;slots.forEach((x,i)=>{if(x) last=i;});
+      hh=Math.max(1,Math.ceil((last+1)/st.jps));slots.length=hh*st.jps;
+      const b={id:st.nid++,h:hh,slots,locked:false,key:null,frozen:0,boarded:false};
+      const first=col.blocks.length===0;
+      col.blocks.push(b);col.spawn++;used+=hh;
+      if(!first) applyMech(st,b,c);
+      ev&&ev.push({type:"roll",blk:b.id,col:c});
+    }
+  });
+}
+/* frozen shelves and nailed-shut shelves are sprinkled over the level as shelves appear */
+function applyMech(st,b,c){
+  const m=st.mech;
+  if(m.frz>0&&rnd(st)<.34){b.frozen=m.thaw;m.frz--;}
+}
+/* Nailed shelf: exactly one, placed in the opening layout so the player sees it from the start.
+   Its hammer is always in a different column and the player is told where:
+   hm 0 — on an open shelf right away (tutorial),
+   hm 1 — in another column's stockroom, arriving with that column's next shelf (label shows +🔨),
+   hm 2 — inside a tied shelf, so the key comes first (key → hammer → boards). */
+function placeBoard(st){
+  if(!st.mech.brd) return;
+  const cand=[];
+  st.cols.forEach((col,c)=>col.blocks.forEach((b,i)=>{if(open(b)&&!b.key&&!b.slots.some(j=>j&&j.tool)&&col.blocks.length>=2) cand.push({col,c,b});}));
+  if(!cand.length) return;
+  const T=cand[Math.floor(rnd(st)*cand.length)];T.b.boarded=true;
+  const hammer={id:st.nid++,t:-1,tool:"hammer",target:T.b.id};
+  const others=[0,1,2].filter(i=>i!==T.c);
+  const hm=st.mech.hm||0;
+  const shelfSpot=(filter)=>{const sp=[];others.forEach(ci=>st.cols[ci].blocks.forEach(b=>{if(filter(b)) b.slots.forEach((j,i)=>{if(j&&!j.tool&&!j.back) sp.push({col:st.cols[ci],b,i,ci});});}));return sp.length?sp[Math.floor(rnd(st)*sp.length)]:null;};
+  let spot=null;
+  if(hm===2) spot=shelfSpot(b=>b.locked);
+  if(hm===0) spot=shelfSpot(b=>open(b)&&!b.key);
+  if(spot){const old=spot.b.slots[spot.i];spot.b.slots[spot.i]=hammer;spot.col.queue.unshift({id:old.id,t:old.t});st.hammerAt={col:spot.ci,where:hm===2?"tied":"shelf"};return;}
+  // hm 1 (or no suitable shelf): next shelf of another column that still has stock
+  const qs=others.filter(ci=>st.cols[ci].queue.length>0);const ci=qs.length?qs[Math.floor(rnd(st)*qs.length)]:others[0];
+  st.cols[ci].queue.splice(Math.floor(rnd(st)*Math.min(st.jps,st.cols[ci].queue.length+1)),0,hammer);
+  st.hammerAt={col:ci,where:"stock"};
+}
+function makeLevel(n,seed){
+  const L=(typeof n==="object")?n:LEVELS[n-1],r=mulberry32(seed);let nid=1;
+  const types=pickTypes(n,L.types,mulberry32((seed*31+7)>>>0),L.look,L.fam);
+  const jars=[];types.forEach(t=>{for(let i=0;i<L.per;i++) jars.push({id:nid++,t});});
+  shuffleIn(jars,r);
+  const cols=[0,1,2].map(()=>({blocks:[],queue:[],spawn:0}));
+  jars.forEach((j,i)=>cols[i%3].queue.push(j));
+  const orderSeq=[];types.forEach(t=>{for(let k=0;k<L.per/3;k++) orderSeq.push(t);});shuffleIn(orderSeq,r);
+  const st={n:typeof n==="object"?0:n,jps:L.jps,vis:L.vis,sizes:L.sizes,seed,cols,orderSeq,counter:[],cap:L.cap||5,baskets:[null,null,null],unlocked:L.bk||2,total:jars.length,collected:0,nid,peak:0,moves:0,shipped:[],rc:0,
+    mech:{wrap:L.wrap||0,deep:L.deep||0,frz:L.frz||0,brd:L.brd||0,thaw:L.thaw||3,hm:L.hm||0}};
+  fillCols(st);
+  for(let l=0;l<(L.locks||0);l++){
+    const board=[];st.cols.forEach((col,c)=>col.blocks.forEach((b,i)=>board.push({b,c,i})));
+    const cands=board.filter(x=>open(x.b)&&!x.b.key&&!x.b.slots.some(j=>j&&j.tool));
+    if(cands.length<2) break;
+    shuffleIn(cands,r);
+    const tgt=cands.find(x=>x.b.h>=2)||cands[0];
+    const keyC=cands.find(x=>x!==tgt&&x.c!==tgt.c)||cands.find(x=>x!==tgt);
+    if(!keyC) break;
+    tgt.b.locked=true;keyC.b.key=tgt.b.id;
+  }
+  placeBoard(st);
+  refillBaskets(st);
+  return st;
+}
+function findBlock(st,id){
+  for(let c=0;c<3;c++){const i=st.cols[c].blocks.findIndex(b=>b.id===id);if(i>-1) return {c,i,b:st.cols[c].blocks[i]};}
+  return null;
+}
+/* front items a player can tap (tools included); includeLocked also lists tied/frozen/nailed shelves */
+function visibleJars(st,includeLocked){
+  const out=[];st.cols.forEach((col,c)=>col.blocks.forEach(b=>{if(!includeLocked&&!open(b)) return;b.slots.forEach((j,i)=>{if(j) out.push({b,c,i,jar:j});});}));
+  return out;
+}
+function typeStats(st){
+  const m={};const g=t=>m[t]||(m[t]={c:0,v:0,l:0,h:0});
+  st.counter.forEach(j=>g(j.t).c++);
+  st.cols.forEach(col=>{col.blocks.forEach(b=>b.slots.forEach(j=>{if(!j||j.tool) return;open(b)?g(j.t).v++:g(j.t).l++;if(j.back) g(j.back.t).l++;}));col.queue.forEach(j=>{if(!j.tool) g(j.t).h++;});});
+  return m;
+}
+/* Basket orders follow the level's order list, but anything already waiting on the counter goes first. */
+function pickTarget(st){
+  const active=new Set(st.baskets.filter(Boolean).map(b=>b.t));
+  const m=typeStats(st);const tot=t=>{const x=m[t];return x?x.c+x.v+x.l+x.h:0;};
+  const cc={};st.counter.forEach(j=>cc[j.t]=(cc[j.t]||0)+1);
+  let best=null,bc=0;
+  Object.keys(cc).map(Number).sort((a,b)=>a-b).forEach(t=>{if(!active.has(t)&&tot(t)>=3&&cc[t]>bc){bc=cc[t];best=t;}});
+  if(best!=null){const k=st.orderSeq.indexOf(best);if(k>-1) st.orderSeq.splice(k,1);return best;}
+  for(let k=0;k<st.orderSeq.length;k++){const t=st.orderSeq[k];if(!active.has(t)&&tot(t)>=3){st.orderSeq.splice(k,1);return t;}}
+  for(const t in m){if(!active.has(+t)&&tot(+t)>=3) return +t;}
+  return null;
+}
+function refillBaskets(st,ev){
+  for(let i=0;i<st.unlocked;i++){
+    if(st.baskets[i]) continue;
+    const t=pickTarget(st);if(t==null) continue;
+    const b={id:st.nid++,t,jars:[],done:false};st.baskets[i]=b;
+    for(let k=0;k<st.counter.length&&b.jars.length<3;){ if(st.counter[k].t===t){b.jars.push(st.counter.splice(k,1)[0]);} else k++; }
+    if(b.jars.length===3) b.done=true;
+    ev&&ev.push({type:"basket",slot:i,id:b.id});
+  }
+}
+function removeBlock(st,c,b,ev){
+  st.cols[c].blocks=st.cols[c].blocks.filter(x=>x!==b);
+  ev&&ev.push({type:"fold",col:c,blk:b.id});
+  if(b.key){const f=findBlock(st,b.key);if(f&&f.b.locked){f.b.locked=false;ev&&ev.push({type:"unlock",target:f.b.id,from:b.id});}}
+}
+function matchBasket(st,t){return st.baskets.find(b=>b&&!b.done&&b.t===t&&b.jars.length<3);}
+function take(st,bid,idx){
+  const f=findBlock(st,bid);if(!f||!open(f.b)) return {ok:false};
+  const jar=f.b.slots[idx];if(!jar) return {ok:false};
+  const ev=[];
+  if(jar.tool==="hammer"){
+    f.b.slots[idx]=jar.back||null;st.moves++;
+    const tg=findBlock(st,jar.target);if(tg&&tg.b.boarded){tg.b.boarded=false;ev.push({type:"unboard",target:tg.b.id,from:jar.id});}
+    if(f.b.slots.every(x=>!x)){removeBlock(st,f.c,f.b,ev);fillCols(st,ev);}
+    return {ok:true,jar,tool:true,ev};
+  }
+  const bk=matchBasket(st,jar.t);
+  if(!bk&&st.counter.length>=st.cap) return {ok:false,reason:"full"};
+  f.b.slots[idx]=jar.back||null; // the item behind steps forward
+  const it={id:jar.id,t:jar.t};st.moves++;
+  if(bk){bk.jars.push(it);if(bk.jars.length===3) bk.done=true;}
+  else {st.counter.push(it);st.peak=Math.max(st.peak,st.counter.length);}
+  // taking an item unwraps the paper bags on the same row
+  const row=Math.floor(idx/st.jps);
+  for(let k=row*st.jps;k<(row+1)*st.jps;k++){const s=f.b.slots[k];if(s&&s.wrap){f.b.slots[k]={...s,wrap:false};ev.push({type:"unwrap",jar:s.id});}}
+  if(f.b.slots.every(x=>!x)){removeBlock(st,f.c,f.b,ev);fillCols(st,ev);}
+  return {ok:true,jar:it,toBasket:!!bk,basket:bk,ev};
+}
+function completeBasket(st,slot){
+  const b=st.baskets[slot];if(!b||!b.done) return null;
+  st.collected+=3;st.shipped.push(b.t);st.baskets[slot]=null;
+  const ev=[];
+  // every shipped basket melts the ice a little
+  st.cols.forEach(col=>col.blocks.forEach(x=>{if(x.frozen>0){x.frozen--;if(!x.frozen) ev.push({type:"thaw",blk:x.id});}}));
+  refillBaskets(st,ev);return {t:b.t,ev};
+}
+function isWon(st){return st.collected>=st.total;}
+function isLost(st){
+  if(st.baskets.some(b=>b&&b.done)) return false;
+  if(st.collected>=st.total) return false;
+  const vis=visibleJars(st);
+  if(st.counter.length<st.cap) return vis.length===0;
+  return !vis.some(v=>v.jar.tool||matchBasket(st,v.jar.t));
+}
+/* boosters */
+function bQuickPick(st){
+  let bi=-1,bl=-1;st.baskets.forEach((b,i)=>{if(b&&!b.done&&b.jars.length>bl){bl=b.jars.length;bi=i;}});
+  if(bi<0) return null;
+  const bk=st.baskets[bi],ev=[],origins={};
+  for(let k=0;k<st.counter.length&&bk.jars.length<3;){if(st.counter[k].t===bk.t) bk.jars.push(st.counter.splice(k,1)[0]);else k++;}
+  for(const v of visibleJars(st,true)){
+    if(bk.jars.length>=3) break;
+    if(v.jar.tool||v.jar.t!==bk.t||v.b.slots[v.i]!==v.jar) continue;
+    v.b.slots[v.i]=v.jar.back||null;bk.jars.push({id:v.jar.id,t:v.jar.t});
+    if(v.b.slots.every(x=>!x)) removeBlock(st,v.c,v.b,ev);
+  }
+  for(let c=0;c<3&&bk.jars.length<3;c++){
+    const q=st.cols[c].queue;
+    for(let k=0;k<q.length&&bk.jars.length<3;){if(!q[k].tool&&q[k].t===bk.t){const j=q.splice(k,1)[0];bk.jars.push(j);origins[j.id]=c;} else k++;}
+  }
+  fillCols(st,ev);
+  if(bk.jars.length===3) bk.done=true;
+  st.moves++;
+  return {slot:bi,ev,origins};
+}
+function bTidy(st){
+  const n=Math.min(3,st.counter.length);if(!n) return null;
+  const jars=st.counter.splice(0,n);
+  let c=0;st.cols.forEach((col,i)=>{if(col.queue.length<st.cols[c].queue.length) c=i;});
+  st.cols[c].queue.unshift(...jars);
+  const ev=[];fillCols(st,ev);st.moves++;
+  const back=jars.filter(j=>st.cols[c].queue.includes(j)).map(j=>j.id);
+  return {col:c,jars,back,ev};
+}
+function bShuffle(st,r){
+  const pos=[];st.cols.forEach(col=>col.blocks.forEach(b=>{if(open(b)) b.slots.forEach((j,i)=>{if(j&&!j.tool) pos.push({b,i});});}));
+  if(pos.length<2) return false;
+  const jars=pos.map(p=>p.b.slots[p.i]);const before=jars.map(j=>j.id).join();
+  shuffleIn(jars,r);if(jars.map(j=>j.id).join()===before) jars.push(jars.shift());
+  pos.forEach((p,k)=>p.b.slots[p.i]=jars[k]);st.moves++;return true;
+}
+
+
+function compact(st){
+  const jar=j=>j?(j.tool?'H':(j.wrap?'w':'')+j.t+(j.back?'/'+j.back.t:'')):'.';
+  const cols=st.cols.map(c=>c.blocks.map(b=>b.id+':'+(b.locked?'L':'')+(b.key?'K':'')+(b.frozen?'F'+b.frozen:'')+(b.boarded?'B':'')+'['+b.slots.map(jar).join(',')+']').join('|')+'#'+c.queue.map(jar).join(','));
+  return cols.join(' / ')+' C['+st.counter.map(j=>j.t).join(',')+'] K['+st.baskets.map(b=>b?b.t+':'+b.jars.length:'-').join(',')+'] '+st.collected+'/'+st.total+' p'+st.peak+' m'+st.moves+' cap'+st.cap+' u'+st.unlocked;
+}
+function pick(st){
+  const vis=visibleJars(st);
+  const want=vis.find(v=>!v.jar.tool&&matchBasket(st,v.jar.t));
+  if(want) return want;
+  const tool=vis.find(v=>v.jar.tool); if(tool) return tool;
+  return vis.find(v=>!v.jar.wrap)||vis[0];
+}
+const res={};
+for(const [name,curve] of [['new',NEW_LEVELS],['orig',ORIG_LEVELS]]){
+  res[name]=curve.map((L,li)=>{
+    const st=makeLevel(L,L.seed); const steps=[compact(st)];
+    for(let k=0;k<400;k++){
+      let shipped=false;
+      for(let s=0;s<3;s++){ if(st.baskets[s]&&st.baskets[s].done){completeBasket(st,s);steps.push('ship'+s+' '+compact(st));shipped=true;} }
+      if(shipped) continue;
+      if(isWon(st)){steps.push('WON');break;}
+      if(isLost(st)){steps.push('LOST');break;}
+      if(k===6){const r=bQuickPick(st);steps.push('pick'+(r?r.slot:-1)+' '+compact(st));continue;}
+      if(k===11){const r=bTidy(st);steps.push('tidy'+(r?r.col:-1)+' '+compact(st));continue;}
+      const v=pick(st); if(!v){steps.push('NOMOVE');break;}
+      const r=take(st,v.b.id,v.i);
+      steps.push('take'+v.b.id+'.'+v.i+(r.ok?'':'X')+' '+compact(st));
+      if(!r.ok){steps.push('STUCK');break;}
+    }
+    return steps;
+  });
+}
+fs.writeFileSync(process.argv[3],JSON.stringify(res));
+console.log('ok', res.new.map(s=>s.length+':'+s[s.length-1]).join(' '));

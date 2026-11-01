@@ -1,0 +1,27 @@
+{
+    "name": "Game.Flow",
+    "rootNamespace": "Game.Flow",
+    "references": [
+        "Game.Features",
+        "Game.Services",
+        "UniTask",
+        "UniTask.Addressables",
+        "UniTask.DOTween",
+        "UniRx",
+        "VContainer",
+        "DOTween.Modules",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

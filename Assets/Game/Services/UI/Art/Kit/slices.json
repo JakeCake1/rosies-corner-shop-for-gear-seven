@@ -1,0 +1,140 @@
+{
+ "bar_fill.png": [
+  24,
+  24,
+  24,
+  24
+ ],
+ "bar_track.png": [
+  30,
+  30,
+  30,
+  30
+ ],
+ "board.png": [
+  18,
+  8,
+  18,
+  8
+ ],
+ "board_oak.png": [
+  36,
+  44,
+  36,
+  36
+ ],
+ "board_walnut.png": [
+  32,
+  40,
+  32,
+  32
+ ],
+ "btn_berry.png": [
+  38,
+  48,
+  38,
+  38
+ ],
+ "btn_gold.png": [
+  38,
+  48,
+  38,
+  38
+ ],
+ "btn_green.png": [
+  38,
+  48,
+  38,
+  38
+ ],
+ "btn_grey.png": [
+  38,
+  48,
+  38,
+  38
+ ],
+ "btn_wood.png": [
+  38,
+  48,
+  38,
+  38
+ ],
+ "cabinet.png": [
+  36,
+  40,
+  36,
+  36
+ ],
+ "card.png": [
+  54,
+  54,
+  54,
+  54
+ ],
+ "chip.png": [
+  32,
+  32,
+  32,
+  32
+ ],
+ "ice.png": [
+  14,
+  14,
+  14,
+  14
+ ],
+ "pill_white.png": [
+  30,
+  30,
+  30,
+  30
+ ],
+ "plank.png": [
+  12,
+  20,
+  12,
+  12
+ ],
+ "ribbon_berry.png": [
+  44,
+  16,
+  44,
+  16
+ ],
+ "ribbon_green.png": [
+  44,
+  16,
+  44,
+  16
+ ],
+ "rounded_white.png": [
+  16,
+  16,
+  16,
+  16
+ ],
+ "shelf_back.png": [
+  8,
+  8,
+  8,
+  8
+ ],
+ "shelf_floor.png": [
+  8,
+  6,
+  8,
+  6
+ ],
+ "shelf_post.png": [
+  2,
+  8,
+  2,
+  8
+ ],
+ "wainscot_rail.png": [
+  2,
+  2,
+  2,
+  2
+ ]
+}

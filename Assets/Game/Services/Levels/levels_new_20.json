@@ -1,0 +1,311 @@
+[
+  {
+    "look": 0,
+    "seed": 51013,
+    "jps": 2,
+    "vis": 3,
+    "sizes": [
+      1
+    ],
+    "types": 3,
+    "per": 6,
+    "locks": 0,
+    "tip": ""
+  },
+  {
+    "look": 0,
+    "seed": 253292,
+    "jps": 2,
+    "vis": 2,
+    "sizes": [
+      1
+    ],
+    "types": 4,
+    "per": 6,
+    "locks": 0,
+    "tip": ""
+  },
+  {
+    "look": 0,
+    "seed": 463312,
+    "jps": 3,
+    "vis": 2,
+    "sizes": [
+      1
+    ],
+    "types": 5,
+    "per": 6,
+    "locks": 0,
+    "tip": ""
+  },
+  {
+    "look": 0,
+    "seed": 97275,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      1,
+      1,
+      2,
+      2
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "hard": true,
+    "tip": "Rewards ×2. Bigger shelves today: plan before you tap."
+  },
+  {
+    "look": 0,
+    "seed": 140216,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1
+    ],
+    "types": 6,
+    "per": 9,
+    "locks": 1,
+    "tip": "Empty the shelf with the brass key to untie the tied one."
+  },
+  {
+    "look": 0,
+    "seed": 548279,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "tip": ""
+  },
+  {
+    "look": 0,
+    "seed": 250616,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 6,
+    "per": 9,
+    "locks": 0,
+    "tip": "A calm day at the shop."
+  },
+  {
+    "look": 0,
+    "seed": 112291,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "frz": 2,
+    "thaw": 3,
+    "tip": "Frozen shelf: it thaws as you pack baskets."
+  },
+  {
+    "look": 0,
+    "seed": 221678,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "tip": "Keep room on the counter for the next basket."
+  },
+  {
+    "look": 0,
+    "seed": 183986,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      1,
+      2,
+      2,
+      3
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "hard": true,
+    "tip": "Rewards ×2."
+  },
+  {
+    "look": 0,
+    "seed": 572049,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 6,
+    "per": 9,
+    "locks": 0,
+    "brd": 1,
+    "hm": 0,
+    "tip": "A nailed shelf! Tap the hammer to pull the boards off."
+  },
+  {
+    "look": 0,
+    "seed": 69897,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 1,
+    "brd": 1,
+    "hm": 0,
+    "tip": "Find the hammer and the key."
+  },
+  {
+    "look": 0,
+    "seed": 496665,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "wrap": 0.25,
+    "tip": "Paper bags hide what's inside. Take one to find out."
+  },
+  {
+    "look": 0,
+    "seed": 575088,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "frz": 1,
+    "thaw": 3,
+    "wrap": 0.25,
+    "tip": "Bags and ice on the same shelves."
+  },
+  {
+    "look": 0,
+    "seed": 196792,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "brd": 1,
+    "hm": 0,
+    "hard": true,
+    "tip": "Rewards ×2. Plan before you tap."
+  },
+  {
+    "look": 0,
+    "seed": 298438,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 6,
+    "per": 9,
+    "locks": 0,
+    "fam": "bakery",
+    "tip": "New department: the Bakery."
+  },
+  {
+    "look": 0,
+    "seed": 283969,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "deep": 0.25,
+    "tip": "Some shelves have a second row hiding behind the first."
+  },
+  {
+    "look": 0,
+    "seed": 168867,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      2,
+      3
+    ],
+    "types": 7,
+    "per": 9,
+    "locks": 0,
+    "frz": 1,
+    "thaw": 3,
+    "deep": 0.25,
+    "tip": "Second rows and frozen shelves."
+  },
+  {
+    "look": 0,
+    "seed": 580153,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      1,
+      2
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "wrap": 0.25,
+    "fam": "sweet",
+    "tip": "New department: Sweets."
+  },
+  {
+    "look": 0,
+    "seed": 294749,
+    "jps": 3,
+    "vis": 5,
+    "sizes": [
+      1,
+      1,
+      2,
+      2,
+      3
+    ],
+    "types": 8,
+    "per": 9,
+    "locks": 0,
+    "deep": 0.25,
+    "hard": true,
+    "tip": "Rewards ×2."
+  }
+]

@@ -1,0 +1,28 @@
+{
+    "name": "Game.Bootstrap.Editor",
+    "rootNamespace": "Game.Bootstrap.Editor",
+    "references": [
+        "Game.Bootstrap",
+        "Game.Flow",
+        "Game.Features",
+        "Game.Services",
+        "VContainer",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "UniRx"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
