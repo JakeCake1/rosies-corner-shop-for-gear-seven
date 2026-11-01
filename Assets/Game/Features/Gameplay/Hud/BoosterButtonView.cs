@@ -1,49 +1,63 @@
-using System;
 using DG.Tweening;
 using Game.Services.UI;
-using TMPro;
+using Game.Services.UI.Elements;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay.Hud
 {
     /// <summary>
-    /// A booster button: icon tile, count badge (red count or green "+"), label, pulse and gift glow.
+    /// One booster button under the cabinet (<c>Booster.uxml</c>): tile with icon, count badge, title, pulse when
+    /// it would help, glow when it was just gifted.
     /// </summary>
     public sealed class BoosterButtonView : View<BoosterViewModel>
     {
-        [SerializeField] private Button _button;
-        [SerializeField] private Image _icon;
-        [SerializeField] private TMP_Text _title;
-        [SerializeField] private Image _badge;
-        [SerializeField] private TMP_Text _count;
-        [SerializeField] private CanvasGroup _group;
-        [SerializeField] private Image _glow;
-        [SerializeField] private Color _countColor = new Color(0.78f, 0.24f, 0.31f);
-        [SerializeField] private Color _plusColor = new Color(0.37f, 0.6f, 0.27f);
+        private const string TileName = "tile";
+        private const string IconName = "icon";
+        private const string TitleName = "title";
+        private const string BadgeName = "badge";
+        private const string CountName = "count";
+        private const string GlowName = "glow";
+        private const string PlusClass = "booster__badge--plus";
 
+        private Button _tile;
+        private VisualElement _icon;
+        private Label _title;
+        private VisualElement _badge;
+        private Label _count;
+        private VisualElement _glow;
         private Tween _pulse;
         private Tween _glowTween;
 
         /// <summary>
-        /// Sets the icon; the board picks it by booster id.
+        /// Sets the booster picture.
         /// </summary>
-        /// <param name="icon">Booster icon.</param>
-        public void SetIcon(Sprite icon) => _icon.sprite = icon;
+        /// <param name="icon">Icon.</param>
+        public void SetIcon(Sprite icon) => _icon.SetSprite(icon);
+
+        /// <inheritdoc/>
+        protected override void OnAttached()
+        {
+            _tile = Q<Button>(TileName);
+            _icon = Q(IconName);
+            _title = Q<Label>(TitleName);
+            _badge = Q(BadgeName);
+            _count = Q<Label>(CountName);
+            _glow = Q(GlowName);
+            _glow.SetVisible(false);
+        }
 
         /// <inheritdoc/>
         protected override void OnBind(BoosterViewModel vm)
         {
-            gameObject.SetActive(true);
-            _title.SetText(vm.Title);
-            vm.Count.Subscribe(c => _count.SetText(c)).AddTo(Bindings);
-            vm.IsPlus.Subscribe(p => _badge.color = p ? _plusColor : _countColor).AddTo(Bindings);
-            vm.IsDimmed.Subscribe(d => _group.alpha = d ? 0.5f : 1f).AddTo(Bindings);
+            _title.text = vm.Title;
+            vm.Count.Subscribe(c => _count.text = c).AddTo(Bindings);
+            vm.IsPlus.Subscribe(p => _badge.EnableInClassList(PlusClass, p)).AddTo(Bindings);
+            vm.IsDimmed.Subscribe(d => Root.style.opacity = d ? 0.5f : 1f).AddTo(Bindings);
             vm.IsPulsing.Subscribe(SetPulse).AddTo(Bindings);
             vm.IsGift.Subscribe(SetGlow).AddTo(Bindings);
-            _button.OnClickAsObservable().ThrottleFirst(TimeSpan.FromMilliseconds(300))
-                .Subscribe(_ => vm.Use()).AddTo(Bindings);
+            _tile.OnTapAsObservable().Subscribe(_ => vm.Use()).AddTo(Bindings);
         }
 
         /// <inheritdoc/>
@@ -56,18 +70,18 @@ namespace Game.Features.Gameplay.Hud
         private void SetPulse(bool isOn)
         {
             _pulse?.Kill();
-            transform.localScale = Vector3.one;
-            if (isOn) _pulse = transform.DOScale(1.08f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
+            VisualElementTweens.SetScale(Root, Vector2.one);
+            if (isOn) _pulse = Root.DOScale(1.08f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetId(this);
         }
 
         private void SetGlow(bool isOn)
         {
             _glowTween?.Kill();
-            _glow.gameObject.SetActive(isOn);
+            _glow.SetVisible(isOn);
             if (!isOn) return;
 
-            _glow.color = new Color(1f, 0.85f, 0.4f, 0.9f);
-            _glowTween = _glow.DOFade(0.3f, 0.6f).SetLoops(-1, LoopType.Yoyo).SetLink(gameObject);
+            _glow.style.opacity = 0.9f;
+            _glowTween = _glow.DOFade(0.3f, 0.6f).SetLoops(-1, LoopType.Yoyo).SetId(this);
         }
     }
 }

@@ -1,7 +1,8 @@
 # Agent resource tracking (Langfuse)
 
 Measures how many tokens the AI agent spent on a task, split by task phase, and sends the result to Langfuse as
-one trace: a span per phase and a generation per model reply (model, token usage, tools called).
+one trace over OpenTelemetry: an agent span for the task, a span per phase and a generation per model reply
+(model, token usage, tools called).
 
 | File | What |
 |---|---|
@@ -9,7 +10,7 @@ one trace: a span per phase and a generation per model reply (model, token usage
 | `phases.json` | Task name, issue, transcript glob and phase boundaries (UTC) |
 | `ledger.jsonl` | Every reply seen so far, deduplicated by id; survives context compaction |
 | `REPORT.md`, `usage_summary.json` | Human and machine readable report |
-| `langfuse_batch.json` | Events for the Langfuse public ingestion API |
+| `otel/batch_NNN.json` | OTLP/JSON spans for Langfuse's `/api/public/otel/v1/traces` |
 | `Send-ToLangfuse.ps1` | Posts the batch to Langfuse |
 
 ## Measure a task
@@ -17,7 +18,7 @@ one trace: a span per phase and a generation per model reply (model, token usage
 ```bash
 python3 Tools/Langfuse/usage_report.py mark "4. Implementation"   # starts a phase, closes the previous one
 python3 Tools/Langfuse/usage_report.py snapshot                   # copies replies into ledger.jsonl
-python3 Tools/Langfuse/usage_report.py report                     # snapshot + REPORT.md + langfuse_batch.json
+python3 Tools/Langfuse/usage_report.py report                     # snapshot + REPORT.md + otel/batch_*.json
 ```
 
 Effective tokens weight every token by its price relative to an uncached input token: cache read 0.1×,
@@ -46,4 +47,6 @@ Ranges longer than 30 minutes without data are listed in `REPORT.md` as coverage
    (Langfuse → Project settings → API keys) and `LANGFUSE_HOST`. `.env` is git-ignored.
 2. Run `powershell -ExecutionPolicy Bypass -File Tools\Langfuse\Send-ToLangfuse.ps1`.
 
-Event ids are deterministic per trace, phase and reply, so sending again updates the same trace.
+The script posts OTLP/JSON with `x-langfuse-ingestion-version: 4`. Langfuse's legacy `/api/public/ingestion`
+endpoint no longer accepts traces ("Event type not accepted"). Span ids are deterministic per trace, phase and
+reply, so sending again updates the same trace.

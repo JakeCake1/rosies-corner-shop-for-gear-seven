@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Panel root: background, safe-area layers (scene, HUD, screens), popups with the blocker, overlay. -->
+    <ui:VisualElement name="background" class="background" picking-mode="Ignore">
+        <ui:VisualElement name="wallpaper" class="wallpaper" picking-mode="Ignore" />
+        <ui:VisualElement name="wainscot" class="wainscot" picking-mode="Ignore">
+            <ui:VisualElement class="wainscot__rail kit-wainscot-rail" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="bunting" class="bunting icon-bunting" picking-mode="Ignore" />
+        <ui:VisualElement name="tricky-tint" class="tricky-tint" picking-mode="Ignore" />
+    </ui:VisualElement>
+    <ui:VisualElement name="safe" class="layer" picking-mode="Ignore">
+        <ui:VisualElement name="scene" class="layer" picking-mode="Ignore" />
+        <ui:VisualElement name="hud" class="layer" picking-mode="Ignore" />
+        <ui:VisualElement name="screens" class="layer" picking-mode="Ignore" />
+    </ui:VisualElement>
+    <ui:VisualElement name="popups" class="layer" picking-mode="Ignore">
+        <ui:VisualElement name="blocker" class="blocker" style="display: none;" />
+    </ui:VisualElement>
+    <ui:VisualElement name="overlay" class="layer" picking-mode="Ignore" />
+</ui:UXML>

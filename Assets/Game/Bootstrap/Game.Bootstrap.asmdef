@@ -12,9 +12,7 @@
         "VContainer",
         "DOTween.Modules",
         "Unity.Addressables",
-        "Unity.ResourceManager",
-        "Unity.TextMeshPro",
-        "UnityEngine.UI"
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

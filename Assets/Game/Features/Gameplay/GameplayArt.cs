@@ -13,6 +13,8 @@ namespace Game.Features.Gameplay
         [SerializeField] private Sprite _tidy;
         [SerializeField] private Sprite _shuffle;
         [SerializeField] private Sprite _basket;
+        [SerializeField] private Sprite _hammer;
+        [SerializeField] private Sprite _paperBag;
 
         /// <summary>Undo icon.</summary>
         public Sprite Undo => _undo;
@@ -29,6 +31,12 @@ namespace Game.Features.Gameplay
         /// <summary>Full basket picture for the extra-basket offer and start boosters.</summary>
         public Sprite Basket => _basket;
 
+        /// <summary>Hammer tool item.</summary>
+        public Sprite Hammer => _hammer;
+
+        /// <summary>Paper bag over wrapped items.</summary>
+        public Sprite PaperBag => _paperBag;
+
         /// <summary>
         /// Returns the icon of a booster id.
         /// </summary>
@@ -44,23 +52,6 @@ namespace Game.Features.Gameplay
                 case "shuffle": return _shuffle;
                 default: return null;
             }
-        }
-
-        /// <summary>
-        /// Assigns the sprites; called by the editor builder only.
-        /// </summary>
-        /// <param name="undo">Undo icon.</param>
-        /// <param name="pick">Quick Pick icon.</param>
-        /// <param name="tidy">Tidy Up icon.</param>
-        /// <param name="shuffle">Shuffle icon.</param>
-        /// <param name="basket">Basket picture.</param>
-        public void SetSprites(Sprite undo, Sprite pick, Sprite tidy, Sprite shuffle, Sprite basket)
-        {
-            _undo = undo;
-            _pick = pick;
-            _tidy = tidy;
-            _shuffle = shuffle;
-            _basket = basket;
         }
     }
 }

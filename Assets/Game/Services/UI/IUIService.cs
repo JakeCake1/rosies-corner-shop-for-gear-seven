@@ -4,56 +4,49 @@ using Cysharp.Threading.Tasks;
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Opens and closes windows on layers. Game code never instantiates or enables windows itself.
+    /// Opens and closes windows on their layers; owns the popup blocker and Back handling.
     /// </summary>
-    /// <remarks>
-    /// Window prefabs are addressable under <c>ui/&lt;WindowTypeName&gt;</c>. Opening a window type that is already
-    /// open replaces it (closes the old one first). Popups get a dimmed blocker behind the top one.
-    /// </remarks>
     public interface IUIService
     {
-        /// <summary>
-        /// True while any popup is open; gameplay ignores taps on the board meanwhile.
-        /// </summary>
+        /// <summary>Whether a popup is open.</summary>
         bool IsPopupOpen { get; }
 
         /// <summary>
-        /// Loads, binds and shows a window.
+        /// Loads the window layout (Addressables key <c>ui/{WindowType}</c>), binds it and plays its opening.
+        /// An open window of the same type is closed first.
         /// </summary>
-        /// <typeparam name="TWindow">Window view type; its prefab address is <c>ui/</c> + type name.</typeparam>
-        /// <typeparam name="TViewModel">The window's view model type.</typeparam>
-        /// <param name="viewModel">View model to bind; ownership passes to the UI service, which disposes it on
-        /// close.</param>
-        /// <param name="ct">Cancels the show transition.</param>
-        /// <returns>The shown window.</returns>
-        /// <exception cref="System.OperationCanceledException">Opening was cancelled.</exception>
+        /// <typeparam name="TWindow">Window view type.</typeparam>
+        /// <typeparam name="TViewModel">ViewModel type.</typeparam>
+        /// <param name="viewModel">ViewModel; disposed when the window closes.</param>
+        /// <param name="ct">Cancels loading and the transition.</param>
+        /// <returns>The open window.</returns>
         UniTask<TWindow> OpenAsync<TWindow, TViewModel>(TViewModel viewModel, CancellationToken ct)
-            where TWindow : WindowView<TViewModel>
+            where TWindow : WindowView<TViewModel>, new()
             where TViewModel : ViewModel;
 
         /// <summary>
-        /// Hides, unbinds and destroys a window and disposes its view model. Does nothing if it is not open.
+        /// Closes a window.
         /// </summary>
-        /// <param name="window">The window to close.</param>
-        /// <returns>Completes after the hide transition.</returns>
+        /// <param name="window">Window to close.</param>
+        /// <returns>Completes when it is removed.</returns>
         UniTask CloseAsync(IWindow window);
 
         /// <summary>
-        /// Closes every open window of the given type.
+        /// Closes every open window of a type.
         /// </summary>
         /// <typeparam name="TWindow">Window type.</typeparam>
-        /// <returns>Completes when all are closed.</returns>
+        /// <returns>Completes when they are removed.</returns>
         UniTask CloseAsync<TWindow>() where TWindow : IWindow;
 
         /// <summary>
-        /// Closes all windows on a layer, top first.
+        /// Closes every window of a layer, top first.
         /// </summary>
-        /// <param name="layer">Layer to clear.</param>
-        /// <returns>Completes when the layer is empty.</returns>
+        /// <param name="layer">Layer.</param>
+        /// <returns>Completes when they are removed.</returns>
         UniTask CloseAllAsync(UILayer layer);
 
         /// <summary>
-        /// Back navigation (Escape / Android back): closes the top popup if it allows closing.
+        /// Closes the top popup if it allows it (Android back / Escape).
         /// </summary>
         void Back();
     }

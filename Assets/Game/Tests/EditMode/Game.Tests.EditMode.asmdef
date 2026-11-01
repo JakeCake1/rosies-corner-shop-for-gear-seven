@@ -8,8 +8,7 @@
         "UniRx",
         "VContainer",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "Unity.TextMeshPro"
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
         "Editor"

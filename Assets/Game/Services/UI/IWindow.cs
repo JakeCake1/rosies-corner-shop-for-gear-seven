@@ -1,47 +1,46 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Services.UI
 {
     /// <summary>
-    /// What the UI service needs from any window, independent of its view model type.
+    /// A window managed by <see cref="IUIService"/>.
     /// </summary>
     public interface IWindow
     {
-        /// <summary>Layer the window opens on.</summary>
+        /// <summary>Layer the window is shown on.</summary>
         UILayer Layer { get; }
 
-        /// <summary>Whether tapping the dimmed blocker behind this popup closes it.</summary>
+        /// <summary>Whether tapping the popup blocker or Back closes the window.</summary>
         bool IsClosedByBlocker { get; }
 
-        /// <summary>The window's root object.</summary>
-        GameObject Root { get; }
+        /// <summary>Root element (removed from the panel when the window closes).</summary>
+        VisualElement Root { get; }
 
-        /// <summary>
-        /// Emits when the window asks to be closed (its close button); the UI service handles it.
-        /// </summary>
+        /// <summary>Emits when the window asks to be closed.</summary>
         IObservable<IWindow> CloseRequested { get; }
 
+        /// <summary>Completes once the window has been closed and released.</summary>
+        UniTask Closed { get; }
+
         /// <summary>
-        /// Plays the show transition; input is blocked until it ends.
+        /// Plays the opening transition; input is blocked until it ends.
         /// </summary>
-        /// <param name="ct">Cancelled when the window closes early; kills the tween.</param>
+        /// <param name="ct">Cancels the transition.</param>
         /// <returns>Completes when the window is interactive.</returns>
-        /// <exception cref="OperationCanceledException">The transition was cancelled.</exception>
         UniTask ShowAsync(CancellationToken ct);
 
         /// <summary>
-        /// Plays the hide transition with input blocked.
+        /// Plays the closing transition.
         /// </summary>
-        /// <param name="ct">Cancelled on scene change; kills the tween.</param>
-        /// <returns>Completes when the window is invisible.</returns>
-        /// <exception cref="OperationCanceledException">The transition was cancelled.</exception>
+        /// <param name="ct">Cancels the transition.</param>
+        /// <returns>Completes when the window is hidden.</returns>
         UniTask HideAsync(CancellationToken ct);
 
         /// <summary>
-        /// Unbinds the view; the UI service then disposes the view model and destroys the view.
+        /// Unbinds the window after it is hidden.
         /// </summary>
         void Release();
     }

@@ -1,7 +1,7 @@
 {
   "task": "Porting from Claude artifact to Unity project",
   "issue": "EVG-7",
-  "generatedAt": "2026-11-01T06:10:22.172Z",
+  "generatedAt": "2026-11-01T06:31:53.128Z",
   "weights": {
     "input": 1.0,
     "cache_read": 0.1,
@@ -9,7 +9,7 @@
     "output": 5.0
   },
   "transcripts": 1,
-  "replies": 210,
+  "replies": 236,
   "phases": [
     {
       "replies": 54,
@@ -100,42 +100,45 @@
       "wallMinutes": 581.3
     },
     {
-      "replies": 25,
+      "replies": 51,
       "tools": {
-        "Bash": 20,
-        "mcp:remote-devices": 4,
+        "Bash": 28,
+        "mcp:remote-devices": 12,
         "Write": 1,
         "ToolSearch": 2,
-        "mcp:Linear": 2
+        "mcp:Linear": 2,
+        "SendUserFile": 1,
+        "WebSearch": 2,
+        "WebFetch": 3
       },
       "models": {
-        "claude-opus-5-5": 25
+        "claude-opus-5-5": 51
       },
-      "input": 54,
-      "output": 16227,
-      "cache_read": 6425129,
-      "cache_write": 36247,
-      "thinking": 3588,
+      "input": 110,
+      "output": 29504,
+      "cache_read": 13829694,
+      "cache_write": 53851,
+      "thinking": 6370,
       "web_search": 0,
       "web_fetch": 0,
-      "effective": 796196,
+      "effective": 1638301,
       "first": "2026-11-01T06:07:22.623Z",
-      "last": "2026-11-01T06:10:21.940Z",
+      "last": "2026-11-01T06:31:52.672Z",
       "name": "5. Report",
       "start": "2026-11-01T06:06:48.592Z",
-      "end": "2026-11-01T06:10:21.940Z",
-      "wallMinutes": 3.6
+      "end": "2026-11-01T06:31:52.672Z",
+      "wallMinutes": 25.1
     }
   ],
   "total": {
-    "input": 436,
-    "output": 97793,
-    "cache_read": 40347482,
-    "cache_write": 392712,
-    "thinking": 28727,
+    "input": 492,
+    "output": 111070,
+    "cache_read": 47752047,
+    "cache_write": 410316,
+    "thinking": 31509,
     "web_search": 0,
     "web_fetch": 0,
-    "effective": 5309573
+    "effective": 6151679
   },
   "gaps": [
     {

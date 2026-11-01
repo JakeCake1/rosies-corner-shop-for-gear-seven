@@ -1,8 +1,8 @@
 # Unity Tech Stack Rules
 
-Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween**, **Addressables**, **uGUI**.
+Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween**, **Addressables**, **UI Toolkit**.
 
-Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when its trigger matches the current code or task. Use only the libraries listed above; do not introduce alternatives (Zenject, R3, LeanTween, Resources, UI Toolkit, coroutines for new code) unless explicitly asked.
+Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when its trigger matches the current code or task. Use only the libraries listed above; do not introduce alternatives (Zenject, R3, LeanTween, Resources, uGUI/TextMeshPro, coroutines for new code) unless explicitly asked.
 
 ---
 
@@ -13,8 +13,8 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 - **WHEN** exposing observable state or events → **DO** use UniRx (`ReactiveProperty<T>`, `Subject<T>`, `ReactiveCollection<T>`). Prefer plain C# `event` only for very low-level, high-frequency code.
 - **WHEN** animating UI or transforms → **DO** use DOTween. Do not use `Animator` for simple UI transitions.
 - **WHEN** loading assets at runtime → **DO** use Addressables. Never use the `Resources` folder.
-- **WHEN** building UI → **DO** use uGUI with TextMeshPro (`TMP_Text`), not legacy `Text`.
-- **WHEN** organizing code → **DO** follow `unity-project-structure-rules.md` for folders and for where to place Assembly Definitions; in every `.asmdef`, reference the libraries' asmdefs explicitly (`VContainer`, `UniTask`, `UniTask.Addressables`, `UniTask.DOTween`, `UniRx`, `DOTween.Modules`, `Unity.Addressables`, `Unity.ResourceManager`, `Unity.TextMeshPro`).
+- **WHEN** building UI → **DO** use UI Toolkit: UXML layouts, USS styles and `VisualElement` views; no uGUI `Canvas` or TextMeshPro.
+- **WHEN** organizing code → **DO** follow `unity-project-structure-rules.md` for folders and for where to place Assembly Definitions; in every `.asmdef`, reference the libraries' asmdefs explicitly (`VContainer`, `UniTask`, `UniTask.Addressables`, `UniTask.DOTween`, `UniRx`, `DOTween.Modules`, `Unity.Addressables`, `Unity.ResourceManager`).
 - **WHEN** Enter Play Mode Options are enabled with domain reload disabled → **DO** avoid mutable static state; if unavoidable, reset it with `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`.
 
 ---
@@ -107,17 +107,18 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 
 ---
 
-## uGUI
+## UI Toolkit
 
-- **WHEN** creating UI → **DO** follow MVVM: plain C# ViewModels (registered/created via VContainer) and thin `MonoBehaviour` Views that bind with UniRx.
-- **WHEN** opening windows → **DO** use an injected `IUIService` (window stack per layer: HUD, Screens, Popups, Overlay). Windows are loaded via `IAssetProvider` and instantiated via `IObjectResolver`.
-- **WHEN** referencing UI elements → **DO** use `[SerializeField] private` fields. Never `transform.Find` or `GetComponentInChildren` by name.
-- **WHEN** a Canvas contains frequently changing elements → **DO** move them to a nested Canvas.
-- **WHEN** an element isn't clickable → **DO** disable `Raycast Target`.
-- **WHEN** hiding a cached window → **DO** use `CanvasGroup` (`alpha`, `interactable`, `blocksRaycasts`) or disable the `Canvas` component, not frequent `SetActive`.
-- **WHEN** showing long lists → **DO** use a recycled scroll list with pooled item Views.
-- **WHEN** updating numbers in text → **DO** `TMP_Text.SetText("{0}", value)` and only when the value changes.
-- **WHEN** setting up a Canvas → **DO** use `Canvas Scaler` → `Scale With Screen Size` and a `SafeArea` component for notched devices.
+- **WHEN** creating UI → **DO** follow MVVM: plain C# ViewModels and plain C# Views (`ElementView` → `View<TViewModel>` → `WindowView<TViewModel>`) that bind to a `VisualElement` with UniRx. No `MonoBehaviour` per view.
+- **WHEN** laying out UI → **DO** author UXML for structure and USS for style, sizes and positions; one `PanelSettings` with `Scale With Screen Size` at the 390×844 reference resolution, so one USS pixel is one prototype CSS pixel. Never build scenes or UI from editor scripts.
+- **WHEN** opening windows → **DO** use an injected `IUIService` (layers: Scene, HUD, Screens, Popups, Overlay). Window layouts are `VisualTreeAsset`s loaded via `IAssetProvider` (`ui/<WindowType>`) and instantiated only when the window opens.
+- **WHEN** an element is needed only sometimes (toasts, coach bubbles, dialog blocks, locks, booster buttons) → **DO** create it when it is first shown and remove it from the hierarchy when hidden; do not keep hidden elements in the tree.
+- **WHEN** referencing elements → **DO** query by name once in `OnAttached` (`Q<T>(name)` with a `const` name) and cache the reference; never query per frame.
+- **WHEN** an element isn't clickable → **DO** set `picking-mode="Ignore"`.
+- **WHEN** many identical elements spawn repeatedly (items, shelves, baskets) → **DO** pool them with `ElementPool<T>` / `PooledElementView`.
+- **WHEN** animating elements → **DO** tween `style.translate`, `scale` and `opacity` with DOTween (`VisualElementTweens`), not `left`/`top` (they force a relayout).
+- **WHEN** two or more views share code → **DO** move it into the base view classes.
+- **WHEN** handling notched devices → **DO** apply `Screen.safeArea` to the safe layer (`UIRoot`).
 
 ---
 
