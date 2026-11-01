@@ -78,3 +78,5 @@ Reference skeletons in the topic files show structure only. When writing real co
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
 - **Resource tracking:** `Tools/Langfuse` measures agent token usage per task phase and sends it to Langfuse.
+- **Implementation workflow:** every implementation attempt is tied to a Linear issue (`/impl-start`, `/handoff`);
+  rules in `CLAUDE.md`, setup in `Docs/agent-workflow.md`, scripts in `Tools/Workflow`.

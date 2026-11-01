@@ -1,0 +1,19 @@
+{
+  "linear": {
+    "statuses": { "in_progress": "In Progress", "in_review": "In Review", "done": "Done" }
+  },
+  "git": { "base": "main", "remote": "origin" },
+  "langfuse": { "environment": "default" },
+  "guarded_paths": ["Assets/", "Packages/", "ProjectSettings/"],
+  "checks": [
+    {
+      "name": "Unity EditMode tests (batch mode)",
+      "requires_env": ["UNITY_EDITOR"],
+      "skip_if_exists": "Temp/UnityLockfile",
+      "skip_reason": "the project is open in the Editor; run the tests through Unity MCP and pass --check-result",
+      "command": ["${UNITY_EDITOR}", "-batchmode", "-nographics", "-projectPath", ".", "-runTests",
+                  "-testPlatform", "EditMode", "-testResults", "Temp/editmode-results.xml", "-logFile", "-"],
+      "timeout": 1800
+    }
+  ]
+}
