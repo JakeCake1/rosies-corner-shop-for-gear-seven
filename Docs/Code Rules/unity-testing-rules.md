@@ -9,7 +9,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Tools: Unity Test Framewo
 - **WHEN** adding or changing logic in `Features/` or `Services/` (rules, calculations, state transitions, ViewModels, services, save migrations) → **DO** add or update EditMode tests in the same change.
 - **WHEN** adding or changing a `ScriptableObject` config type → **DO** add validation for it and a config test that runs it over every asset of that type (see **Config tests**).
 - **WHEN** fixing a bug in logic → **DO** first write a test that reproduces it and fails, then fix the code so it passes.
-- **WHEN** code is a thin View, a Unity API wrapper, a trivial property or a private method → **DO NOT** test it directly; test behavior through the public API of the class that uses it.
+- **WHEN** code is a thin View (UI Toolkit `ElementView`), a Unity API wrapper, a trivial property or a private method → **DO NOT** test it directly; test behavior through the public API of the class that uses it.
 - **WHEN** behavior depends on Unity lifecycle, physics, scene loading or real `MonoBehaviour` interaction (pool integration, collisions) → **DO** use a PlayMode test, kept small; everything else is EditMode.
 
 ---
@@ -91,6 +91,13 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Tools: Unity Test Framewo
 - **WHEN** an `AssetReference` must be loadable at runtime → **DO** check in the Editor test that its GUID is an Addressables entry (`AddressableAssetSettingsDefaultObject.Settings.FindAssetEntry(guid) != null`).
 - **WHEN** game balance has invariants (rewards grow with level, upgrade cost increases, drop chances sum to 1) → **DO** encode them as config tests, not as comments.
 - **WHEN** save data uses default values or migrations → **DO** test that a new `PlayerProfileData` has valid defaults and that every stored sample of an old save version migrates and loads (see the save system rules).
+
+### Layout tests (UI Toolkit)
+
+- **WHEN** adding or changing a window, a UXML layout or the names a view queries → **DO** keep an EditMode test that, for every `WindowView<T>` subclass, finds the Addressables entry `ui/<WindowType>` and loads it as a `VisualTreeAsset`; a missing or renamed layout then fails in tests instead of at runtime.
+- **WHEN** a view queries elements by name constants → **DO** test that each queried name exists in its layout: instantiate the `VisualTreeAsset` (`CloneTree()`), attach the view and assert that no `Q<T>(name)` returned `null` (or read the `...Name` constants via reflection and query each one).
+- **WHEN** a USS file or a UXML layout references assets (`url("project://...")`, `<Style src=...>`, templates) → **DO** rely on the asset import (no missing-asset warnings in the console after a refresh) and fix broken paths immediately; layouts are not generated, so nothing regenerates them.
+- **WHEN** a layout must match a mockup → **DO** verify it manually in Play mode at the 390×844 reference resolution against the mockup screenshot; pixel comparisons are not automated tests.
 
 ---
 

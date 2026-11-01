@@ -86,7 +86,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 - **WHEN** a tween is played repeatedly (button pulse, panel toggle) → **DO** create it once with `.SetAutoKill(false).Pause()`, then `Restart()`/`PlayForward()`/`PlayBackwards()`; kill it in `OnDestroy`.
 - **WHEN** awaiting a tween → **DO** `await tween.ToUniTask(TweenCancelBehaviour.Kill, ct)` so cancellation kills it cleanly.
 - **WHEN** combining steps → **DO** use `DOTween.Sequence()` with `Append`/`Join`/`Insert` instead of chained callbacks.
-- **WHEN** animating UI → **DO** animate `CanvasGroup.alpha` (`DOFade`) and `RectTransform` (`DOAnchorPos`, `DOScale`). Avoid animating Layout Group children and avoid tweening every frame on many elements in one Canvas.
+- **WHEN** animating UI → **DO** tween `VisualElement` styles through the `VisualElementTweens` extensions (`DOFade`, `DOScale`, `DOTranslate`, `DORotate`, `DOShake`), with `.SetId(this)` in views and `.SetUpdate(true)` for windows. Prefer `translate`/`scale`/`rotate`/`opacity` (no relayout); `DOPosition`/`DOBottom`/`DOWidthPercent` change layout and are for a few absolutely positioned elements only.
 - **WHEN** tweens are created in `Update` → **DO NOT**; create tweens on events only.
 
 ---
@@ -116,7 +116,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 - **WHEN** referencing elements → **DO** query by name once in `OnAttached` (`Q<T>(name)` with a `const` name) and cache the reference; never query per frame.
 - **WHEN** an element isn't clickable → **DO** set `picking-mode="Ignore"`.
 - **WHEN** many identical elements spawn repeatedly (items, shelves, baskets) → **DO** pool them with `ElementPool<T>` / `PooledElementView`.
-- **WHEN** animating elements → **DO** tween `style.translate`, `scale` and `opacity` with DOTween (`VisualElementTweens`), not `left`/`top` (they force a relayout).
+- **WHEN** animating elements → **DO** see the DOTween rules: prefer `translate`, `scale`, `rotate` and `opacity`; layout properties only for a few absolutely positioned elements.
 - **WHEN** two or more views share code → **DO** move it into the base view classes.
 - **WHEN** handling notched devices → **DO** apply `Screen.safeArea` to the safe layer (`UIRoot`).
 
@@ -268,7 +268,8 @@ public abstract class ViewModel : IDisposable
     public virtual void Dispose() => Disposables.Dispose();
 }
 
-public abstract class View<TViewModel> : MonoBehaviour where TViewModel : ViewModel
+// UI Toolkit views are plain C# classes on a VisualElement subtree (see unity-ui-mvvm-rules.md for the full set).
+public abstract class View<TViewModel> : ElementView where TViewModel : class
 {
     private CompositeDisposable _bindings = new();
     protected TViewModel ViewModel { get; private set; }
@@ -287,50 +288,49 @@ public abstract class View<TViewModel> : MonoBehaviour where TViewModel : ViewMo
         _bindings.Dispose();
         _bindings = new CompositeDisposable();
         DOTween.Kill(this);
+        OnUnbind();
+        ClearSpawned(); // elements spawned while bound leave the tree
         ViewModel = null;
     }
 
     protected abstract void OnBind(TViewModel viewModel);
-    protected virtual void OnDestroy() => Unbind();
+    protected virtual void OnUnbind() { }
 }
 
 // ---------- Window with DOTween show/hide ----------
-public enum UILayer { HUD, Screens, Popups, Overlay }
+public enum UILayer { Scene, HUD, Screens, Popups, Overlay }
 
 public abstract class WindowView<TViewModel> : View<TViewModel> where TViewModel : ViewModel
 {
-    [SerializeField] private CanvasGroup _canvasGroup;
-    [SerializeField] private float _fadeDuration = 0.2f;
+    private const float FadeSeconds = 0.2f;
 
     public abstract UILayer Layer { get; }
 
     public async UniTask ShowAsync(CancellationToken ct)
     {
-        _canvasGroup.blocksRaycasts = false;
-        _canvasGroup.alpha = 0f;
-        await _canvasGroup.DOFade(1f, _fadeDuration)
-            .SetUpdate(true).SetLink(gameObject).SetId(this)
+        Root.pickingMode = PickingMode.Ignore; // no taps while animating
+        Root.style.opacity = 0f;
+        await Root.DOFade(1f, FadeSeconds).SetUpdate(true).SetId(this)
             .ToUniTask(TweenCancelBehaviour.Kill, ct);
-        _canvasGroup.interactable = _canvasGroup.blocksRaycasts = true;
+        Root.pickingMode = PickingMode.Position;
     }
 
     public async UniTask HideAsync(CancellationToken ct)
     {
-        _canvasGroup.interactable = _canvasGroup.blocksRaycasts = false;
-        await _canvasGroup.DOFade(0f, _fadeDuration)
-            .SetUpdate(true).SetLink(gameObject).SetId(this)
+        Root.pickingMode = PickingMode.Ignore;
+        await Root.DOFade(0f, FadeSeconds).SetUpdate(true).SetId(this)
             .ToUniTask(TweenCancelBehaviour.Kill, ct);
     }
+
+    protected override void OnAttached() => OnLayoutAttached();
+    protected abstract void OnLayoutAttached();
 }
 
-// ---------- Example window ----------
+// ---------- Example window (ShopWindow.uxml at address "ui/ShopWindow") ----------
 public sealed class ShopViewModel : ViewModel
 {
-    private readonly ReactiveProperty<int> _coins = new();
-    public IReadOnlyReactiveProperty<int> Coins => _coins;
-    public IReadOnlyReactiveProperty<bool> CanBuy { get; }
-
     private const int Price = 100;
+    private readonly ReactiveProperty<int> _coins = new();
 
     public ShopViewModel(IWallet wallet)
     {
@@ -339,21 +339,33 @@ public sealed class ShopViewModel : ViewModel
         _coins.AddTo(Disposables);
     }
 
+    public IReadOnlyReactiveProperty<int> Coins => _coins;
+    public IReadOnlyReactiveProperty<bool> CanBuy { get; }
+
     public void Buy() { /* call IWallet / IShopService */ }
 }
 
 public sealed class ShopWindow : WindowView<ShopViewModel>
 {
-    [SerializeField] private TMP_Text _coinsText;
-    [SerializeField] private Button _buyButton;
+    private const string CoinsName = "coins-value";
+    private const string BuyName = "buy";
+
+    private Label _coins;
+    private Button _buy;
 
     public override UILayer Layer => UILayer.Screens;
 
+    protected override void OnLayoutAttached()
+    {
+        _coins = Root.Q<Label>(CoinsName);
+        _buy = Root.Q<Button>(BuyName);
+    }
+
     protected override void OnBind(ShopViewModel vm)
     {
-        vm.Coins.Subscribe(c => _coinsText.SetText("{0}", c)).AddTo(Bindings);
-        vm.CanBuy.Subscribe(x => _buyButton.interactable = x).AddTo(Bindings);
-        _buyButton.OnClickAsObservable()
+        vm.Coins.Subscribe(c => _coins.text = c.ToString()).AddTo(Bindings);
+        vm.CanBuy.Subscribe(x => _buy.SetEnabled(x)).AddTo(Bindings);
+        _buy.OnClickAsObservable() // Button.clicked as an observable (ElementExtensions)
             .ThrottleFirst(TimeSpan.FromMilliseconds(300))
             .Subscribe(_ => vm.Buy())
             .AddTo(Bindings);
@@ -364,4 +376,4 @@ public sealed class ShopWindow : WindowView<ShopViewModel>
 Notes for the agent:
 - `UNITASK_DOTWEEN_SUPPORT` must be in Scripting Define Symbols for `ToUniTask` on tweens; UniTask's Addressables support activates automatically when the Addressables package is installed.
 - Verify VContainer API signatures (e.g. `IAsyncStartable`, `RegisterComponentInNewPrefab`) against the installed package version before relying on them.
-- `UIRoot`, `UIService`, `IWallet`, `GameConfig`, `MenuState` follow the UI and save-system rule files; implement them per those rules.
+- `ElementView`, `UIRoot` (owns the `UIDocument`), `UIService` (loads `ui/<WindowType>` layouts), `IWallet`, `GameConfig`, `MenuState` follow the UI and save-system rule files; implement them per those rules.

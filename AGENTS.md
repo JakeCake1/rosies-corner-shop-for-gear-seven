@@ -15,7 +15,7 @@ Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween*
 | `Docs/Code Rules/unity-project-structure-rules.md` | Creating files or folders, adding a feature or service, moving code, adding `.asmdef`s. |
 | `Docs/Code Rules/unity-testing-rules.md` | Adding or changing logic in `Features/` or `Services/`, adding or changing configs, fixing bugs, writing tests. |
 | `Docs/Code Rules/unity-architecture-rules.md` | Designing classes, choosing patterns, refactoring, object pooling, game flow and state machines. |
-| `Docs/Code Rules/unity-ui-mvvm-rules.md` | Any UI work: screens, windows, popups, HUD, lists, UI service. |
+| `Docs/Code Rules/unity-ui-mvvm-rules.md` | Any UI work: screens, windows, popups, HUD, lists, UI service, UXML/USS layouts and matching them to the mockups. |
 | `Docs/Code Rules/unity-save-system-rules.md` | Saving or loading player data, profiles, settings, migrations, cloud saves. |
 | `Docs/Code Rules/unity-csharp-optimization-rules.md` | Hot code (`Update`, per-frame logic), performance fixes, rendering, physics, assets, build settings. |
 
