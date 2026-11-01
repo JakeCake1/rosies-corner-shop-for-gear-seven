@@ -7,6 +7,8 @@
         "UniTask",
         "UniRx",
         "VContainer",
+        "Unity.Localization",
+        "Unity.Localization.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
