@@ -1,0 +1,752 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UI
+  m_TableCollectionNameGuidString: 1b883ce0133ff024d9ad1fae32abb8f3
+  m_Entries:
+  - m_Id: 692768768
+    m_Key: album.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792192
+    m_Key: album.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792193
+    m_Key: album.subtitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792194
+    m_Key: album.total
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792195
+    m_Key: album.section_done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792196
+    m_Key: album.section_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792197
+    m_Key: album.unknown_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792198
+    m_Key: album.intro_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792199
+    m_Key: album.intro_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792200
+    m_Key: album.intro_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792201
+    m_Key: album.intro_later
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792202
+    m_Key: ads.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792203
+    m_Key: ads.text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792204
+    m_Key: ads.playing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792205
+    m_Key: dialog.ad_badge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792206
+    m_Key: gameplay.counter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792207
+    m_Key: gameplay.stock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792208
+    m_Key: gameplay.stock_empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792209
+    m_Key: gameplay.shelf_rows
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792210
+    m_Key: gameplay.badge_level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792211
+    m_Key: gameplay.badge_tricky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792212
+    m_Key: gameplay.banner_level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792213
+    m_Key: gameplay.banner_tricky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792214
+    m_Key: gameplay.hammer_stock_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792215
+    m_Key: gameplay.hammer_stock_middle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792216
+    m_Key: gameplay.hammer_stock_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792217
+    m_Key: gameplay.hammer_tied_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792218
+    m_Key: gameplay.hammer_tied_middle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792219
+    m_Key: gameplay.hammer_tied_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792220
+    m_Key: gameplay.hammer_shelf
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792221
+    m_Key: gameplay.tip_counter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792222
+    m_Key: gameplay.tip_ship
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792223
+    m_Key: gameplay.tip_stock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792224
+    m_Key: gameplay.gift_undo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792225
+    m_Key: gameplay.gift_tidy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792226
+    m_Key: gameplay.gift_pick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792227
+    m_Key: gameplay.counter_full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792228
+    m_Key: gameplay.one_spot_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792229
+    m_Key: gameplay.family_complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792230
+    m_Key: gameplay.tutorial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792231
+    m_Key: gameplay.basket_tip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792232
+    m_Key: gameplay.booster_undo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792233
+    m_Key: gameplay.booster_pick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792234
+    m_Key: gameplay.booster_tidy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792235
+    m_Key: gameplay.booster_shuffle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792236
+    m_Key: gameplay.booster_added
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792237
+    m_Key: gameplay.pick_done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792238
+    m_Key: gameplay.pick_none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792239
+    m_Key: gameplay.tidy_done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792240
+    m_Key: gameplay.tidy_none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792241
+    m_Key: gameplay.shuffle_none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792242
+    m_Key: gameplay.undo_done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792243
+    m_Key: gameplay.undo_none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792244
+    m_Key: gameplay.undo_offer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792245
+    m_Key: gameplay.pick_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792246
+    m_Key: gameplay.tidy_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792247
+    m_Key: gameplay.shuffle_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792248
+    m_Key: gameplay.buy_two
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792249
+    m_Key: gameplay.buy_one
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792250
+    m_Key: gameplay.get_one_free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792251
+    m_Key: gameplay.not_now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792252
+    m_Key: gameplay.basket_free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792253
+    m_Key: gameplay.basket_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792254
+    m_Key: gameplay.basket_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792255
+    m_Key: gameplay.basket_open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792256
+    m_Key: gameplay.basket_open_free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792257
+    m_Key: gameplay.complete_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792258
+    m_Key: gameplay.complete_tricky_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792259
+    m_Key: gameplay.headline_three_stars
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792260
+    m_Key: gameplay.headline_two_stars
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792261
+    m_Key: gameplay.headline_one_star
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792262
+    m_Key: gameplay.complete_neat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792263
+    m_Key: gameplay.complete_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792264
+    m_Key: gameplay.stat_items
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792265
+    m_Key: gameplay.stat_peak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792266
+    m_Key: gameplay.stat_moves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792267
+    m_Key: gameplay.double_coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792268
+    m_Key: gameplay.coins_added
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792269
+    m_Key: gameplay.replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792270
+    m_Key: gameplay.next_level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792271
+    m_Key: gameplay.continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792272
+    m_Key: gameplay.next_tricky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792273
+    m_Key: gameplay.loss_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792274
+    m_Key: gameplay.loss_one_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792275
+    m_Key: gameplay.loss_few_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792276
+    m_Key: gameplay.loss_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792277
+    m_Key: gameplay.call_customer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792278
+    m_Key: gameplay.customer_arrived
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792279
+    m_Key: gameplay.customer_note
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792280
+    m_Key: gameplay.extra_spot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792281
+    m_Key: gameplay.spot_added
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792282
+    m_Key: gameplay.undo_free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792283
+    m_Key: gameplay.tidy_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792284
+    m_Key: gameplay.start_over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792285
+    m_Key: gameplay.praise_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792286
+    m_Key: gameplay.praise_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792287
+    m_Key: gameplay.praise_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792288
+    m_Key: gameplay.praise_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792289
+    m_Key: gameplay.praise_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792290
+    m_Key: gameplay.praise_6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792291
+    m_Key: gameplay.combo_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792292
+    m_Key: gameplay.combo_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792293
+    m_Key: gameplay.combo_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792294
+    m_Key: gameplay.combo_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792295
+    m_Key: gameplay.combo_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792296
+    m_Key: gameplay.combo_6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792297
+    m_Key: gameplay.combo_7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792298
+    m_Key: gameplay.combo_8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792299
+    m_Key: gameplay.start_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792300
+    m_Key: gameplay.start_tricky_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792301
+    m_Key: gameplay.start_first
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792302
+    m_Key: gameplay.start_tricky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792303
+    m_Key: gameplay.start_normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792304
+    m_Key: gameplay.start_basket_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792305
+    m_Key: gameplay.start_basket_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792306
+    m_Key: gameplay.start_quick_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792307
+    m_Key: gameplay.start_quick_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792308
+    m_Key: gameplay.start_owned
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792309
+    m_Key: gameplay.start_price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792310
+    m_Key: gameplay.start_toggle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792311
+    m_Key: gameplay.start_play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792312
+    m_Key: gameplay.start_back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792313
+    m_Key: gameplay.not_enough_coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792314
+    m_Key: home.default_shop_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792315
+    m_Key: home.tagline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792316
+    m_Key: home.reviewers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792317
+    m_Key: home.album
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792318
+    m_Key: home.play_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792319
+    m_Key: home.play_line
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792320
+    m_Key: home.play_line_tricky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792321
+    m_Key: home.album_locked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792322
+    m_Key: home.name_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792323
+    m_Key: home.name_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792324
+    m_Key: home.name_idea_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792325
+    m_Key: home.name_idea_2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792326
+    m_Key: home.name_idea_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792327
+    m_Key: home.name_confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792328
+    m_Key: home.name_keep
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792329
+    m_Key: settings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792330
+    m_Key: settings.sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792331
+    m_Key: settings.music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792332
+    m_Key: settings.vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792333
+    m_Key: settings.restart_level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792334
+    m_Key: settings.back_home
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792335
+    m_Key: settings.rename
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792336
+    m_Key: settings.close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792337
+    m_Key: settings.reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792338
+    m_Key: settings.reset_confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792339
+    m_Key: reviewers.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792340
+    m_Key: reviewers.text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792341
+    m_Key: reviewers.note
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792342
+    m_Key: reviewers.curve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792343
+    m_Key: reviewers.offer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792344
+    m_Key: reviewers.offer_customer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792345
+    m_Key: reviewers.offer_spot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792346
+    m_Key: reviewers.reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792347
+    m_Key: reviewers.close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792348
+    m_Key: curve.new.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792349
+    m_Key: curve.new.subtitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792350
+    m_Key: curve.orig.label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792351
+    m_Key: curve.orig.subtitle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792352
+    m_Key: tip.tap_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792353
+    m_Key: tip.fold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792354
+    m_Key: tip.wider
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792355
+    m_Key: tip.tall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792356
+    m_Key: tip.brass_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792357
+    m_Key: tip.nailed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792358
+    m_Key: tip.frozen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792359
+    m_Key: tip.paper_bags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792360
+    m_Key: tip.second_row
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792361
+    m_Key: tip.tricky_tall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792362
+    m_Key: tip.rewards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792363
+    m_Key: tip.rewards_big_shelves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792364
+    m_Key: tip.rewards_plan
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792365
+    m_Key: tip.calm_day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792366
+    m_Key: tip.keep_room
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792367
+    m_Key: tip.hammer_and_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792368
+    m_Key: tip.bags_and_ice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792369
+    m_Key: tip.bakery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792370
+    m_Key: tip.second_rows_frozen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792371
+    m_Key: tip.sweets
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 702105285877825597
+  references:
+    version: 2
+    RefIds:
+    - rid: 702105285877825597
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1793564977450
