@@ -7,15 +7,16 @@ reply carries token usage. This script:
   mark <phase>      appends a phase boundary (UTC now) to phases.json; the previous phase ends there.
   snapshot          copies every reply found in the transcripts into ledger.jsonl (deduplicated by id).
   report            snapshot + aggregates usage per phase and writes usage_summary.json, REPORT.md and
-                    langfuse_batch.json (Langfuse public ingestion API format).
-  import-batch F    seeds ledger.jsonl from an earlier langfuse_batch.json.
+                    otel/batch_NNN.json (OTLP/JSON spans for Langfuse's OpenTelemetry endpoint).
+  import-batch F    seeds ledger.jsonl from an earlier legacy langfuse_batch.json.
 
 Claude Code rewrites the session transcript when it compacts the context, so replies before the
 compaction disappear from it. ledger.jsonl keeps them: run `snapshot` before compaction, or let a
 Claude Code PreCompact hook run `snapshot --hook` (see Tools/Langfuse/README.md). Time ranges with no data are listed
 in REPORT.md as coverage gaps.
 
-Send the batch with Send-ToLangfuse.ps1 (Windows PowerShell).
+Send the spans with Send-ToLangfuse.ps1 (Windows PowerShell). Langfuse accepts traces only over OpenTelemetry
+(/api/public/otel/v1/traces); the legacy /api/public/ingestion endpoint no longer takes traces.
 
 Effective cost weights (relative to one uncached input token) follow Anthropic's pricing ratios:
 cache read 0.1x, cache write (1h TTL) 2x, output 5x.
@@ -258,54 +259,109 @@ def cmd_report(args):
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "usage_summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
-    with open(os.path.join(out_dir, "langfuse_batch.json"), "w", encoding="utf-8") as f:
-        json.dump(build_batch(summary, msgs, data), f, indent=1)
+    otel_dir = os.path.join(out_dir, "otel")
+    os.makedirs(otel_dir, exist_ok=True)
+    for old in glob.glob(os.path.join(otel_dir, "batch_*.json")):
+        os.remove(old)
+    chunks = build_otlp(summary, msgs, data)
+    for i, payload in enumerate(chunks):
+        with open(os.path.join(otel_dir, f"batch_{i:03d}.json"), "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False)
+    legacy = os.path.join(out_dir, "langfuse_batch.json")
+    if os.path.exists(legacy):
+        os.remove(legacy)
     with open(os.path.join(out_dir, "REPORT.md"), "w", encoding="utf-8") as f:
         f.write(build_markdown(summary))
     print(f"{len(msgs)} replies from {len(paths)} transcript(s); effective tokens {total['effective']:,}")
 
 
-def build_batch(summary, msgs, data):
-    """Langfuse ingestion events: one trace for the task, one span per phase, one generation per reply."""
-    trace_id = str(uuid.uuid5(TRACE_NAMESPACE, (data.get("issue") or "task") + "|" + (data.get("task") or "")))
-    now = utc_now()
-    events = [{
-        "id": str(uuid.uuid4()), "timestamp": now, "type": "trace-create",
-        "body": {"id": trace_id, "name": f"{data.get('issue')} {data.get('task')}".strip(),
-                 "timestamp": summary["phases"][0]["start"] if summary["phases"] else now,
-                 "tags": ["claude-agent", "resource-consumption", data.get("issue") or "task"],
-                 "metadata": {"weights": WEIGHTS, "replies": summary["replies"]},
-                 "output": {"total": summary["total"]}},
-    }]
-    span_ids = {}
-    for p in summary["phases"]:
-        sid = str(uuid.uuid5(TRACE_NAMESPACE, trace_id + "|phase|" + p["name"]))
-        span_ids[p["name"]] = sid
-        events.append({
-            "id": str(uuid.uuid4()), "timestamp": now, "type": "span-create",
-            "body": {"id": sid, "traceId": trace_id, "name": p["name"], "startTime": p["start"],
-                     "endTime": p["end"],
-                     "metadata": {k: p[k] for k in ("replies", "tools", "models", "wallMinutes", "effective",
-                                                    "input", "output", "cache_read", "cache_write", "thinking")}},
-        })
+OTLP_CHUNK = 150
+
+
+def nanos(ts):
+    t = parse_ts(ts)
+    return str(int(t.timestamp()) * 1_000_000_000 + t.microsecond * 1000)
+
+
+def otlp_value(v):
+    if isinstance(v, bool):
+        return {"boolValue": v}
+    if isinstance(v, int):
+        return {"intValue": str(v)}
+    if isinstance(v, float):
+        return {"doubleValue": v}
+    if isinstance(v, (list, tuple)):
+        return {"arrayValue": {"values": [otlp_value(x) for x in v]}}
+    if isinstance(v, dict):
+        return {"stringValue": json.dumps(v, ensure_ascii=False)}
+    return {"stringValue": "" if v is None else str(v)}
+
+
+def otlp_span(trace_id, span_id, parent, name, start, end, attrs):
+    span = {"traceId": trace_id, "spanId": span_id, "name": name, "kind": 1,
+            "startTimeUnixNano": nanos(start), "endTimeUnixNano": nanos(end),
+            "attributes": [{"key": k, "value": otlp_value(v)} for k, v in attrs.items() if v is not None]}
+    if parent:
+        span["parentSpanId"] = parent
+    return span
+
+
+def build_otlp(summary, msgs, data):
+    """OTLP/JSON payloads: a root agent span for the task, a span per phase, a generation span per reply.
+
+    Langfuse reads langfuse.* span attributes (observation type, model, usage details, trace name and tags).
+    Ids are derived from the issue, phase and reply ids, so sending again updates the same trace.
+    """
+    key = (data.get("issue") or "task") + "|" + (data.get("task") or "")
+    trace_id = uuid.uuid5(TRACE_NAMESPACE, key).hex
+    sid = lambda *parts: uuid.uuid5(TRACE_NAMESPACE, "|".join((key,) + parts)).hex[:16]
+    trace_name = f"{data.get('issue')} {data.get('task')}".strip()
+    common = {"langfuse.trace.name": trace_name,
+              "langfuse.trace.tags": ["claude-agent", "resource-consumption", data.get("issue") or "task"],
+              "langfuse.environment": "default"}
+    phases = summary["phases"]
+    first = min([p["start"] for p in phases] + ([msgs[0]["timestamp"]] if msgs else [])) if (phases or msgs) else utc_now()
+    last = max([p["end"] for p in phases] + ([msgs[-1]["timestamp"]] if msgs else [])) if (phases or msgs) else first
+    root = sid("root")
+    t = summary["total"]
+    spans = [otlp_span(trace_id, root, None, trace_name, first, last, {
+        **common, "langfuse.observation.type": "agent",
+        "langfuse.observation.output": {"total": t, "replies": summary["replies"], "gaps": summary.get("gaps", [])},
+        "langfuse.observation.metadata.weights": WEIGHTS,
+        "langfuse.observation.metadata.effective_tokens": t["effective"]})]
+    phase_ids = {}
+    for p in phases:
+        phase_ids[p["name"]] = sid("phase", p["name"])
+        spans.append(otlp_span(trace_id, phase_ids[p["name"]], root, p["name"], p["start"], p["end"], {
+            **common, "langfuse.observation.type": "span",
+            "langfuse.observation.output": {k: p[k] for k in ("replies", "input", "output", "cache_read",
+                                                               "cache_write", "thinking", "effective")},
+            "langfuse.observation.metadata.tools": p["tools"],
+            "langfuse.observation.metadata.models": p["models"],
+            "langfuse.observation.metadata.wall_minutes": p["wallMinutes"]}))
     prev_end = {}
     for m in msgs:
         n = usage_numbers(m["usage"])
-        parent = span_ids.get(m["phase"])
-        start = prev_end.get(m["source"], m["timestamp"])
-        prev_end[m["source"]] = m["timestamp"]
-        events.append({
-            "id": str(uuid.uuid4()), "timestamp": now, "type": "generation-create",
-            "body": {"id": str(uuid.uuid5(TRACE_NAMESPACE, m["id"])), "traceId": trace_id,
-                     "parentObservationId": parent, "name": "agent-turn" if m["agent"] == "main" else "subagent-turn",
-                     "model": m["model"], "startTime": start, "endTime": m["timestamp"],
-                     "usageDetails": {"input": n["input"], "output": n["output"],
-                                      "cache_read_input_tokens": n["cache_read"],
-                                      "cache_creation_input_tokens": n["cache_write"]},
-                     "metadata": {"tools": m["tools"], "thinking_tokens": n["thinking"],
-                                  "effective_tokens": round(n["effective"], 1), "phase": m["phase"]}},
-        })
-    return {"batch": events}
+        end = m["timestamp"]
+        start = prev_end.get(m["source"], end)
+        if parse_ts(start) > parse_ts(end):
+            start = end
+        prev_end[m["source"]] = end
+        spans.append(otlp_span(trace_id, sid("reply", m["id"]), phase_ids.get(m["phase"], root),
+                               "agent-turn" if m["agent"] == "main" else "subagent-turn", start, end, {
+            **common, "langfuse.observation.type": "generation",
+            "langfuse.observation.model.name": m["model"],
+            "langfuse.observation.usage_details": {
+                "input": n["input"], "output": n["output"],
+                "cache_read_input_tokens": n["cache_read"], "cache_creation_input_tokens": n["cache_write"]},
+            "langfuse.observation.metadata.tools": m["tools"],
+            "langfuse.observation.metadata.thinking_tokens": n["thinking"],
+            "langfuse.observation.metadata.effective_tokens": round(n["effective"], 1),
+            "langfuse.observation.metadata.phase": m["phase"]}))
+    resource = {"attributes": [{"key": "service.name", "value": {"stringValue": "claude-agent-usage"}}]}
+    scope = {"name": "rosie.usage_report", "version": "2"}
+    return [{"resourceSpans": [{"resource": resource, "scopeSpans": [{"scope": scope, "spans": spans[i:i + OTLP_CHUNK]}]}]}
+            for i in range(0, len(spans), OTLP_CHUNK)]
 
 
 def build_markdown(s):
@@ -349,7 +405,7 @@ def main():
     sn.add_argument("--transcripts", help="glob of transcript JSONL files (defaults to phases.json transcriptGlob)")
     sn.add_argument("--hook", action="store_true", help="read transcript_path from Claude Code hook JSON on stdin")
     ib = sub.add_parser("import-batch")
-    ib.add_argument("file", help="an earlier langfuse_batch.json")
+    ib.add_argument("file", help="an earlier legacy langfuse_batch.json")
     m.set_defaults(func=cmd_mark)
     sn.set_defaults(func=cmd_snapshot)
     ib.set_defaults(func=cmd_import_batch)

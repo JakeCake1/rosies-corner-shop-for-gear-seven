@@ -12,6 +12,8 @@ Mobile sorting puzzle in a little grocery shop, ported from the Claude HTML prot
    `Services/Content` and `Services/Levels`), all prefabs, the `Boot`, `Home` and `Gameplay` scenes, VContainer
    settings and Addressables groups (`Assets/Game/Bootstrap/Generated`, `Assets/Game/Bootstrap/Scenes`).
 3. Open `Assets/Game/Bootstrap/Scenes/Boot.unity` and press Play (Game view 390×844 portrait recommended).
+4. Code: open `rosies-corner-shop.sln` in Rider. Unity generates it (`com.unity.ide.rider`); if it is missing, use
+   **Edit → Preferences → External Tools → Regenerate project files** (the `.sln`/`.csproj` files are git-ignored).
 
 ## Layout
 
