@@ -5,7 +5,7 @@
 The main goal is zero heap allocations per frame in hot code: every GC spike shows up as a hitch.
 
 1. Don't create `new` objects, arrays or lists in `Update`, `FixedUpdate`, `LateUpdate`. Allocate up front and reuse (`list.Clear()` instead of a new list).
-2. Don't concatenate strings in loops or every frame. Use `StringBuilder`, cache finished strings, and for UI numbers use `TMP_Text.SetText("{0}", value)`.
+2. Don't concatenate strings in loops or every frame. Use `StringBuilder`, cache finished strings, and set UI numbers (`Label.text`) only when the value changes.
 3. Avoid LINQ in hot code: it allocates iterators and closures. It's fine during initialization.
 4. Don't capture outer variables in lambdas in frequently called code: a closure is an allocation. Cache delegates in fields.
 5. Avoid boxing: don't pass a `struct` as `object` or an interface, and don't use an `enum` as a `Dictionary` key without your own `IEqualityComparer`.
@@ -71,19 +71,19 @@ First find the bottleneck — CPU (draw calls, SetPass) or GPU (fill rate, shade
 13. On mobile, lower Render Scale and use simple shaders (Simple Lit / Unlit).
 14. Remove unused shader variants (Shader Stripping) — it reduces build size and load times.
 
-## UI
+## UI (UI Toolkit)
 
-In uGUI, any change to an element rebuilds its whole Canvas — split canvases and don't touch what you don't need to.
+UI Toolkit re-resolves styles and recomputes layout only for elements that changed (and what depends on them), so the cost is in how many elements you touch and whether a change triggers layout.
 
-1. Split the UI into several Canvases: static (backgrounds, frames) separate from frequently changing (timers, health bars).
-2. Disable `Raycast Target` on everything that isn't clickable (text, decorative images).
-3. Hide windows by disabling the `Canvas` component or with `CanvasGroup.alpha = 0` + `blocksRaycasts = false`, rather than toggling `SetActive(false)` often.
-4. Avoid Layout Groups and Content Size Fitters on frequently changing elements — layout recalculation is expensive.
-5. Use TextMeshPro, not the legacy `Text`.
-6. For long lists, use virtualization (recycled cells) instead of hundreds of objects in a ScrollRect.
-7. Don't update text every frame if the value hasn't changed.
-8. For new projects, consider UI Toolkit — it scales better for complex interfaces.
-9. Don't animate UI with an Animator on always-active elements — it marks the Canvas dirty every frame; use tweens or a script.
+1. Keep the tree small: create elements when they are first shown and remove them from the hierarchy when hidden; pool elements that spawn often (`ElementPool<T>`). Don't keep hidden windows or overlays in the tree.
+2. Set `picking-mode="Ignore"` on everything that isn't clickable (labels, decor, containers) — picking walks the tree.
+3. Animate `translate`, `scale`, `rotate` and `opacity`: they don't trigger layout. Tween layout properties (`left`/`top`/`bottom`/`width`) only on a few absolutely positioned elements, never on many elements at once.
+4. Put shared styling into USS classes and toggle classes; avoid writing many inline styles from code each frame.
+5. Don't update `Label.text` every frame if the value hasn't changed.
+6. For long lists, use `ListView` (virtualized) or pooled rows instead of hundreds of elements in a `ScrollView`.
+7. Query elements once (`Q<T>(name)`) and cache them; never query per frame.
+8. Use one `PanelSettings` for the whole game; a second panel means a second layout and render pass.
+9. Don't animate UI with an `Animator`; use DOTween on element styles (`VisualElementTweens`) and kill tweens when the view is unbound or returned to a pool.
 
 ## Assets, Memory and Loading
 

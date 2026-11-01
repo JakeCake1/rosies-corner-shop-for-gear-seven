@@ -40,7 +40,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 
 ## Object Pooling
 
-Stack-specific: pools are created through VContainer, prefabs come from Addressables via `IAssetProvider`, async work uses UniTask.
+Stack-specific: pools are created through VContainer, prefabs come from Addressables via `IAssetProvider`, async work uses UniTask. UI is UI Toolkit, so pooled UI elements use `ElementPool<T>` (see "Pooling UI elements"); the GameObject rules below apply to scene objects.
 
 ### When to pool
 
@@ -51,6 +51,7 @@ Stack-specific: pools are created through VContainer, prefabs come from Addressa
 ### Which pool to use
 
 - **WHEN** pooling GameObjects/components → **DO** wrap `UnityEngine.Pool.ObjectPool<T>` in a typed pool class (one pool per prefab). Don't write a pool from scratch.
+- **WHEN** pooling UI Toolkit elements (board items, shelves, list rows) → **DO** use `ElementPool<T>` (it wraps `ObjectPool<T>`) with views derived from `PooledElementView`.
 - **WHEN** a temporary collection is needed inside a method → **DO** use `ListPool<T>.Get(out var list)` / `HashSetPool<T>` / `DictionaryPool<TKey, TValue>` with `using` so it's returned automatically.
 - **WHEN** a temporary array buffer is needed → **DO** use `ArrayPool<T>.Shared.Rent` / `Return` (remember the rented array can be larger than requested).
 - **WHEN** pooling plain C# objects (commands, events, data packets) → **DO** use `GenericPool<T>` or `ObjectPool<T>` with a reset in `actionOnRelease`.
@@ -83,7 +84,14 @@ Stack-specific: pools are created through VContainer, prefabs come from Addressa
   - UniTask: cancel and dispose the per-spawn `CancellationTokenSource`;
   - gameplay state (health, timers, flags, target references) and `Animator` (`Rebind()` / reset triggers).
 - **WHEN** a pooled object holds references to other objects (target, owner) → **DO** clear them on despawn so they don't keep dead objects alive or act on stale targets.
-- **WHEN** deactivating a pooled GameObject → **DO** use `SetActive(false)` in `actionOnRelease`. For pooled UI items in a list, keep them active and rebind instead (toggling `SetActive` rebuilds the Canvas).
+- **WHEN** deactivating a pooled GameObject → **DO** use `SetActive(false)` in `actionOnRelease`.
+
+### Pooling UI elements
+
+- **WHEN** a UI element type spawns and despawns often → **DO** derive its view from `PooledElementView` and create an `ElementPool<T>(create, defaultCapacity, maxSize)` in the view that owns those elements; `create` builds the element (from UXML or code) and attaches the view.
+- **WHEN** an element is released → **DO** let the pool remove it from the hierarchy and kill its tweens; in `OnDespawned()` reset everything the view changed (inline styles such as `translate`, `scale`, `opacity`, `left`/`top`, sprites, USS classes, callbacks). `PooledElementView.ResetTransform` resets the transform styles.
+- **WHEN** an element is taken from the pool → **DO** pass per-spawn data through an explicit method (`item.Setup(jarId, sprite, isWrapped, onTap)`) and add it to its parent at that moment; a released element is never left in the tree hidden.
+- **WHEN** the owning view is disposed (scene unload, screen closed) → **DO** release active elements and dispose the pool.
 
 ### Returning objects
 
@@ -241,8 +249,9 @@ Note: create `GameObjectPool<T>` through a pool factory registered in the scene 
 ## DRY (Don't Repeat Yourself)
 
 - **WHEN** the same logic is copied in 2–3 places → **DO** extract it into a method, base class, utility or component.
+- **WHEN** code in two or more Views or windows is repeated or very similar (element queries, show/hide, close, spawning, pooling resets) → **DO** extract it into a parent class right away (`ElementView`, `View<TViewModel>`, `WindowView<TViewModel>`, `PooledElementView`, or a new intermediate base); for views the rule of three below does not apply.
 - **WHEN** the same numbers and settings are scattered across code and prefabs → **DO** move them into a `ScriptableObject` config or constants.
-- **WHEN** the same object setup is repeated manually → **DO** use prefabs and Prefab Variants.
+- **WHEN** the same object setup is repeated manually → **DO** use prefabs and Prefab Variants for scene objects, and UXML templates (`<ui:Template>`/`<ui:Instance>`) plus shared USS classes for UI.
 - **WHEN** code only looks similar but changes for different reasons → **DO NOT** merge it: this is not duplicated knowledge. Follow the rule of three: generalize on the third repetition.
 
 ---
