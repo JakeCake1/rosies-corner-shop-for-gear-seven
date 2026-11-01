@@ -22,3 +22,6 @@
 /_inputs/
 /Assets/**/.idea/
 /Assets/Screenshots.meta
+/.agent-workflow/
+/.claude/settings.local.json
+__pycache__/
