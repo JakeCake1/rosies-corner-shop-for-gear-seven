@@ -329,10 +329,12 @@
     flex-direction: row;
 }
 
+/* Clips shelves dropping in from the stock, like the prototype's .col { overflow: hidden }. */
 .cabinet__column {
     flex-grow: 1;
     flex-basis: 0;
     margin: 0 2px;
+    overflow: hidden;
 }
 
 /* Shelves */
