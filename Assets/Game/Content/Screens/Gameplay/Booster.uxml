@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
     <ui:VisualElement class="booster" picking-mode="Ignore">
         <ui:VisualElement name="glow" class="booster__glow kit-circle" picking-mode="Ignore" />
         <ui:Button name="tile" class="btn booster__tile kit-rounded-white">

@@ -13,21 +13,21 @@
     --gold: #EDB53F;
     --oak-dark: #96622F;
 
-    -unity-font: url("project://database/Assets/Game/Services/UI/Fonts/Fredoka-SemiBold.ttf");
+    -unity-font: url("project://database/Assets/Game/Content/Visual/Fonts/Fredoka-SemiBold.ttf");
     -unity-font-definition: initial;
     color: var(--ink);
     font-size: 16px;
 }
 
 .unity-text-element {
-    -unity-font: url("project://database/Assets/Game/Services/UI/Fonts/Fredoka-SemiBold.ttf");
+    -unity-font: url("project://database/Assets/Game/Content/Visual/Fonts/Fredoka-SemiBold.ttf");
     -unity-font-definition: initial;
     margin: 0;
     padding: 0;
 }
 
 .display-font {
-    -unity-font: url("project://database/Assets/Game/Services/UI/Fonts/YesevaOne-Regular.ttf");
+    -unity-font: url("project://database/Assets/Game/Content/Visual/Fonts/YesevaOne-Regular.ttf");
     -unity-font-definition: initial;
 }
 
@@ -56,7 +56,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wallpaper.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wallpaper.png");
     background-repeat: repeat repeat;
     background-size: 36px 36px;
 }
@@ -67,7 +67,7 @@
     right: 0;
     bottom: 0;
     height: 120px;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wainscot.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wainscot.png");
     background-repeat: repeat repeat;
     background-size: 42px 60px;
     background-position-y: bottom;
@@ -192,7 +192,7 @@
     min-height: 44px;
     padding: 6px 14px 8px 14px;
     justify-content: center;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/pill_white.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/pill_white.png");
     -unity-slice-left: 30;
     -unity-slice-top: 30;
     -unity-slice-right: 30;
@@ -216,7 +216,7 @@
     position: absolute;
     width: 270px;
     padding: 10px 14px 12px 14px;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/card.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/card.png");
     -unity-slice-left: 54;
     -unity-slice-top: 54;
     -unity-slice-right: 54;
@@ -233,13 +233,13 @@
 
 .coach-hand {
     position: absolute;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/tutorial_hand.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/tutorial_hand.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .particle {
     position: absolute;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/circle.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/circle.png");
 }
 
 .praise {

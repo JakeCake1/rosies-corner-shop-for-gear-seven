@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
     <!-- One shelf block; ShelfView adds a floor per row and a cell per item slot. -->
     <ui:VisualElement class="shelf" picking-mode="Ignore">
         <ui:VisualElement name="content" class="shelf__content" picking-mode="Ignore">

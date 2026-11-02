@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Home/Layouts/Home.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Home/Home.uss" />
     <ui:Button name="settings" class="btn kit-btn-wood home-settings">
         <ui:VisualElement class="home-settings__icon icon-gear" picking-mode="Ignore" />
     </ui:Button>

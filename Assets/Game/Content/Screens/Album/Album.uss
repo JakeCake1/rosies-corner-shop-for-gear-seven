@@ -92,7 +92,7 @@
 .album-cabinet__inner {
     flex-grow: 1;
     background-color: #B0C39A;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wainscot.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wainscot.png");
     background-repeat: repeat repeat;
     background-size: 42px 60px;
     border-top-left-radius: 16px;

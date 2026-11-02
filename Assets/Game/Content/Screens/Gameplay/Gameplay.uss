@@ -139,7 +139,7 @@
     right: -2%;
     bottom: 16px;
     height: 22px;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/ledge.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ledge.png");
     background-repeat: repeat no-repeat;
     background-size: 20px 22px;
 }
@@ -157,7 +157,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/basket/basket_front.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/basket/basket_front.png");
     opacity: 0.35;
 }
 
@@ -179,11 +179,11 @@
 }
 
 .basket__back {
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/basket/basket_back.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/basket/basket_back.png");
 }
 
 .basket__front {
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/basket/basket_front.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/basket/basket_front.png");
 }
 
 .basket__slot {
@@ -211,7 +211,7 @@
     left: 10px;
     width: 88px;
     height: 40px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/basket/napkin_done.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/basket/napkin_done.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
@@ -253,11 +253,11 @@
     width: 56px;
     height: 20px;
     margin-left: -28px;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/doily.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/doily.png");
 }
 
 .counter-slot__doily--hot {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/doily_hot.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/doily_hot.png");
 }
 
 .counter__label {
@@ -280,7 +280,7 @@
     right: -3%;
     top: -14px;
     height: 38px;
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/awning.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/awning.png");
     background-repeat: repeat no-repeat;
     background-size: 52px 38px;
 }
@@ -315,7 +315,7 @@
     top: 3px;
     width: 14px;
     height: 20px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/tools/hammer.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/tools/hammer.png");
     -unity-background-scale-mode: scale-to-fit;
     display: none;
 }
@@ -414,7 +414,7 @@
     right: 2px;
     top: 2px;
     bottom: 2px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/shelf/tie_twine.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/shelf/tie_twine.png");
 }
 
 .shelf__seal {
@@ -425,7 +425,7 @@
     height: 34px;
     margin-left: -17px;
     margin-top: -17px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/shelf/tie_seal.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/shelf/tie_seal.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
@@ -436,13 +436,13 @@
     width: 20px;
     height: 26px;
     margin-left: -10px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/shelf/key_tag.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/shelf/key_tag.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .key-flyer {
     position: absolute;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/shelf/key_tag.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/shelf/key_tag.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
@@ -494,7 +494,7 @@
     height: 40px;
     margin-left: -13px;
     margin-top: -20px;
-    background-image: url("project://database/Assets/Game/Features/Gameplay/Art/tools/hammer.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/tools/hammer.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 

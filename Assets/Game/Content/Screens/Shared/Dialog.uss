@@ -73,7 +73,7 @@
 }
 
 .dialog-headline {
-    -unity-font: url("project://database/Assets/Game/Services/UI/Fonts/YesevaOne-Regular.ttf");
+    -unity-font: url("project://database/Assets/Game/Content/Visual/Fonts/YesevaOne-Regular.ttf");
     -unity-font-definition: initial;
     font-size: 26px;
     color: var(--walnut);
@@ -200,7 +200,7 @@
 }
 
 .dialog-input__field > .unity-base-text-field__input {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/rounded_white.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/rounded_white.png");
     -unity-slice-left: 16;
     -unity-slice-top: 16;
     -unity-slice-right: 16;
