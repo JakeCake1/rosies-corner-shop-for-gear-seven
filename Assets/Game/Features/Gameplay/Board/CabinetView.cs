@@ -22,7 +22,7 @@ namespace Game.Features.Gameplay.Board
     {
         private const string ColumnsName = "columns";
         private const string TabsName = "stock-tabs";
-        private const string ColumnClass = "cabinet__column";
+        private const string ColumnClass = "cabinet__column-clip";
         private const int PoolCapacity = 24;
         private const int PoolMaxSize = 60;
 
