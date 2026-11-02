@@ -16,6 +16,8 @@ namespace Game.Flow
         private readonly GameplayRequest _request;
         private readonly StartBoostersPrompt _startBoosters;
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
+        // Cached: a button handler running during shutdown must see cancellation, not ObjectDisposedException.
+        private readonly CancellationToken _lifetimeToken;
 
         /// <summary>
         /// Creates the flow.
@@ -28,23 +30,24 @@ namespace Game.Flow
             _states = states;
             _request = request;
             _startBoosters = startBoosters;
+            _lifetimeToken = _lifetime.Token;
         }
 
         /// <inheritdoc/>
-        public UniTask GoHomeAsync() => _states.Enter<HomeState>(_lifetime.Token);
+        public UniTask GoHomeAsync() => _states.Enter<HomeState>(_lifetimeToken);
 
         /// <inheritdoc/>
         public async UniTask PlayLevelAsync(int level, StartBoosters startBoosters = null)
         {
             if (startBoosters == null && _startBoosters.IsNeeded(level))
             {
-                startBoosters = await _startBoosters.AskAsync(level, _lifetime.Token);
+                startBoosters = await _startBoosters.AskAsync(level, _lifetimeToken);
                 if (startBoosters == null) return;
             }
 
             _request.Level = level;
             _request.StartBoosters = startBoosters ?? StartBoosters.None;
-            await _states.Enter<GameplayState>(_lifetime.Token);
+            await _states.Enter<GameplayState>(_lifetimeToken);
         }
 
         /// <inheritdoc/>

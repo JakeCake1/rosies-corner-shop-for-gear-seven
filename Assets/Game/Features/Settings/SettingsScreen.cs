@@ -52,7 +52,7 @@ namespace Game.Features.Settings
         }
 
         /// <inheritdoc/>
-        public async UniTask OpenAsync(Action restartLevel)
+        public async UniTask OpenAsync(Action restartLevel, CancellationToken ct)
         {
             var dialog = new DialogViewModel("Settings", RibbonStyle.Green) { IsClosedByBlocker = true };
             dialog.Toggles.Add(new DialogToggle("Sound", _settings.IsSoundOn, on =>
@@ -81,7 +81,7 @@ namespace Game.Features.Settings
             if (_onboarding.HasFlag(Flags.NameAsked))
             {
                 dialog.Buttons.Add(new DialogButton("Rename the shop", ButtonStyle.WoodSmall,
-                    () => _namePrompt.AskAsync(CancellationToken.None).Forget()));
+                    () => _namePrompt.AskAsync(ct).Forget()));
             }
 
             dialog.Buttons.Add(new DialogButton("Close", ButtonStyle.Berry, null));
@@ -100,7 +100,7 @@ namespace Game.Features.Settings
                 _flow.GoHomeAsync().Forget();
             }, false);
             dialog.Buttons.Add(reset);
-            await _dialogs.ShowAsync(dialog, CancellationToken.None);
+            await _dialogs.ShowAsync(dialog, ct);
         }
     }
 }

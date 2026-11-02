@@ -32,6 +32,7 @@ namespace Game.Features.Home
         private readonly IReviewersScreen _reviewers;
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private HomeWindow _window;
+        private CancellationTokenSource _shown;
 
         /// <summary>
         /// Creates the screen controller.
@@ -65,17 +66,24 @@ namespace Game.Features.Home
         /// <summary>
         /// Shows the home screen and schedules milestone popups.
         /// </summary>
-        /// <param name="ct">Cancelled when the Home state exits.</param>
+        /// <param name="ct">Cancelled with the game flow (app shutdown).</param>
         /// <returns>Completes when the screen is shown.</returns>
         /// <exception cref="OperationCanceledException">Opening was cancelled.</exception>
+        /// <remarks>
+        /// Everything started from the screen (milestone popups, album, settings, reviewers) is bound to this
+        /// showing and is cancelled and closed by <see cref="HideAsync"/>.
+        /// </remarks>
         public async UniTask ShowAsync(CancellationToken ct)
         {
+            CancelShown();
+            _shown = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var shown = _shown.Token;
             _overlay.SetBackground(false, true);
             _subscriptions.Clear();
             var vm = new HomeViewModel(_progress, _curves, _content);
-            vm.Commands.Subscribe(OnCommand).AddTo(_subscriptions);
-            _window = await _ui.OpenAsync<HomeWindow, HomeViewModel>(vm, ct);
-            ShowMilestonesAsync(ct).Forget();
+            vm.Commands.Subscribe(command => OnCommand(command, shown)).AddTo(_subscriptions);
+            _window = await _ui.OpenAsync<HomeWindow, HomeViewModel>(vm, shown);
+            ShowMilestonesAsync(shown).Forget();
         }
 
         /// <summary>
@@ -85,14 +93,32 @@ namespace Game.Features.Home
         public async UniTask HideAsync()
         {
             _subscriptions.Clear();
-            if (_window != null) await _ui.CloseAsync(_window);
+            var window = _window;
             _window = null;
+            // The close starts before the cancel so the window plays its fade; the cancel then stops pending
+            // milestones and closes popups opened from the home screen.
+            var closing = window != null ? _ui.CloseAsync(window) : UniTask.CompletedTask;
+            CancelShown();
+            await closing;
         }
 
         /// <inheritdoc/>
-        public void Dispose() => _subscriptions.Dispose();
+        public void Dispose()
+        {
+            CancelShown();
+            _subscriptions.Dispose();
+        }
 
-        private void OnCommand(HomeCommand command)
+        private void CancelShown()
+        {
+            if (_shown == null) return;
+
+            _shown.Cancel();
+            _shown.Dispose();
+            _shown = null;
+        }
+
+        private void OnCommand(HomeCommand command, CancellationToken shown)
         {
             if (_ui.IsPopupOpen) return;
 
@@ -102,16 +128,16 @@ namespace Game.Features.Home
                     _flow.PlayLevelAsync(_curves.NextLevel()).Forget();
                     break;
                 case HomeCommand.Album:
-                    _album.OpenAsync(CancellationToken.None).Forget();
+                    _album.OpenAsync(shown).Forget();
                     break;
                 case HomeCommand.AlbumLocked:
                     _overlay.Toast($"The album opens after level {AlbumFromLevel}. Keep going!");
                     break;
                 case HomeCommand.Settings:
-                    _settings.OpenAsync(null).Forget();
+                    _settings.OpenAsync(null, shown).Forget();
                     break;
                 case HomeCommand.Reviewers:
-                    _reviewers.OpenAsync(CancellationToken.None).Forget();
+                    _reviewers.OpenAsync(shown).Forget();
                     break;
             }
         }

@@ -92,7 +92,9 @@ namespace Game.Features.Reviewers
             if (!reopen) return;
 
             await _flow.GoHomeAsync();
-            await OpenAsync(ct);
+            // Going home hid the old home screen and cancelled ct with it; the refreshed screen's popups are closed
+            // by the next flow state instead.
+            await OpenAsync(CancellationToken.None);
         }
 
         private void JumpTo(int level)
