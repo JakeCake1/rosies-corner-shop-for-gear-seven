@@ -106,6 +106,9 @@ namespace Game.Features.Gameplay.Board
                     }
 
                     ShowBlock(view, block);
+                    // Bottom to top, each sent to the back of the column: the lower shelf ends up drawn last, so its "N rows"
+                    // badge and "+1" stickers that stick out over the shelf above stay visible.
+                    view.Root.SendToBack();
                     offset += block.Height;
                 }
             }
