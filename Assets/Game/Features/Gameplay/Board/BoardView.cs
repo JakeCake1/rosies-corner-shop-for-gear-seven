@@ -6,6 +6,7 @@ using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
 using Game.Services.Content;
+using Game.Services.Localization;
 using Game.Services.Pooling;
 using Game.Services.UI;
 using Game.Services.UI.Elements;
@@ -75,6 +76,7 @@ namespace Game.Features.Gameplay.Board
         private readonly GameplayLayouts _layouts;
         private readonly IOverlayService _overlay;
         private readonly IAudioService _audio;
+        private readonly ILocalizationService _texts;
         private readonly ItemCatalog _catalog;
         private readonly GameplayArt _art;
         private readonly VisualElement _progressTarget;
@@ -109,9 +111,11 @@ namespace Game.Features.Gameplay.Board
         /// Sounds of the move itself (tap, ship, boosters) are played by the level session.
         /// </param>
         /// <param name="progressTarget">HUD progress bar that shipped baskets fly into.</param>
+        /// <param name="texts">Stock tabs, shelf rows badges and praise words.</param>
         public BoardView(GameplayLayouts layouts, IOverlayService overlay, IContentService content, GameplayArt art,
-            IAudioService audio, VisualElement progressTarget)
+            IAudioService audio, VisualElement progressTarget, ILocalizationService texts)
         {
+            _texts = texts;
             _layouts = layouts;
             _overlay = overlay;
             _catalog = content.Catalog;
@@ -188,7 +192,7 @@ namespace Game.Features.Gameplay.Board
             basket.CoverWithNapkin();
             var at = basket.Root.worldBound.center;
             _overlay.Burst(at, EffectKind.Spark, 20 + notice.Combo * 6);
-            _overlay.Praise(at + Vector2.down * 30f, notice.Word, notice.Combo > 0);
+            _overlay.Praise(at + Vector2.down * 30f, _texts.Get(notice.WordKey), notice.Combo > 0);
         }
 
         /// <summary>
@@ -559,7 +563,9 @@ namespace Game.Features.Gameplay.Board
                 var hasHammer = col.Queue.Any(j => j.IsTool);
                 var tiedHammer = col.Blocks.Any(b => b.IsLocked && b.Slots.Any(j => j != null && j.IsTool));
                 if (hasHammer) stock--;
-                _stockLabels[c].text = stock > 0 ? $"<b>{stock}</b> in stock" : "all out";
+                _stockLabels[c].text = stock > 0
+                    ? _texts.Format(GameplayTexts.Stock, stock)
+                    : _texts.Get(GameplayTexts.StockEmpty);
                 _stockHammers[c].SetVisible(hasHammer || tiedHammer);
                 var offset = 0;
                 var fresh = 0;
@@ -573,7 +579,8 @@ namespace Game.Features.Gameplay.Board
                         _columns[c].Add(view.Root);
                         view.Root.AddToClassList("shelf-slot");
                         view.Root.style.height = b.Height * _rowHeight - 3f;
-                        view.Setup(b.Id, b.Height, _jarsPerRow, _columnWidth, _rowHeight, _itemSize);
+                        var rowsText = b.Height > 1 ? _texts.Format(GameplayTexts.ShelfRows, b.Height) : null;
+                        view.Setup(b.Id, b.Height, _jarsPerRow, _columnWidth, _rowHeight, _itemSize, rowsText);
                         _shelves[b.Id] = view;
                         if (instant)
                         {

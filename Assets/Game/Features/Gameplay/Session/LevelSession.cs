@@ -27,11 +27,15 @@ namespace Game.Features.Gameplay.Session
     /// </remarks>
     public sealed class LevelSession : IDisposable
     {
-        private static readonly string[] Praises = { "Lovely!", "Sweet!", "Delicious!", "Well done!", "Perfect!", "Yummy!" };
+        private static readonly string[] Praises =
+        {
+            GameplayTexts.Praise1, GameplayTexts.Praise2, GameplayTexts.Praise3, GameplayTexts.Praise4,
+            GameplayTexts.Praise5, GameplayTexts.Praise6,
+        };
         private static readonly string[] ComboWords =
         {
-            "Neat!", "Tidy shop!", "Rosie is proud!", "On a roll!", "Busy hands!", "What a streak!",
-            "The shop is buzzing!", "Look at you go!",
+            GameplayTexts.Combo1, GameplayTexts.Combo2, GameplayTexts.Combo3, GameplayTexts.Combo4,
+            GameplayTexts.Combo5, GameplayTexts.Combo6, GameplayTexts.Combo7, GameplayTexts.Combo8,
         };
 
         private readonly ILevelCurveService _curves;
