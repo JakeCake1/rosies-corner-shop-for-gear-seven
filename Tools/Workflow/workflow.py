@@ -34,6 +34,7 @@ import glob
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -149,6 +150,7 @@ def load_config():
     cfg.setdefault("langfuse", {}).setdefault("environment", "default")
     cfg.setdefault("checks", [])
     cfg.setdefault("auto_draft_pr", True)
+    cfg.setdefault("context_warning_tokens", 150000)
     cfg.setdefault("guarded_paths", ["Assets/", "Packages/", "ProjectSettings/"])
     return cfg
 
@@ -271,7 +273,8 @@ def resolve_states(issue, cfg):
 
 def gh(*args, check=True):
     try:
-        return run(["gh", *args], check=check)
+        # which() honours PATHEXT, so a gh.cmd shim is found on Windows as well
+        return run([shutil.which("gh") or "gh", *args], check=check)
     except FileNotFoundError:
         raise WorkflowError("GitHub CLI 'gh' is not installed or not on PATH")
 
@@ -313,6 +316,32 @@ def read_replies(path):
                    "session_id": entry.get("sessionId")}
 
 
+def read_events(path):
+    """Yields the user turns and context compactions of a main transcript. Only the entry id, kind and time are
+    kept; message content is looked at for its type (a tool result is not a user turn) and never stored."""
+    with open(path, encoding="utf-8", errors="replace") as f:
+        for line in f:
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            kind = None
+            if entry.get("type") == "user" and not entry.get("isMeta") and not entry.get("isCompactSummary"):
+                content = (entry.get("message") or {}).get("content")
+                if isinstance(content, str) or (isinstance(content, list) and not any(
+                        isinstance(c, dict) and c.get("type") == "tool_result" for c in content)):
+                    kind = "user_message"
+            elif entry.get("type") == "system" and entry.get("subtype") == "compact_boundary":
+                kind = "compaction"
+            if kind and entry.get("uuid") and entry.get("timestamp"):
+                yield {"id": entry["uuid"], "kind": kind, "timestamp": entry["timestamp"]}
+
+
+def context_tokens(usage):
+    """Prompt size of one reply: everything the model read, cached or not."""
+    return sum(usage.get(k, 0) for k in ("input", "cache_read_input_tokens", "cache_creation_input_tokens"))
+
+
 def usage_fields(u):
     if not isinstance(u, dict):
         return None
@@ -328,21 +357,48 @@ def collect_usage(attempt):
     re-sent hooks never double count). Returns the ledger."""
     ledger_file = os.path.join(USAGE_DIR, f"{attempt['attempt_id']}.json")
     ledger = read_json(ledger_file, {}) or {}
+    events = read_json(events_path(attempt), {}) or {}
     start = parse_ts(attempt["started_at"])
     end = parse_ts(attempt["ended_at"]) if attempt.get("ended_at") else None
+    outside = lambda value: parse_ts(value) < start or (end and parse_ts(value) > end)
     for t in attempt.get("transcripts", []):
         for path in transcript_files(t.get("path"), t.get("session_id")):
             for rec in read_replies(path):
-                ts = parse_ts(rec["timestamp"])
-                if ts < start or (end and ts > end):
+                if outside(rec["timestamp"]):
                     continue
                 prev = ledger.get(rec["id"])
                 # Streaming writes the same reply several times; keep the entry with the most output tokens.
                 if prev and (prev.get("usage") or {}).get("output", -1) > (rec.get("usage") or {}).get("output", -1):
                     continue
                 ledger[rec["id"]] = rec
+        if t.get("path") and os.path.exists(t["path"]):
+            events.update({ev["id"]: ev for ev in read_events(t["path"]) if not outside(ev["timestamp"])})
     write_json(ledger_file, ledger)
+    write_json(events_path(attempt), events)
     return ledger
+
+
+def events_path(attempt):
+    return os.path.join(USAGE_DIR, f"{attempt['attempt_id']}.events.json")
+
+
+def activity_summary(attempt):
+    """User turns (a rework signal) and context compactions; None when no transcript was ever registered."""
+    if not attempt.get("transcripts"):
+        return None
+    kinds = [ev["kind"] for ev in (read_json(events_path(attempt), {}) or {}).values()]
+    return {"user_messages": kinds.count("user_message"), "compactions": kinds.count("compaction")}
+
+
+def diff_stats(cfg, branch):
+    """Files and lines the issue branch changes since it left the base branch; None when git can't tell."""
+    base = f"{cfg['git']['remote']}/{cfg['git']['base']}"
+    proc = run(["git", "diff", "--shortstat", f"{base}...{branch}"], check=False)
+    if proc.returncode != 0:
+        return None
+    found = {kind: int(n) for n, kind in re.findall(r"(\d+) (file|insertion|deletion)", proc.stdout)}
+    return {"files": found.get("file", 0), "insertions": found.get("insertion", 0),
+            "deletions": found.get("deletion", 0)}
 
 
 def register_transcript(attempt, path, session_id):
@@ -362,9 +418,15 @@ def usage_summary(ledger):
         for k in totals:
             totals[k] += r["usage"].get(k, 0)
     models = sorted({r["model"] for r in ledger.values() if r.get("model")})
+    sub = [r for r in ledger.values() if r.get("agent") == "subagent"]
+    sub_tokens = {k: sum(r["usage"].get(k, 0) for r in sub if r.get("usage")) for k in totals}
+    contexts = [context_tokens(r["usage"]) for r in with_usage if r.get("agent") != "subagent"]
     return {"replies": len(ledger), "replies_with_usage": len(with_usage),
             "replies_without_usage": len(ledger) - len(with_usage), "models": models,
             "tokens": totals if with_usage else None,
+            "subagents": {"replies": len(sub), "share": round(len(sub) / len(ledger), 3),
+                          "tokens": sub_tokens if any(r.get("usage") for r in sub) else None} if ledger else None,
+            "context": {"avg": sum(contexts) // len(contexts), "max": max(contexts)} if contexts else None,
             "usage_status": "available" if with_usage and len(with_usage) == len(ledger)
             else ("partial" if with_usage else "unavailable")}
 
@@ -418,8 +480,15 @@ def build_payload(attempt, ledger, cfg):
                   "langfuse.observation.metadata.replies": summary["replies"],
                   "langfuse.observation.metadata.replies_without_usage": summary["replies_without_usage"],
                   "langfuse.observation.metadata.models": summary["models"]}
-    if summary["tokens"] is not None:
-        root_attrs["langfuse.observation.metadata.tokens"] = summary["tokens"]
+    # Missing data stays "unavailable" instead of turning into zeros.
+    for key in ("tokens", "subagents", "context"):
+        if summary[key] is not None:
+            root_attrs[f"langfuse.observation.metadata.{key}"] = summary[key]
+    activity = activity_summary(attempt)
+    for key in ("user_messages", "compactions"):
+        root_attrs[f"langfuse.observation.metadata.{key}"] = activity[key] if activity else "unavailable"
+    if "diff" in attempt:  # measured when the attempt ends
+        root_attrs["langfuse.observation.metadata.diff"] = attempt["diff"] or "unavailable"
     spans = [{"traceId": trace_id, "spanId": root, "name": f"{attempt['issue']} attempt {aid[:8]}", "kind": 1,
               "startTimeUnixNano": nanos(attempt["started_at"]), "endTimeUnixNano": nanos(end),
               "attributes": [{"key": k, "value": otlp_value(v)} for k, v in root_attrs.items()]}]
@@ -683,6 +752,7 @@ def cmd_handoff(args):
     with Lock():
         attempt["ended_at"] = now_iso()
         attempt["outcome"] = "handed_off"
+        attempt["diff"] = diff_stats(cfg, branch)
         ledger = collect_usage(attempt)
         save_attempt(attempt)
         queue_payload(attempt, ledger, cfg)
@@ -704,6 +774,7 @@ def cmd_abandon(args):
             raise WorkflowError("no active attempt")
         attempt["ended_at"] = now_iso()
         attempt["outcome"] = "abandoned"
+        attempt["diff"] = diff_stats(cfg, attempt["branch"])
         ledger = collect_usage(attempt)
         save_attempt(attempt)
         queue_payload(attempt, ledger, cfg)
@@ -795,9 +866,31 @@ def hook_collect(data):
             return
         if register_transcript(attempt, data.get("transcript_path"), data.get("session_id")):
             save_attempt(attempt)
-        collect_usage(attempt)
+        ledger = collect_usage(attempt)
+        warning = context_warning(attempt, ledger, data) if data.get("hook_event_name") == "Stop" else None
+    if warning:
+        print(json.dumps({"systemMessage": warning}))
     if data.get("hook_event_name") == "Stop" and load_config()["auto_draft_pr"]:
         auto_draft_pr(attempt)
+
+
+def context_warning(attempt, ledger, data):
+    """Once per session and context window: a note when the last main reply read more than the configured
+    context size, so the next phase starts after /compact or /clear instead of re-reading everything."""
+    limit = load_config()["context_warning_tokens"]
+    session = data.get("session_id")
+    mine = [r for r in ledger.values() if r.get("usage") and r.get("agent") != "subagent"
+            and (not session or r.get("session_id") == session)]
+    if not limit or not mine:
+        return None
+    size = context_tokens(max(mine, key=lambda r: r["timestamp"])["usage"])
+    key = f"{session}:{(activity_summary(attempt) or {}).get('compactions', 0)}"
+    if size < limit or attempt.get("context_warned") == key:
+        return None
+    attempt["context_warned"] = key
+    save_attempt(attempt)
+    return (f"[workflow] Context is at {size // 1000}k tokens (limit {limit // 1000}k). Run /compact or /clear "
+            f"before the next phase; every further reply re-reads the whole context.")
 
 
 def auto_draft_pr(attempt):

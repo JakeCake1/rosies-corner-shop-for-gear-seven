@@ -31,12 +31,36 @@ attempt and one `generation` per model reply.
   cache read, cache creation), number of replies without usage data.
 - Not sent: prompts, replies, code, file paths, tool names, tool inputs or outputs. The script only reads `id`,
   `model`, `timestamp` and `usage` from the transcript.
+- Attempt span metadata (numbers only, measured from the transcripts and git):
+  - `subagents`: replies, share of all replies and tokens of subagent replies;
+  - `context`: average and maximum prompt size (input + cache read + cache creation) of main-agent replies;
+  - `user_messages`: user turns in the attempt (tool results and injected skill text don't count), a rework signal;
+  - `compactions`: context compactions (`compact_boundary` entries);
+  - `diff`: files, insertions and deletions of the issue branch against the merge base with `origin/main`, measured at
+    handoff or abandon.
+  A value that could not be measured is `unavailable` or missing, never zero.
 - Cost: not computed here. Langfuse fills it in only if its model price table has the model.
 - Missing usage: a reply without usage data gets `usage_status: unavailable` and no usage numbers; a whole attempt
   without data is marked `unavailable`, not zero.
 - Duplicates: the ledger is keyed by message id; span ids are derived from the attempt and message ids, and a
   payload leaves the outbox only after Langfuse accepted it.
 - Offline: payloads wait in `.agent-workflow/outbox/` and go out with `flush`, `/handoff` or the next session start.
+
+## Context size and cost
+
+Each reply re-reads the whole context, so cost follows context size (rules for agents: `CLAUDE.md`, *Token budget*).
+
+- The Stop hook prints a one-time note when the last main reply read more than `context_warning_tokens`
+  (`Tools/Workflow/config.json`, default 150000, `0` turns it off). It repeats only after a compaction or in a new
+  session.
+- Baseline before any work (first reply of a session, 2026-11-02): about **52k tokens** in the terminal `claude` CLI
+  and about **79.5k** in the Claude Desktop Code tab. The difference is the app's own instructions and its connectors
+  (browsers, computer use, docs, visualizer), and it is paid again on every reply. Long implementation sessions are
+  cheaper in the CLI. In the app, turn off connectors a Unity task doesn't need.
+- The project MCP servers are `codebase-memory-mcp` (`.mcp.json`) and the user-level `UnityMCP` and `linear-server`.
+  The workflow reaches Linear through `LINEAR_API_KEY`, so the Linear MCP is only needed to read issues in chat.
+- `CLAUDE.md` and `AGENTS.md` add about 2.5k tokens to every session. `Docs/Code Rules/` (about 37k tokens in total)
+  is read per task, only the files the task needs.
 
 The official Langfuse Claude Code plugin was not used: it sends prompts, replies and tool inputs/outputs and has no
 switch to turn content off (only truncation).

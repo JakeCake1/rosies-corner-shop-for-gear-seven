@@ -5,7 +5,8 @@ Run: python3 Tools/Workflow/tests/test_scenarios.py   (no network, no credential
 
 Covers: start, usage collection with duplicates, restart (new session transcript), Langfuse down at handoff and
 later flush, handoff re-run without a duplicate PR, return from review with a new attempt on the same PR, guard
-and git hooks, missing usage reported as unavailable instead of zero.
+and git hooks, missing usage reported as unavailable instead of zero, attempt metrics (user turns, compactions,
+subagents, context, diff) and the context-size note.
 """
 import http.server
 import json
@@ -90,12 +91,21 @@ json.dump(prs, open(db, "w"))
 '''
 
 
-def reply_line(mid, ts, out=10, usage=True):
+def reply_line(mid, ts, out=10, usage=True, sid="sess1"):
     msg = {"id": mid, "model": "claude-opus-5-5", "content": [{"type": "text", "text": "SECRET PROMPT TEXT"}]}
     if usage:
         msg["usage"] = {"input_tokens": 3, "output_tokens": out, "cache_read_input_tokens": 100,
                         "cache_creation_input_tokens": 7}
-    return json.dumps({"type": "assistant", "timestamp": ts, "sessionId": "sess", "message": msg}) + "\n"
+    return json.dumps({"type": "assistant", "timestamp": ts, "sessionId": sid, "message": msg}) + "\n"
+
+
+def user_line(uid, ts, content="SECRET PROMPT TEXT", meta=False):
+    return json.dumps({"type": "user", "uuid": uid, "timestamp": ts, "isMeta": meta,
+                       "message": {"role": "user", "content": content}}) + "\n"
+
+
+def compact_line(uid, ts):
+    return json.dumps({"type": "system", "subtype": "compact_boundary", "uuid": uid, "timestamp": ts}) + "\n"
 
 
 def main():
@@ -108,6 +118,9 @@ def main():
     with open(os.path.join(bindir, "gh"), "w") as f:
         f.write(FAKE_GH)
     os.chmod(os.path.join(bindir, "gh"), 0o755)
+    if os.name == "nt":  # Windows can't run an extensionless script; a .cmd shim is found through PATHEXT
+        with open(os.path.join(bindir, "gh.cmd"), "w") as f:
+            f.write(f'@"{sys.executable}" "%~dp0gh" %*\n')
     env = dict(os.environ, PATH=bindir + os.pathsep + os.environ["PATH"], CLAUDE_WORKFLOW_ROOT=repo,
                FAKE_GH_DB=os.path.join(tmp, "prs.json"), LINEAR_API_KEY="lin_test", LINEAR_API_URL=base + "/graphql",
                LANGFUSE_PUBLIC_KEY="pk", LANGFUSE_SECRET_KEY="sk", LANGFUSE_HOST=base,
@@ -121,12 +134,17 @@ def main():
         return p.stdout + p.stderr
 
     def wf(*args, ok=True, inp=None):
-        return sh(sys.executable, WORKFLOW, *args, ok=ok, inp=inp)
+        # the copy in the test repo, so it reads the test config
+        return sh(sys.executable, os.path.join(repo, "Tools", "Workflow", "workflow.py"), *args, ok=ok, inp=inp)
 
     subprocess.run(["git", "init", "--bare", "-b", "main", origin], check=True, capture_output=True)
     subprocess.run(["git", "clone", origin, repo], check=True, capture_output=True)
     shutil.copytree(os.path.dirname(WORKFLOW), os.path.join(repo, "Tools", "Workflow"),
                     ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    config_file = os.path.join(repo, "Tools", "Workflow", "config.json")
+    config = json.load(open(config_file))
+    config["context_warning_tokens"] = 100  # every fake reply reads 110 tokens
+    json.dump(config, open(config_file, "w"))
     os.makedirs(os.path.join(repo, ".claude"))
     existing = {"hooks": {"PreCompact": [{"hooks": [{"type": "command", "command": "python3 old_snapshot.py"}]}]},
                 "permissions": {"allow": ["Bash(ls:*)"]}}
@@ -180,6 +198,9 @@ def main():
     import datetime as dt
     now = lambda: dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
     with open(t1, "a") as f:
+        f.write(user_line("u1", now()))
+        f.write(user_line("u1-skill", now(), content=[{"type": "text", "text": "skill body"}], meta=True))
+        f.write(user_line("u1-tool", now(), content=[{"type": "tool_result", "content": "SECRET TOOL OUTPUT"}]))
         f.write(reply_line("m1", now(), out=5))
         f.write(reply_line("m1", now(), out=50))  # streaming duplicate, final usage wins
         f.write(reply_line("m2", now(), out=20))
@@ -189,7 +210,8 @@ def main():
 
     # --- restart: new session, new transcript, usage keeps going into the same attempt
     t2 = os.path.join(transcripts, "sess2.jsonl")
-    open(t2, "w").write(reply_line("m3", now(), out=30) + reply_line("m4", now(), usage=False))
+    open(t2, "w").write(compact_line("c1", now()) + user_line("u2", now(), content=[{"type": "text", "text": "x"}])
+                        + reply_line("m3", now(), out=30, sid="sess2") + reply_line("m4", now(), usage=False, sid="sess2"))
     out = hook("session-start", t2, "sess2")
     assert attempt1[:8] in out and "EVG-12" in out, out
     hook("collect", t2, "sess2")
@@ -213,14 +235,16 @@ def main():
     # --- end of an agent reply (Stop): push + draft PR, nothing else changes
     stop = lambda: wf("hook", "collect", inp=json.dumps({"transcript_path": t2, "session_id": "sess2",
                                                          "hook_event_name": "Stop"}))
-    stop()
+    out = stop()
+    assert '"systemMessage"' in out and "/compact" in out, out  # context over the limit: one note
     prs = json.load(open(env["FAKE_GH_DB"]))
     assert len(prs) == 1 and prs[0]["isDraft"], prs
     assert Fake.state["issue_state"] == "s-prog"  # not a handoff
     assert os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
     remote_head = sh("git", "rev-parse", "origin/pirit699/evg-12-rework-savemanager").strip()
-    stop()  # no new commits: no push, no second PR
+    out = stop()  # no new commits: no push, no second PR
     assert len(json.load(open(env["FAKE_GH_DB"]))) == 1
+    assert "systemMessage" not in out, out  # the context note is not repeated
     open(os.path.join(repo, "Assets", "Save.cs"), "a").write("// chunk interface\n")
     sh("git", "commit", "-am", "EVG-12: chunk interface")
     stop()  # new commit: pushed to the same draft PR
@@ -258,7 +282,15 @@ def main():
     assert len(gens) == 5, len(gens)
     assert not any("999" in json.dumps(v) for v in gens)
     assert sum(1 for v in gens if "langfuse.observation.usage_details" not in v) == 1  # unavailable, not zero
-    assert "SECRET PROMPT TEXT" not in json.dumps(list(spans1.values()))
+    assert "SECRET" not in json.dumps(list(spans1.values()))
+    root = next(v for v in spans1.values() if v["langfuse.observation.type"]["stringValue"] == "agent")
+    meta = lambda k: root["langfuse.observation.metadata." + k]
+    assert meta("user_messages") == {"intValue": "2"} and meta("compactions") == {"intValue": "1"}, root
+    sub = json.loads(meta("subagents")["stringValue"])
+    assert sub["replies"] == 1 and sub["share"] == 0.2 and sub["tokens"]["output"] == 4, sub
+    assert json.loads(meta("context")["stringValue"]) == {"avg": 110, "max": 110}
+    diff = json.loads(meta("diff")["stringValue"])
+    assert diff["files"] == 1 and diff["insertions"] == 3, diff
 
     # --- return from review: new attempt, same issue and PR, status back to In Progress
     out = wf("start", "EVG-12")
@@ -280,7 +312,9 @@ def main():
     out = wf("handoff")
     assert "updated https://github/pr/1" in out, out
     prs = json.load(open(real_db))
-    assert len(prs) == 1 and attempt1[:8] in prs[0]["body"] and attempt2[:8] in prs[0]["body"]
+    assert len(prs) == 1
+    if os.name != "nt":  # cmd.exe cuts a multi-line --body at the first newline before it reaches the gh.cmd shim
+        assert attempt1[:8] in prs[0]["body"] and attempt2[:8] in prs[0]["body"]
     assert Fake.state["issue_state"] == "s-rev"
     traces = {k[0] for k in Fake.state["spans"]}
     assert len(traces) == 2, traces  # one trace per attempt
@@ -293,6 +327,7 @@ def main():
     last = [v for v in Fake.state["spans"].values() if v.get("langfuse.observation.metadata.outcome", {}).get("stringValue") == "abandoned"]
     assert last and last[0]["langfuse.trace.metadata.usage_status"]["stringValue"] == "unavailable"
     assert "langfuse.observation.metadata.tokens" not in last[0]
+    assert "langfuse.observation.metadata.context" not in last[0] and "langfuse.observation.metadata.diff" in last[0]
 
     # --- disabled workflow: hooks are no-ops
     print(wf("uninstall"))
