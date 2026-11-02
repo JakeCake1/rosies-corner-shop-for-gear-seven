@@ -32,9 +32,11 @@ namespace Game.Features.Home
         private const string LockedAlbumClass = "kit-btn-grey";
         private const string PlayClass = "kit-btn-berry";
         private const string TrickyPlayClass = "kit-btn-gold";
-        private const float LongNameSize = 30f;
-        private const float MediumNameSize = 34f;
-        private const float NormalNameSize = 40f;
+        private const float LongNameSize = 26f;
+        private const float MediumNameSize = 31f;
+        private const float NormalNameSize = 36f;
+        private const int MediumNameLine = 12;
+        private const int LongNameLine = 16;
 
         private readonly List<VisualElement> _showcase = new List<VisualElement>();
         private Label _shopName;
@@ -55,6 +57,9 @@ namespace Game.Features.Home
 
         /// <inheritdoc/>
         public override UILayer Layer => UILayer.Screens;
+
+        /// <summary>Album button; the locked-album tip pops up above it.</summary>
+        public VisualElement AlbumButton => _album;
 
         /// <inheritdoc/>
         protected override void OnLayoutAttached()
@@ -117,7 +122,8 @@ namespace Game.Features.Home
         private void SetShopName(string name)
         {
             _shopName.text = name;
-            _shopName.style.fontSize = name.Length > 18 ? LongNameSize : name.Length > 13 ? MediumNameSize : NormalNameSize;
+            var longest = SignLines.LongestLine(name);
+            _shopName.style.fontSize = longest > LongNameLine ? LongNameSize : longest > MediumNameLine ? MediumNameSize : NormalNameSize;
         }
 
         private void SetShowcase(IReadOnlyList<Sprite> sprites)
