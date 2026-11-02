@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.Levels;
 using NUnit.Framework;
@@ -21,17 +22,23 @@ namespace Game.Tests.EditMode.Configs
 
         private static IEnumerable<TestCaseData> Curves() => Assets<LevelCurveConfig>();
 
+        private static IEnumerable<TestCaseData> AudioLibraries() => Assets<AudioLibrary>();
+
         [TestCaseSource(nameof(Catalogs))]
         public void ItemCatalog_IsValid(string path) => AssertValid(path);
 
         [TestCaseSource(nameof(Curves))]
         public void LevelCurve_IsValid(string path) => AssertValid(path);
 
+        [TestCaseSource(nameof(AudioLibraries))]
+        public void AudioLibrary_IsValid(string path) => AssertValid(path);
+
         [Test]
         public void Configs_Exist()
         {
             Assert.That(AssetDatabase.FindAssets("t:ItemCatalog"), Is.Not.Empty, "no ItemCatalog asset; run Tools/Rosie/Build Project");
             Assert.That(AssetDatabase.FindAssets("t:LevelCurveConfig").Length, Is.EqualTo(2), "expected the New 20 and Original 10 curves");
+            Assert.That(AssetDatabase.FindAssets("t:AudioLibrary").Length, Is.EqualTo(1), "expected one AudioLibrary at config/audio");
         }
 
         [Test]

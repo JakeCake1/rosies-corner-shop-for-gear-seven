@@ -30,12 +30,13 @@ namespace Game.Services.UI.Dialogs
         /// Creates the button for a model.
         /// </summary>
         /// <param name="model">Button model.</param>
+        /// <param name="adBadgeText">Caption of the rewarded-ad badge ("AD"); used only by ad buttons.</param>
         /// <returns>The view (its <see cref="ElementView.Root"/> is the button).</returns>
-        public static DialogButtonView Create(DialogButton model)
+        public static DialogButtonView Create(DialogButton model, string adBadgeText)
         {
             var view = new DialogButtonView();
             view.Attach(new Button());
-            view.Setup(model);
+            view.Setup(model, adBadgeText);
             return view;
         }
 
@@ -47,7 +48,7 @@ namespace Game.Services.UI.Dialogs
             Button.AddToClassList("btn");
         }
 
-        private void Setup(DialogButton model)
+        private void Setup(DialogButton model, string adBadgeText)
         {
             var hasSub = !string.IsNullOrEmpty(model.SubLabel);
             Button.AddToClassList(StyleClasses[(int)model.Style]);
@@ -60,7 +61,7 @@ namespace Game.Services.UI.Dialogs
             if (model.Badge == ButtonBadge.Ad)
             {
                 var ad = CreateElement(AdClass, "kit-rounded-white");
-                ad.Add(CreateLabel("AD", AdTextClass));
+                ad.Add(CreateLabel(adBadgeText, AdTextClass));
                 content.Add(ad);
             }
             else if (model.Badge == ButtonBadge.Coins)

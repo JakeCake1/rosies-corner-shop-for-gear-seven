@@ -1,5 +1,7 @@
 using System;
-using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using Game.Services.Assets;
 using Game.Services.Settings;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -7,28 +9,30 @@ using Object = UnityEngine.Object;
 namespace Game.Services.Audio
 {
     /// <summary>
-    /// Default <see cref="IAudioService"/>: synthesized clips played through a small pool of audio sources on a
-    /// persistent object.
+    /// Default <see cref="IAudioService"/>: clips from the <see cref="AudioLibrary"/> played through a small pool of
+    /// audio sources on a persistent object.
     /// </summary>
     public sealed class AudioService : IAudioService, IDisposable
     {
         private const int Voices = 8;
-        private const float MusicVolume = 0.35f;
 
         private readonly ISettingsService _settings;
-        private readonly Dictionary<SoundId, AudioClip> _clips;
+        private readonly IAssetProvider _assets;
         private readonly AudioSource[] _voices = new AudioSource[Voices];
         private readonly AudioSource _music;
         private readonly GameObject _host;
+        private AudioLibrary _library;
         private int _next;
 
         /// <summary>
-        /// Creates the audio host object and synthesizes all clips (a few milliseconds at startup).
+        /// Creates the audio host object; clips arrive later with <see cref="LoadAsync"/>.
         /// </summary>
         /// <param name="settings">Sound and music on/off.</param>
-        public AudioService(ISettingsService settings)
+        /// <param name="assets">Loads and owns the library handle.</param>
+        public AudioService(ISettingsService settings, IAssetProvider assets)
         {
             _settings = settings;
+            _assets = assets;
             _host = new GameObject("[Audio]");
             Object.DontDestroyOnLoad(_host);
             // The scenes' cameras have no listener: the game is 2D UI and all sounds come from this persistent host.
@@ -40,41 +44,36 @@ namespace Game.Services.Audio
             }
 
             _music = _host.AddComponent<AudioSource>();
+            _music.playOnAwake = false;
             _music.loop = true;
-            _music.volume = MusicVolume;
-            _music.clip = SynthClips.CreateMusicLoop();
-            _clips = SynthClips.CreateEffects();
         }
 
         /// <inheritdoc/>
-        public void Play(SoundId id, float pitch = 1f)
+        public async UniTask LoadAsync(CancellationToken ct)
         {
-            if (!_settings.IsSoundOn || !_clips.TryGetValue(id, out var clip)) return;
-
-            var source = _voices[_next];
-            _next = (_next + 1) % Voices;
-            source.pitch = pitch;
-            source.PlayOneShot(clip);
+            _library = await _assets.LoadAsync<AudioLibrary>(AudioLibrary.AddressKey, ct);
+            _music.clip = _library.Music;
         }
 
         /// <inheritdoc/>
-        public void PlayTap(string silhouette)
+        public void Play(SoundId id)
         {
-            switch (silhouette)
-            {
-                case "box": Play(SoundId.TapBox); break;
-                case "can": Play(SoundId.TapCan); break;
-                case "bottle": Play(SoundId.TapBottle); break;
-                case "stick": Play(SoundId.TapStick); break;
-                case "round": Play(SoundId.TapRound); break;
-                default: Play(SoundId.TapSoft); break;
-            }
+            if (_library != null) PlayClip(_library.Get(id));
+        }
+
+        /// <inheritdoc/>
+        public void PlayTap(string silhouette) => Play(TapSounds.For(silhouette));
+
+        /// <inheritdoc/>
+        public void PlayShip(int combo)
+        {
+            if (_library != null) PlayClip(_library.Ship(combo));
         }
 
         /// <inheritdoc/>
         public void ApplySettings()
         {
-            if (_settings.IsMusicOn)
+            if (_settings.IsMusicOn && _music.clip != null)
             {
                 if (!_music.isPlaying) _music.Play();
             }
@@ -95,6 +94,16 @@ namespace Game.Services.Audio
         public void Dispose()
         {
             if (_host != null) Object.Destroy(_host);
+        }
+
+        private void PlayClip(AudioClip clip)
+        {
+            if (!_settings.IsSoundOn || clip == null) return;
+
+            // Round-robin voices so overlapping sounds (several items landing at once) don't cut each other off.
+            var source = _voices[_next];
+            _next = (_next + 1) % Voices;
+            source.PlayOneShot(clip);
         }
     }
 }

@@ -27,11 +27,15 @@ namespace Game.Features.Gameplay.Session
     /// </remarks>
     public sealed class LevelSession : IDisposable
     {
-        private static readonly string[] Praises = { "Lovely!", "Sweet!", "Delicious!", "Well done!", "Perfect!", "Yummy!" };
+        private static readonly string[] Praises =
+        {
+            GameplayTexts.Praise1, GameplayTexts.Praise2, GameplayTexts.Praise3, GameplayTexts.Praise4,
+            GameplayTexts.Praise5, GameplayTexts.Praise6,
+        };
         private static readonly string[] ComboWords =
         {
-            "Neat!", "Tidy shop!", "Rosie is proud!", "On a roll!", "Busy hands!", "What a streak!",
-            "The shop is buzzing!", "Look at you go!",
+            GameplayTexts.Combo1, GameplayTexts.Combo2, GameplayTexts.Combo3, GameplayTexts.Combo4,
+            GameplayTexts.Combo5, GameplayTexts.Combo6, GameplayTexts.Combo7, GameplayTexts.Combo8,
         };
 
         private readonly ILevelCurveService _curves;
@@ -188,7 +192,7 @@ namespace Game.Features.Gameplay.Session
             }
 
             SetSnapshot(snapshot);
-            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapSoft);
+            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapRound);
             else _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
             _haptics.Pulse(HapticKind.Tap);
             if (result.Basket == null && !result.IsTool) _combo = -1;
@@ -405,7 +409,7 @@ namespace Game.Features.Gameplay.Session
                 _combo++;
                 var word = _combo > 0 ? ComboWord(_combo) : Praises[_praiseIndex++ % Praises.Length];
                 _shipping.OnNext(new ShipNotice(slot, basketId, _combo, word));
-                _audio.Play(SoundId.Ship, 1f + Math.Min(_combo, 8) * 0.06f);
+                _audio.PlayShip(_combo);
                 _haptics.Pulse(HapticKind.Ship);
                 _notice.OnNext("ship");
                 await UniTask.Delay(GameplayBalance.ShipLeaveMs, cancellationToken: ct);

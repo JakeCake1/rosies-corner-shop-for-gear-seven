@@ -16,6 +16,7 @@ using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Haptics;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.Save;
 using Game.Services.Settings;
@@ -47,6 +48,7 @@ namespace Game.Bootstrap.Composition
             builder.Register<ISaveStorage>(_ => new FileSaveStorage(Application.persistentDataPath), Lifetime.Singleton);
             builder.Register<SaveService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ContentService>(Lifetime.Singleton).AsImplementedInterfaces();
+            builder.Register<LocalizationService>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ProfileService>(Lifetime.Singleton).AsImplementedInterfaces();
             RegisterProfileChunks(builder);
             builder.Register<LevelCurveService>(Lifetime.Singleton).AsImplementedInterfaces();

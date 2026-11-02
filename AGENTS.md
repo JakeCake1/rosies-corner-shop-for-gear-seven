@@ -74,6 +74,9 @@ Reference skeletons in the topic files show structure only. When writing real co
   (`Features/*/Layouts`, `Services/UI/Layouts`), configs next to their services. Edit them directly; there is no
   editor code that builds scenes or UI. USS sizes are prototype CSS pixels (panel reference 390×844), and every
   layout is checked against the mockups in `screens.rar`.
+- **Localization:** all player-facing text is in the Unity Localization string tables `UI` and `Items`
+  (`Services/Localization`); code uses keys from the feature `*Texts` classes through `ILocalizationService`, never
+  string literals. How to add a text: `Docs/localization.md`.
 - **Agent bridge:** `Game.Bootstrap.Editor.Agent.AgentBridge` logs every compilation to `AgentBridge/compile.log`
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
