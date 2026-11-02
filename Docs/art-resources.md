@@ -39,3 +39,8 @@ Shelf states (ice, boards, twine, second-row ghost) and wood/awning/wallpaper su
 The UI is UI Toolkit with one `PanelSettings` at the 390×844 reference resolution, so the CSS pixel values from
 `styles.css`, `LAYOUT.md` and the screenshots (which are @2x: divide by 2) go into USS unchanged. Scenes, layouts,
 styles and configs are authored assets; there is no editor code that generates them.
+
+Sprite atlases (Sprite Atlas V2, `Content/Visual/Atlases/`): `UI` packs the shared kit and icons
+(`Content/Visual/UI`), `Gameplay` packs the board art (`Content/Visual/Gameplay`). A sprite added to one of those
+folders joins its atlas automatically. Item sprites are not atlased: they load per level from their own Addressables
+groups, and an items atlas would pull every item into one bundle.
