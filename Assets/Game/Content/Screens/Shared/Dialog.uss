@@ -328,20 +328,22 @@
     -unity-text-align: middle-left;
 }
 
+/* Chips are as wide as their idea and wrap to a second row when they don't fit the card. */
 .dialog-input__ideas {
-    height: 34px;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
 }
 
 .dialog-chip {
-    width: 104px;
     height: 30px;
-    margin: 0 3px;
+    margin: 2px 3px;
+    padding: 0 12px 2px 12px;
     font-size: 12px;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
     color: var(--ink);
-    padding-bottom: 2px;
 }
 
 .dialog-grid {
