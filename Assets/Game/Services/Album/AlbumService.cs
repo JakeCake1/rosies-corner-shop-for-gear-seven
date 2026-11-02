@@ -19,6 +19,15 @@ namespace Game.Services.Album
         private readonly IContentService _content;
         private readonly IWalletService _wallet;
 
+        /// <inheritdoc/>
+        public override string Key => "album";
+
+        /// <inheritdoc/>
+        public IReadOnlyList<int> Found => Data.Found;
+
+        /// <inheritdoc/>
+        public int NewCount => Data.NewCount;
+
         /// <summary>
         /// Creates the service.
         /// </summary>
@@ -29,15 +38,6 @@ namespace Game.Services.Album
             _content = content;
             _wallet = wallet;
         }
-
-        /// <inheritdoc/>
-        public override string Key => "album";
-
-        /// <inheritdoc/>
-        public IReadOnlyList<int> Found => Data.Found;
-
-        /// <inheritdoc/>
-        public int NewCount => Data.NewCount;
 
         /// <inheritdoc/>
         public bool IsFamilyCompleted(string family) => Data.CompletedFamilies.Contains(family);

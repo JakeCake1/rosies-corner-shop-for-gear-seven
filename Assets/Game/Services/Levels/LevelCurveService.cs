@@ -13,6 +13,15 @@ namespace Game.Services.Levels
         private readonly IExperimentsService _experiments;
         private readonly ILevelProgressService _levels;
 
+        /// <inheritdoc/>
+        public LevelCurveConfig Active => _curves.FirstOrDefault(c => c.Id == _experiments.Curve) ?? _curves[0];
+
+        /// <inheritdoc/>
+        public IReadOnlyList<LevelCurveConfig> Curves => _curves;
+
+        /// <inheritdoc/>
+        public int Count => Active.Levels.Count;
+
         /// <summary>
         /// Creates the service.
         /// </summary>
@@ -26,15 +35,6 @@ namespace Game.Services.Levels
             _experiments = experiments;
             _levels = levels;
         }
-
-        /// <inheritdoc/>
-        public LevelCurveConfig Active => _curves.FirstOrDefault(c => c.Id == _experiments.Curve) ?? _curves[0];
-
-        /// <inheritdoc/>
-        public IReadOnlyList<LevelCurveConfig> Curves => _curves;
-
-        /// <inheritdoc/>
-        public int Count => Active.Levels.Count;
 
         /// <inheritdoc/>
         public LevelDefinition Get(int level) => Active.Levels[level - 1];

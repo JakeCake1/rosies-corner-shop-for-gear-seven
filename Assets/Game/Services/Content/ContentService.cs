@@ -11,6 +11,9 @@ namespace Game.Services.Content
     {
         private readonly IAssetProvider _assets;
 
+        /// <inheritdoc/>
+        public ItemCatalog Catalog { get; private set; }
+
         /// <summary>
         /// Creates the service.
         /// </summary>
@@ -19,9 +22,6 @@ namespace Game.Services.Content
         {
             _assets = assets;
         }
-
-        /// <inheritdoc/>
-        public ItemCatalog Catalog { get; private set; }
 
         /// <inheritdoc/>
         public async UniTask LoadAsync(CancellationToken ct)

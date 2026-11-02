@@ -5,6 +5,18 @@ namespace Game.Features.Gameplay.Model
     /// </summary>
     public readonly struct JarLocation
     {
+        /// <summary>Shelf holding the jar.</summary>
+        public Block Block { get; }
+
+        /// <summary>Column index of the shelf.</summary>
+        public int Column { get; }
+
+        /// <summary>Cell index on the shelf; row = slot / jarsPerRow.</summary>
+        public int Slot { get; }
+
+        /// <summary>The jar in that cell when the location was listed; compare by reference to detect changes.</summary>
+        public Jar Jar { get; }
+
         /// <summary>
         /// Creates a location.
         /// </summary>
@@ -19,17 +31,5 @@ namespace Game.Features.Gameplay.Model
             Slot = slot;
             Jar = jar;
         }
-
-        /// <summary>Shelf holding the jar.</summary>
-        public Block Block { get; }
-
-        /// <summary>Column index of the shelf.</summary>
-        public int Column { get; }
-
-        /// <summary>Cell index on the shelf; row = slot / jarsPerRow.</summary>
-        public int Slot { get; }
-
-        /// <summary>The jar in that cell when the location was listed; compare by reference to detect changes.</summary>
-        public Jar Jar { get; }
     }
 }

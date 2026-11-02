@@ -7,6 +7,21 @@ namespace Game.Features.Gameplay
     /// </summary>
     public sealed class GameplayLayouts
     {
+        /// <summary>Board, HUD and booster bar.</summary>
+        public VisualTreeAsset Screen { get; }
+
+        /// <summary>One shelf block.</summary>
+        public VisualTreeAsset Shelf { get; }
+
+        /// <summary>One basket.</summary>
+        public VisualTreeAsset Basket { get; }
+
+        /// <summary>One booster button.</summary>
+        public VisualTreeAsset Booster { get; }
+
+        /// <summary>Level banner.</summary>
+        public VisualTreeAsset Banner { get; }
+
         /// <summary>
         /// Creates the set.
         /// </summary>
@@ -24,20 +39,5 @@ namespace Game.Features.Gameplay
             Booster = booster;
             Banner = banner;
         }
-
-        /// <summary>Board, HUD and booster bar.</summary>
-        public VisualTreeAsset Screen { get; }
-
-        /// <summary>One shelf block.</summary>
-        public VisualTreeAsset Shelf { get; }
-
-        /// <summary>One basket.</summary>
-        public VisualTreeAsset Basket { get; }
-
-        /// <summary>One booster button.</summary>
-        public VisualTreeAsset Booster { get; }
-
-        /// <summary>Level banner.</summary>
-        public VisualTreeAsset Banner { get; }
     }
 }

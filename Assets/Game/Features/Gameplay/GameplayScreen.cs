@@ -28,6 +28,15 @@ namespace Game.Features.Gameplay
         private readonly VisualElement _element;
         private readonly VisualElement _boosterBar;
 
+        /// <summary>Shelves, counter and baskets.</summary>
+        public BoardView Board { get; }
+
+        /// <summary>Level badge, progress and coins.</summary>
+        public HudView Hud { get; }
+
+        /// <summary>"Level N" banner.</summary>
+        public LevelBannerView Banner { get; }
+
         /// <summary>
         /// Creates the screen and adds it to the scene layer.
         /// </summary>
@@ -54,15 +63,6 @@ namespace Game.Features.Gameplay
             _boosterBar = _element.Q(BoostersName);
             Banner = new LevelBannerView(layouts.Banner, Board.Root);
         }
-
-        /// <summary>Shelves, counter and baskets.</summary>
-        public BoardView Board { get; }
-
-        /// <summary>Level badge, progress and coins.</summary>
-        public HudView Hud { get; }
-
-        /// <summary>"Level N" banner.</summary>
-        public LevelBannerView Banner { get; }
 
         /// <summary>
         /// Completes once the board has a valid size (after the first layout pass).

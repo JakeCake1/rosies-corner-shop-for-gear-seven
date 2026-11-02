@@ -13,6 +13,11 @@ namespace Game.Features.Gameplay.Model
         public const int Capacity = 3;
 
         /// <summary>
+        /// Items already packed (0..3).
+        /// </summary>
+        public List<Jar> Jars { get; } = new List<Jar>();
+
+        /// <summary>
         /// Unique id within the level; a new id means a new customer (views animate it in).
         /// </summary>
         public int Id { get; set; }
@@ -21,11 +26,6 @@ namespace Game.Features.Gameplay.Model
         /// Wanted item type.
         /// </summary>
         public int Type { get; set; }
-
-        /// <summary>
-        /// Items already packed (0..3).
-        /// </summary>
-        public List<Jar> Jars { get; } = new List<Jar>();
 
         /// <summary>
         /// Full and waiting to ship; ships after a short presentation delay owned by the session.

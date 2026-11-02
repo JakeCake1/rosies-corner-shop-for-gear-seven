@@ -97,6 +97,16 @@ namespace Game.Features.Gameplay
         private bool _isTutorialShown;
 
         /// <summary>
+        /// Lifetime of the level in play: cancelled on restart, replay, the next level and scene unload, so delayed
+        /// tips, gifts, result dialogs and ads of an old level never show over a new one.
+        /// </summary>
+        private CancellationToken Ct => _levelToken;
+
+        private int Level => _session.LevelNumber;
+
+        private bool HasAds => Level >= GameplayBalance.AdsFromLevel;
+
+        /// <summary>
         /// Creates the presenter; VContainer calls <see cref="Start"/> once the gameplay scope is built.
         /// </summary>
         /// <param name="session">Level rules and state.</param>
@@ -131,16 +141,6 @@ namespace Game.Features.Gameplay
             _lifetimeToken = _lifetime.Token;
             ResetLevelLifetime();
         }
-
-        /// <summary>
-        /// Lifetime of the level in play: cancelled on restart, replay, the next level and scene unload, so delayed
-        /// tips, gifts, result dialogs and ads of an old level never show over a new one.
-        /// </summary>
-        private CancellationToken Ct => _levelToken;
-
-        private int Level => _session.LevelNumber;
-
-        private bool HasAds => Level >= GameplayBalance.AdsFromLevel;
 
         /// <inheritdoc/>
         public void Start()

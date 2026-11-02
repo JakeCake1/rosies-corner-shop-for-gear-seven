@@ -9,12 +9,12 @@ namespace Game.Tests.EditMode.Services.Content
     /// </summary>
     internal sealed class FakeContentService : IContentService
     {
+        public ItemCatalog Catalog { get; }
+
         public FakeContentService(ItemCatalog catalog)
         {
             Catalog = catalog;
         }
-
-        public ItemCatalog Catalog { get; }
 
         public UniTask LoadAsync(CancellationToken ct) => UniTask.CompletedTask;
     }

@@ -33,38 +33,6 @@ namespace Game.Features.Home
         private readonly IContentService _content;
         private readonly ILocalizationService _texts;
 
-        /// <summary>
-        /// Creates the view model and follows progress changes.
-        /// </summary>
-        /// <param name="progress">Coins, stars, album, flags, shop name.</param>
-        /// <param name="curves">Next level and its difficulty.</param>
-        /// <param name="content">Item sprites for the showcase.</param>
-        /// <param name="texts">Sign, button and play line texts.</param>
-        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content,
-            ILocalizationService texts)
-        {
-            _progress = progress;
-            _curves = curves;
-            _content = content;
-            _texts = texts;
-            Tagline = texts.Get(HomeTexts.Tagline);
-            ReviewersLink = texts.Get(HomeTexts.Reviewers);
-            AlbumCaption = texts.Get(HomeTexts.Album);
-            PlayTitle = texts.Get(HomeTexts.PlayTitle);
-            Coins = progress.Wallet.Coins;
-            Disposables.Add(_shopName);
-            Disposables.Add(_subtitle);
-            Disposables.Add(_playLine);
-            Disposables.Add(_isPlayTricky);
-            Disposables.Add(_isAlbumLocked);
-            Disposables.Add(_albumBadge);
-            Disposables.Add(_isAlbumPulsing);
-            Disposables.Add(_showcase);
-            Disposables.Add(_commands);
-            progress.Profile.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
-            Refresh();
-        }
-
         /// <summary>Shop name on the sign.</summary>
         public IReadOnlyReactiveProperty<string> ShopName => _shopName;
 
@@ -106,6 +74,38 @@ namespace Game.Features.Home
 
         /// <summary>Commands for the home presenter (navigation lives outside the view model).</summary>
         public IObservable<HomeCommand> Commands => _commands;
+
+        /// <summary>
+        /// Creates the view model and follows progress changes.
+        /// </summary>
+        /// <param name="progress">Coins, stars, album, flags, shop name.</param>
+        /// <param name="curves">Next level and its difficulty.</param>
+        /// <param name="content">Item sprites for the showcase.</param>
+        /// <param name="texts">Sign, button and play line texts.</param>
+        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content,
+            ILocalizationService texts)
+        {
+            _progress = progress;
+            _curves = curves;
+            _content = content;
+            _texts = texts;
+            Tagline = texts.Get(HomeTexts.Tagline);
+            ReviewersLink = texts.Get(HomeTexts.Reviewers);
+            AlbumCaption = texts.Get(HomeTexts.Album);
+            PlayTitle = texts.Get(HomeTexts.PlayTitle);
+            Coins = progress.Wallet.Coins;
+            Disposables.Add(_shopName);
+            Disposables.Add(_subtitle);
+            Disposables.Add(_playLine);
+            Disposables.Add(_isPlayTricky);
+            Disposables.Add(_isAlbumLocked);
+            Disposables.Add(_albumBadge);
+            Disposables.Add(_isAlbumPulsing);
+            Disposables.Add(_showcase);
+            Disposables.Add(_commands);
+            progress.Profile.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
+            Refresh();
+        }
 
         /// <summary>
         /// "Open the shop" tapped.

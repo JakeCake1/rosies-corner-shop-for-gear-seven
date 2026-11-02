@@ -22,28 +22,6 @@ namespace Game.Services.Content
         [Tooltip("Dominant color group; each level uses a color group at most once.")]
         [SerializeField] private string _colorBucket;
 
-        /// <summary>
-        /// Creates an item definition; used by the catalog importer and tests.
-        /// </summary>
-        /// <param name="id">Stable catalog id (0..161); saves and level layouts refer to it.</param>
-        /// <param name="name">English name that identifies the item in the generator's lookalike pairs.</param>
-        /// <param name="family">Department id.</param>
-        /// <param name="shape">Product shape.</param>
-        /// <param name="silhouette">Outline class.</param>
-        /// <param name="colorBucket">Dominant color group.</param>
-        /// <param name="sprite">Item art (40:64 aspect); may be null in tests.</param>
-        public ItemDefinition(int id, string name, string family, string shape, string silhouette, string colorBucket,
-            Sprite sprite)
-        {
-            _id = id;
-            _name = name;
-            _family = family;
-            _shape = shape;
-            _silhouette = silhouette;
-            _colorBucket = colorBucket;
-            _sprite = sprite;
-        }
-
         /// <summary>Item art; the 40:64 frame includes the shadow the item stands on.</summary>
         public Sprite Sprite => _sprite;
 
@@ -67,5 +45,27 @@ namespace Game.Services.Content
 
         /// <summary>Dominant color group used to keep lookalikes apart.</summary>
         public string ColorBucket => _colorBucket;
+
+        /// <summary>
+        /// Creates an item definition; used by the catalog importer and tests.
+        /// </summary>
+        /// <param name="id">Stable catalog id (0..161); saves and level layouts refer to it.</param>
+        /// <param name="name">English name that identifies the item in the generator's lookalike pairs.</param>
+        /// <param name="family">Department id.</param>
+        /// <param name="shape">Product shape.</param>
+        /// <param name="silhouette">Outline class.</param>
+        /// <param name="colorBucket">Dominant color group.</param>
+        /// <param name="sprite">Item art (40:64 aspect); may be null in tests.</param>
+        public ItemDefinition(int id, string name, string family, string shape, string silhouette, string colorBucket,
+            Sprite sprite)
+        {
+            _id = id;
+            _name = name;
+            _family = family;
+            _shape = shape;
+            _silhouette = silhouette;
+            _colorBucket = colorBucket;
+            _sprite = sprite;
+        }
     }
 }

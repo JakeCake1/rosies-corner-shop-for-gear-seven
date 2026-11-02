@@ -5,14 +5,6 @@ namespace Game.Features.Gameplay.Session
     /// </summary>
     public readonly struct LevelOutcome
     {
-        private LevelOutcome(bool isWon, int stars, int reward, int itemsLeft)
-        {
-            IsWon = isWon;
-            Stars = stars;
-            Reward = reward;
-            ItemsLeft = itemsLeft;
-        }
-
         /// <summary>True for a win.</summary>
         public bool IsWon { get; }
 
@@ -24,6 +16,14 @@ namespace Game.Features.Gameplay.Session
 
         /// <summary>Items not yet packed (losses only), for the near-miss message.</summary>
         public int ItemsLeft { get; }
+
+        private LevelOutcome(bool isWon, int stars, int reward, int itemsLeft)
+        {
+            IsWon = isWon;
+            Stars = stars;
+            Reward = reward;
+            ItemsLeft = itemsLeft;
+        }
 
         /// <summary>
         /// A win.
