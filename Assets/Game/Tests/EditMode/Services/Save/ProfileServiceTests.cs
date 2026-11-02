@@ -33,7 +33,7 @@ namespace Game.Tests.EditMode.Services.Save
         [TearDown]
         public void TearDown()
         {
-            _profile.Dispose();
+            _profile?.Dispose();
             _wallet.Dispose();
             _settings.Dispose();
             _experiments.Dispose();
@@ -136,6 +136,20 @@ namespace Game.Tests.EditMode.Services.Save
             _profile.SaveAll();
 
             Assert.That(_save.Saved, Is.EqualTo(new[] { "wallet", "settings", "experiments" }));
+        }
+
+        [Test]
+        public void Dispose_WhenASaveIsStillQueued_DoesNotCancelIt()
+        {
+            _profile.Load();
+            _wallet.Add(10);
+
+            _profile.Dispose();
+            _profile = null;
+
+            Assert.That(_save.Tokens, Has.Count.EqualTo(1));
+            Assert.That(_save.Tokens[0].IsCancellationRequested, Is.False,
+                "app shutdown must not drop the last change of a chunk waiting behind another write");
         }
 
         [Test]

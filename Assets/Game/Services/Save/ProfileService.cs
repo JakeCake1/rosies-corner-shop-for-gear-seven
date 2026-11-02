@@ -17,7 +17,6 @@ namespace Game.Services.Save
         private readonly IReadOnlyList<IProfileChunk> _chunks;
         private readonly Subject<Unit> _changed = new Subject<Unit>();
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
-        private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
         private bool _isLoaded;
 
         /// <summary>
@@ -82,8 +81,6 @@ namespace Game.Services.Save
         public void Dispose()
         {
             _subscriptions.Dispose();
-            _lifetime.Cancel();
-            _lifetime.Dispose();
             _changed.OnCompleted();
             _changed.Dispose();
         }
@@ -100,7 +97,9 @@ namespace Game.Services.Save
             // startup) would overwrite the stored profile before it is read.
             if (!_isLoaded) return;
 
-            _save.SaveAsync(chunk, _lifetime.Token).Forget();
+            // Not cancelled on dispose: at app shutdown a save may wait behind another chunk's write, and cancelling
+            // it would drop that chunk's last change. SaveService is built to finish writes after shutdown starts.
+            _save.SaveAsync(chunk, CancellationToken.None).Forget();
         }
     }
 }

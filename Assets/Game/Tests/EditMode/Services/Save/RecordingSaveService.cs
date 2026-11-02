@@ -13,6 +13,7 @@ namespace Game.Tests.EditMode.Services.Save
     {
         public readonly InMemorySaveStorage Storage = new InMemorySaveStorage();
         public readonly List<string> Saved = new List<string>();
+        public readonly List<CancellationToken> Tokens = new List<CancellationToken>();
         private readonly SaveService _inner;
 
         public RecordingSaveService()
@@ -27,6 +28,7 @@ namespace Game.Tests.EditMode.Services.Save
         public UniTask SaveAsync(IProfileChunk chunk, CancellationToken ct)
         {
             Saved.Add(chunk.Key);
+            Tokens.Add(ct);
             return UniTask.CompletedTask;
         }
     }
