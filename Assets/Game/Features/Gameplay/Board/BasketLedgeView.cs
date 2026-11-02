@@ -41,6 +41,7 @@ namespace Game.Features.Gameplay.Board
         private readonly IOverlayService _overlay;
         private readonly ILocalizationService _texts;
         private readonly VisualElement _progressTarget;
+        private readonly int _extraSlotLevel;
         private VisualElement _layer;
         private ElementPool<BasketView> _pool;
 
@@ -56,8 +57,10 @@ namespace Game.Features.Gameplay.Board
         /// <param name="overlay">Sparks and praise.</param>
         /// <param name="texts">Praise words.</param>
         /// <param name="progressTarget">HUD progress bar that shipped baskets fly into.</param>
+        /// <param name="extraSlotLevel">Level from which the locked third slot shows its "+".</param>
         public BasketLedgeView(VisualTreeAsset basketLayout, BoardSprites sprites, ItemLayerView items,
-            IOverlayService overlay, ILocalizationService texts, VisualElement progressTarget)
+            IOverlayService overlay, ILocalizationService texts, VisualElement progressTarget,
+            int extraSlotLevel)
         {
             _basketLayout = basketLayout;
             _sprites = sprites;
@@ -65,6 +68,7 @@ namespace Game.Features.Gameplay.Board
             _overlay = overlay;
             _texts = texts;
             _progressTarget = progressTarget;
+            _extraSlotLevel = extraSlotLevel;
             _locks = new BasketLocks();
         }
 
@@ -81,7 +85,7 @@ namespace Game.Features.Gameplay.Board
             for (var i = 0; i < LevelState.MaxBaskets; i++)
             {
                 var isLockedSlot = i >= state.UnlockedBaskets;
-                var isLockShown = state.LevelNumber >= GameplayBalance.ExtraBasketSlotLevel || state.LevelNumber == 0;
+                var isLockShown = state.LevelNumber >= _extraSlotLevel || state.LevelNumber == 0;
                 _locks.Set(Root, i, isLockedSlot && isLockShown, layout.BasketSlotLeft(i));
                 var basket = state.Baskets[i];
                 if (basket == null)

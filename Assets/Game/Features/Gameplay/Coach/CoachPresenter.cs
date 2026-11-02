@@ -64,7 +64,7 @@ namespace Game.Features.Gameplay.Coach
                 ShowTutorialAsync().Forget();
             }
 
-            if (_context.Level == GameplayBalance.ExtraBasketSlotLevel
+            if (_context.Level == _context.Services.Balance.ExtraBasketSlotLevel
                 && !_context.Services.Onboarding.HasFlag(Flags.FreeBasket))
             {
                 ShowBasketTipAsync().Forget();
@@ -117,7 +117,7 @@ namespace Game.Features.Gameplay.Coach
         private void QueueTip(string tipId, string textKey, VisualElement anchor, bool isAbove)
         {
             var onboarding = _context.Services.Onboarding;
-            if (_context.Level > GameplayBalance.CoachTipsUntilLevel || onboarding.HasSeenTip(tipId))
+            if (_context.Level > _context.Services.Balance.CoachTipsUntilLevel || onboarding.HasSeenTip(tipId))
             {
                 return;
             }
@@ -182,7 +182,7 @@ namespace Game.Features.Gameplay.Coach
         {
             await UniTask.Delay(BasketTipDelayMs, cancellationToken: _context.LevelToken);
             var plus = _context.Board.FirstBasketLock();
-            if (plus == null || _context.Services.UI.IsPopupOpen || _context.Level != GameplayBalance.ExtraBasketSlotLevel)
+            if (plus == null || _context.Services.UI.IsPopupOpen || _context.Level != _context.Services.Balance.ExtraBasketSlotLevel)
             {
                 return;
             }

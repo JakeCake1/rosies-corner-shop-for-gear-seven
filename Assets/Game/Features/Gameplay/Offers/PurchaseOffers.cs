@@ -43,10 +43,10 @@ namespace Game.Features.Gameplay.Offers
             var wasOver = session.IsOver;
             var dialog = CreateDialog(GameplayTexts.BoosterUndo, RibbonStyle.Berry, GameplayTexts.UndoOffer);
             dialog.Icon = _context.Art.Undo;
-            dialog.Buttons.Add(BuyButton(GameplayTexts.BuyTwo, GameplayBalance.UndoPackPrice, () =>
+            dialog.Buttons.Add(BuyButton(GameplayTexts.BuyTwo, _context.Services.Balance.UndoPackPrice, () =>
             {
                 _context.Services.Audio.Play(SoundId.Coin);
-                session.AddUndos(GameplayBalance.UndoPackSize);
+                session.AddUndos(_context.Services.Balance.UndoPackSize);
                 undo();
             }));
             AddAdButton(dialog, GameplayTexts.GetOneFree, () =>
@@ -75,7 +75,7 @@ namespace Game.Features.Gameplay.Offers
             var title = services.Texts.Get(BoosterTexts.NameOf(boosterId));
             var dialog = CreateDialog(BoosterTexts.NameOf(boosterId), RibbonStyle.Berry, BoosterTexts.InfoOf(boosterId));
             dialog.Icon = _context.Art.IconOf(boosterId);
-            dialog.Buttons.Add(BuyButton(GameplayTexts.BuyOne, GameplayBalance.BoosterPrice, () =>
+            dialog.Buttons.Add(BuyButton(GameplayTexts.BuyOne, _context.Services.Balance.BoosterPrice, () =>
             {
                 services.Audio.Play(SoundId.Coin);
                 services.Boosters.Add(boosterId, 1);
@@ -111,7 +111,7 @@ namespace Game.Features.Gameplay.Offers
 
             var dialog = CreateDialog(GameplayTexts.BasketTitle, RibbonStyle.Green, GameplayTexts.BasketText);
             dialog.Icon = _context.Art.Basket;
-            dialog.Buttons.Add(BuyButton(GameplayTexts.BasketOpen, GameplayBalance.ExtraBasketPrice,
+            dialog.Buttons.Add(BuyButton(GameplayTexts.BasketOpen, _context.Services.Balance.ExtraBasketPrice,
                 _context.Session.OpenExtraBasket));
             AddAdButton(dialog, GameplayTexts.BasketOpenFree, _context.Session.OpenExtraBasket);
             dialog.Buttons.Add(NotNowButton(null));

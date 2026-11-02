@@ -37,7 +37,7 @@ namespace Game.Features.Gameplay
         public int Level => Session.LevelNumber;
 
         /// <summary>True from the level where rewarded-ad buttons appear in dialogs.</summary>
-        public bool HasAds => Level >= GameplayBalance.AdsFromLevel;
+        public bool HasAds => Level >= Services.Balance.AdsFromLevel;
 
         /// <summary>
         /// Creates the context.

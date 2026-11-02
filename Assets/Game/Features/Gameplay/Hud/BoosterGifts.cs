@@ -38,9 +38,9 @@ namespace Game.Features.Gameplay.Hud
             var inventory = _context.Services.Boosters;
             var unlocks = new[]
             {
-                (Id: BoosterIds.Undo, Level: GameplayBalance.UndoUnlockLevel),
-                (Id: BoosterIds.Tidy, Level: GameplayBalance.TidyUnlockLevel),
-                (Id: BoosterIds.Pick, Level: GameplayBalance.PickUnlockLevel),
+                (Id: BoosterIds.Undo, Level: _context.Services.Balance.UndoUnlockLevel),
+                (Id: BoosterIds.Tidy, Level: _context.Services.Balance.TidyUnlockLevel),
+                (Id: BoosterIds.Pick, Level: _context.Services.Balance.PickUnlockLevel),
             };
             foreach (var unlock in unlocks.Where(u => u.Level == _context.Level && !inventory.IsGifted(u.Id)))
             {
@@ -73,7 +73,7 @@ namespace Game.Features.Gameplay.Hud
                 return;
             }
 
-            inventory.Add(boosterId, GameplayBalance.BoosterGift);
+            inventory.Add(boosterId, _context.Services.Balance.BoosterGift);
             ShowGiftAsync(boosterId, GiftDelayMs).Forget();
         }
 

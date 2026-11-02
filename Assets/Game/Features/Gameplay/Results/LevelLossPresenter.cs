@@ -86,7 +86,7 @@ namespace Game.Features.Gameplay.Results
                 return BasketOffer;
             }
 
-            return st.Capacity < GameplayBalance.ExtendedCapacity ? SlotOffer : null;
+            return st.Capacity < _context.Services.Balance.ExtendedCapacity ? SlotOffer : null;
         }
 
         private void AddAdOffer(DialogViewModel dialog)
@@ -141,7 +141,7 @@ namespace Game.Features.Gameplay.Results
                 return;
             }
 
-            dialog.Buttons.Add(_offers.BuyButton(GameplayTexts.BoosterTidy, GameplayBalance.BoosterPrice, () =>
+            dialog.Buttons.Add(_offers.BuyButton(GameplayTexts.BoosterTidy, _context.Services.Balance.BoosterPrice, () =>
             {
                 _context.Services.Boosters.Add(BoosterIds.Tidy, 1);
                 _boosters.Use(BoosterIds.Tidy);

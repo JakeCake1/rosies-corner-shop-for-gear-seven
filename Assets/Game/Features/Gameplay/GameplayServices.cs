@@ -1,14 +1,15 @@
 using Game.Features.Gameplay.Boosters;
 using Game.Services.Ads;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
 using Game.Services.Localization;
 using Game.Services.Onboarding;
-using Game.Services.UI;
 using Game.Services.UI.Dialogs;
+using Game.Services.UI;
 using Game.Services.Wallet;
 
 namespace Game.Features.Gameplay
@@ -63,6 +64,9 @@ namespace Game.Features.Gameplay
         /// <summary>Player-facing text from the string tables.</summary>
         public ILocalizationService Texts { get; }
 
+        /// <summary>Prices, gifts and the levels where features appear.</summary>
+        public GameBalanceConfig Balance { get; }
+
         /// <summary>
         /// Creates the bundle; resolved by VContainer.
         /// </summary>
@@ -81,12 +85,14 @@ namespace Game.Features.Gameplay
         /// <param name="settings">Settings dialog.</param>
         /// <param name="audio">Sound effects.</param>
         /// <param name="texts">Dialog, toast and tip texts.</param>
+        /// <param name="balance">Prices, gifts and the levels where features appear.</param>
         public GameplayServices(IDialogService dialogs, IUIService ui, IOverlayService overlay, IWalletService wallet,
             IBoosterInventory boosters, IOnboardingService onboarding, ILevelProgressService levels,
             IExperimentsService experiments, IContentService content, ILevelCurveService curves, IGameFlow flow, IRewardedAdService ads,
-            ISettingsScreen settings, IAudioService audio, ILocalizationService texts)
+            ISettingsScreen settings, IAudioService audio, ILocalizationService texts, GameBalanceConfig balance)
         {
             Texts = texts;
+            Balance = balance;
             Dialogs = dialogs;
             UI = ui;
             Overlay = overlay;

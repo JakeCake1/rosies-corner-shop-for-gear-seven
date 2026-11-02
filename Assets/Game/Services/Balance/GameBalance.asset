@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c761267000f7714d910ee5f8d2768c8, type: 3}
+  m_Name: GameBalance
+  m_EditorClassIdentifier: Game.Services::Game.Services.Balance.GameBalanceConfig
+  _freeUndosPerLevel: 2
+  _undoPackPrice: 60
+  _undoPackSize: 2
+  _boosterPrice: 100
+  _extraBasketPrice: 150
+  _boosterGift: 2
+  _coinsPerStar: 10
+  _extendedCapacity: 6
+  _undoUnlockLevel: 2
+  _tidyUnlockLevel: 4
+  _pickUnlockLevel: 6
+  _extraBasketSlotLevel: 3
+  _adsFromLevel: 6
+  _startBoostersFromLevel: 11
+  _albumFromLevel: 9
+  _nameShopAfterLevel: 10
+  _coachTipsUntilLevel: 4
+  _hintUntilLevel: 5
+  _hintIdleSeconds: 6
