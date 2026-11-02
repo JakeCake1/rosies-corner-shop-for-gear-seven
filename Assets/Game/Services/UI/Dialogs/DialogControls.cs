@@ -6,8 +6,8 @@ using UnityEngine.UIElements;
 namespace Game.Services.UI.Dialogs
 {
     /// <summary>
-    /// Builds the interactive blocks of a <see cref="DialogWindow"/>: toggles, the text input with idea chips, the
-    /// button grid and segmented choices. Each method returns a block for the window to add to its body.
+    /// Builds the interactive blocks of a <see cref="DialogWindow"/>: toggles, selectable tiles, the text input with
+    /// idea chips, the button grid and segmented choices. Each method returns a block for the window to add to its body.
     /// </summary>
     public static class DialogControls
     {
@@ -15,6 +15,8 @@ namespace Game.Services.UI.Dialogs
         private const string RoundedWhiteClass = "kit-rounded-white";
         private const string SwitchOnClass = "dialog-switch--on";
         private const string SegmentOnClass = "dialog-segment--on";
+        private const string TileOnClass = "dialog-tile--on";
+        private const string PriceBadgeClass = "dialog-tile__badge--price";
 
         /// <summary>
         /// Builds a labelled on/off switch.
@@ -63,6 +65,50 @@ namespace Game.Services.UI.Dialogs
             }
 
             return block;
+        }
+
+        /// <summary>
+        /// Builds a row of selectable tiles (dashed when off, green when on) with a corner badge.
+        /// </summary>
+        /// <param name="tiles">The tiles; <see cref="DialogTile.Changed"/> decides each new state.</param>
+        /// <param name="bindings">Subscriptions of the window's current binding.</param>
+        /// <returns>The tile row.</returns>
+        public static VisualElement Tiles(IReadOnlyList<DialogTile> tiles, CompositeDisposable bindings)
+        {
+            var row = ElementView.CreateElement("dialog-tiles");
+            foreach (var tile in tiles)
+            {
+                var button = CreateButton(null, "dialog-tile");
+                var icon = ElementView.CreateElement("dialog-tile__icon");
+                icon.pickingMode = PickingMode.Ignore;
+                icon.SetSprite(tile.Icon);
+                button.Add(icon);
+                button.Add(ElementView.CreateLabel(tile.Name, "dialog-tile__name"));
+                button.Add(ElementView.CreateLabel(tile.Info, "dialog-tile__info"));
+                var badge = ElementView.CreateElement("dialog-tile__badge");
+                badge.pickingMode = PickingMode.Ignore;
+                var badgeText = ElementView.CreateLabel(string.Empty, "dialog-tile__badge-text");
+                badge.Add(badgeText);
+                button.Add(badge);
+                row.Add(button);
+
+                var isOn = false;
+                void Draw()
+                {
+                    button.EnableInClassList(TileOnClass, isOn);
+                    badgeText.text = tile.Badge();
+                    badge.EnableInClassList(PriceBadgeClass, tile.IsPriceBadge());
+                }
+
+                Draw();
+                button.OnClickAsObservable().Subscribe(_ =>
+                {
+                    isOn = tile.Changed(!isOn);
+                    Draw();
+                }).AddTo(bindings);
+            }
+
+            return row;
         }
 
         /// <summary>

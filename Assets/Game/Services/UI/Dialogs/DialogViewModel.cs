@@ -20,6 +20,9 @@ namespace Game.Services.UI.Dialogs
         /// <summary>On/off switches (settings).</summary>
         public List<DialogToggle> Toggles { get; } = new List<DialogToggle>();
 
+        /// <summary>Selectable tiles in one row (start boosters).</summary>
+        public List<DialogTile> Tiles { get; } = new List<DialogTile>();
+
         /// <summary>Compact grid of buttons (reviewers' level jump).</summary>
         public List<DialogButton> Grid { get; } = new List<DialogButton>();
 
