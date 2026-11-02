@@ -1,5 +1,4 @@
 using Game.Services.Save;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Game.Tests.EditMode.Services.Save
@@ -7,7 +6,7 @@ namespace Game.Tests.EditMode.Services.Save
     /// <summary>
     /// Version 2 chunk for save tests: version 1 stored the name as "title", version 2 calls it "name".
     /// </summary>
-    internal sealed class TestChunk : ProfileChunk<TestChunk.Payload>
+    internal sealed class TestChunk : ProfileChunk<TestChunkPayload>
     {
         public override string Key => "test";
 
@@ -33,13 +32,6 @@ namespace Game.Tests.EditMode.Services.Save
 
             data["name"] = data["title"];
             data.Remove("title");
-        }
-
-        public sealed class Payload
-        {
-            [JsonProperty("name")] public string Name { get; set; } = "none";
-
-            [JsonProperty("count")] public int Count { get; set; }
         }
     }
 }

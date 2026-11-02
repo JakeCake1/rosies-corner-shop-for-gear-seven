@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Game.Services.Content;
 using UnityEngine;
@@ -27,7 +26,7 @@ namespace Game.Services.Audio
         /// </summary>
         public const int ShipSteps = 7;
 
-        [SerializeField] private List<Entry> _effects = new List<Entry>();
+        [SerializeField] private List<AudioLibraryEntry> _effects = new List<AudioLibraryEntry>();
         [Tooltip("Basket ship arpeggio for combo steps 0..6; later combos reuse the last clip.")]
         [SerializeField] private List<AudioClip> _ship = new List<AudioClip>();
         [Tooltip("Background music; must loop seamlessly.")]
@@ -112,22 +111,6 @@ namespace Game.Services.Audio
             {
                 errors.Add($"{name}: music clip is missing.");
             }
-        }
-
-        /// <summary>
-        /// One sound effect and its clip.
-        /// </summary>
-        [Serializable]
-        public sealed class Entry
-        {
-            [SerializeField] private SoundId _id;
-            [SerializeField] private AudioClip _clip;
-
-            /// <summary>The sound this clip plays for.</summary>
-            public SoundId Id => _id;
-
-            /// <summary>The rendered clip; never null in a valid library.</summary>
-            public AudioClip Clip => _clip;
         }
     }
 }

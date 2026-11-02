@@ -199,24 +199,5 @@ namespace Game.Services.UI
             _root.Blocker.BringToFront();
             popups[popups.Count - 1].Window.Root.BringToFront();
         }
-
-        private sealed class OpenWindow
-        {
-            public OpenWindow(IWindow window, ViewModel viewModel)
-            {
-                Window = window;
-                ViewModel = viewModel;
-            }
-
-            public IWindow Window { get; }
-
-            public ViewModel ViewModel { get; }
-
-            public IDisposable CloseSubscription { get; set; }
-
-            public CancellationTokenRegistration OpenerRegistration { get; set; }
-
-            public bool IsClosing { get; set; }
-        }
     }
 }
