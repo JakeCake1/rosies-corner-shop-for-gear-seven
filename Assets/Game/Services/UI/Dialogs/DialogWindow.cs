@@ -18,7 +18,12 @@ namespace Game.Services.UI.Dialogs
         private const string BodyName = "body";
         private const string RibbonGreenClass = "kit-ribbon-green";
         private const string RibbonBerryClass = "kit-ribbon-berry";
+        private const int StarCount = 3;
+        private const int BigStar = 1;
+        private const float StarSeconds = 0.35f;
+        private const float StarFirstDelay = 0.15f;
         private const float StarDelay = 0.22f;
+        private const float StarOvershoot = 2f;
 
         private VisualElement _ribbon;
         private Label _title;
@@ -48,79 +53,98 @@ namespace Game.Services.UI.Dialogs
             _ribbon.EnableInClassList(RibbonBerryClass, vm.Style != RibbonStyle.Green);
             vm.CloseRequested.Subscribe(_ => RequestClose()).AddTo(Bindings);
 
+            BuildHeader(vm);
+            BuildSummary(vm);
+            BuildControls(vm);
+            if (!string.IsNullOrEmpty(vm.Note))
+            {
+                Spawn(_body, CreateLabel(vm.Note, "dialog-note"));
+            }
+
+            BuildButtons(vm);
+        }
+
+        private void BuildHeader(DialogViewModel vm)
+        {
             if (vm.Icon != null)
             {
-                var icon = Spawn(_body, CreateElement("dialog-icon"));
-                icon.SetSprite(vm.Icon);
+                Spawn(_body, CreateElement("dialog-icon")).SetSprite(vm.Icon);
             }
 
             if (vm.Stars.HasValue)
             {
                 BuildStars(vm.Stars.Value);
             }
+
             if (!string.IsNullOrEmpty(vm.Headline))
             {
                 Spawn(_body, CreateLabel(vm.Headline, "dialog-headline"));
             }
+
             foreach (var (label, value) in vm.Stats)
             {
                 var row = Spawn(_body, CreateElement("dialog-stat", "kit-rounded-white"));
                 row.Add(CreateLabel(label, "dialog-stat__label"));
                 row.Add(CreateLabel(value, "dialog-stat__value"));
             }
+        }
 
+        private void BuildSummary(DialogViewModel vm)
+        {
             if (!string.IsNullOrEmpty(vm.Text))
             {
                 Spawn(_body, CreateLabel(vm.Text, "dialog-text"));
             }
+
             if (vm.Progress.HasValue)
             {
                 BuildProgress(vm.Progress.Value, vm.ProgressCaption);
             }
+
             if (vm.Items.Count > 0)
             {
                 BuildItems(vm.Items);
             }
+
             if (!string.IsNullOrEmpty(vm.Reward))
             {
                 var reward = Spawn(_body, CreateElement("dialog-reward"));
                 reward.Add(CreateElement("dialog-reward__coin", "icon-coin"));
                 reward.Add(CreateLabel(vm.Reward, "dialog-reward__amount"));
             }
+        }
 
-            foreach (var t in vm.Toggles)
+        private void BuildControls(DialogViewModel vm)
+        {
+            foreach (var toggle in vm.Toggles)
             {
-                BuildToggle(t);
+                Spawn(_body, DialogControls.Toggle(toggle, Bindings));
             }
 
             if (vm.Input != null)
             {
-                BuildInput(vm);
-            }
-            if (vm.Grid.Count > 0)
-            {
-                BuildGrid(vm);
-            }
-            foreach (var s in vm.Segments)
-            {
-                BuildSegments(s);
+                Spawn(_body, DialogControls.Input(vm, Bindings));
             }
 
-            if (!string.IsNullOrEmpty(vm.Note))
+            if (vm.Grid.Count > 0)
             {
-                Spawn(_body, CreateLabel(vm.Note, "dialog-note"));
+                Spawn(_body, DialogControls.Grid(vm, Bindings));
             }
-            BuildButtons(vm);
+
+            foreach (var segments in vm.Segments)
+            {
+                Spawn(_body, DialogControls.Segments(segments, Bindings));
+            }
         }
 
         private void BuildStars(int earned)
         {
             var row = Spawn(_body, CreateElement("dialog-stars"));
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < StarCount; i++)
             {
                 var isOn = i < earned;
                 var star = CreateElement("dialog-star", isOn ? "icon-star-on" : "icon-star-off");
-                star.EnableInClassList("dialog-star--big", i == 1);
+                star.EnableInClassList("dialog-star--big", i == BigStar);
                 row.Add(star);
                 if (!isOn)
                 {
@@ -128,7 +152,8 @@ namespace Game.Services.UI.Dialogs
                 }
 
                 VisualElementTweens.SetScale(star, Vector2.zero);
-                star.DOScale(1f, 0.35f).SetDelay(0.15f + i * StarDelay).SetEase(Ease.OutBack, 2f).SetUpdate(true).SetId(this);
+                star.DOScale(1f, StarSeconds).SetDelay(StarFirstDelay + i * StarDelay).SetEase(Ease.OutBack, StarOvershoot)
+                    .SetUpdate(true).SetId(this);
             }
         }
 
@@ -154,101 +179,6 @@ namespace Game.Services.UI.Dialogs
             }
         }
 
-        private void BuildToggle(DialogToggle toggle)
-        {
-            var row = Spawn(_body, CreateElement("dialog-toggle", "kit-rounded-white"));
-            row.Add(CreateLabel(toggle.Label, "dialog-toggle__label"));
-            var track = new Button();
-            track.AddToClassList("btn");
-            track.AddToClassList("dialog-switch");
-            track.AddToClassList("kit-pill-white");
-            var knob = CreateElement("dialog-switch__knob", "kit-circle");
-            track.Add(knob);
-            row.Add(track);
-            var isOn = toggle.IsOn;
-
-            void Apply() => track.EnableInClassList("dialog-switch--on", isOn);
-
-            Apply();
-            track.OnClickAsObservable().Subscribe(_ =>
-            {
-                isOn = toggle.Changed(!isOn);
-                Apply();
-            }).AddTo(Bindings);
-        }
-
-        private void BuildInput(DialogViewModel vm)
-        {
-            var block = Spawn(_body, CreateElement("dialog-input"));
-            var field = new TextField { maxLength = vm.Input.MaxLength, value = vm.InputText.Value };
-            field.AddToClassList("dialog-input__field");
-            field.textEdition.placeholder = vm.Input.Placeholder;
-            field.RegisterValueChangedCallback(e => vm.InputText.Value = e.newValue);
-            block.Add(field);
-            var ideas = CreateElement("dialog-input__ideas");
-            block.Add(ideas);
-            foreach (var idea in vm.Input.Ideas)
-            {
-                var chip = new Button { text = idea };
-                chip.AddToClassList("btn");
-                chip.AddToClassList("dialog-chip");
-                chip.AddToClassList("kit-chip");
-                var text = idea;
-                chip.OnClickAsObservable().Subscribe(_ => field.value = text).AddTo(Bindings);
-                ideas.Add(chip);
-            }
-        }
-
-        private void BuildGrid(DialogViewModel vm)
-        {
-            var grid = Spawn(_body, CreateElement("dialog-grid"));
-            foreach (var b in vm.Grid)
-            {
-                var cell = new Button { text = b.Label };
-                cell.AddToClassList("btn");
-                cell.AddToClassList("dialog-grid__cell");
-                cell.AddToClassList("kit-rounded-white");
-                cell.EnableInClassList("dialog-grid__cell--current", b.IsHighlighted);
-                var button = b;
-                cell.OnTapAsObservable().Subscribe(_ => vm.Press(button)).AddTo(Bindings);
-                grid.Add(cell);
-            }
-        }
-
-        private void BuildSegments(DialogSegments segments)
-        {
-            var block = Spawn(_body, CreateElement("dialog-segments"));
-            block.Add(CreateLabel(segments.Label, "dialog-segments__label"));
-            var options = CreateElement("dialog-segments__options");
-            block.Add(options);
-            var buttons = new List<Button>();
-            for (var i = 0; i < segments.Options.Count; i++)
-            {
-                var option = new Button { text = segments.Options[i] };
-                option.AddToClassList("btn");
-                option.AddToClassList("dialog-segment");
-                option.AddToClassList("kit-rounded-white");
-                buttons.Add(option);
-                options.Add(option);
-                var index = i;
-                option.OnClickAsObservable().Subscribe(_ =>
-                {
-                    Select(buttons, index);
-                    segments.SelectedChanged(index);
-                }).AddTo(Bindings);
-            }
-
-            Select(buttons, segments.Selected);
-        }
-
-        private static void Select(List<Button> buttons, int index)
-        {
-            for (var k = 0; k < buttons.Count; k++)
-            {
-                buttons[k].EnableInClassList("dialog-segment--on", k == index);
-            }
-        }
-
         private void BuildButtons(DialogViewModel vm)
         {
             VisualElement row = null;
@@ -261,6 +191,7 @@ namespace Game.Services.UI.Dialogs
                     {
                         row = Spawn(_body, CreateElement("dialog-row"));
                     }
+
                     parent = row;
                 }
                 else
@@ -277,6 +208,7 @@ namespace Game.Services.UI.Dialogs
                 {
                     parent.Add(view.Root);
                 }
+
                 var button = b;
                 view.Button.OnTapAsObservable().Subscribe(_ => vm.Press(button)).AddTo(Bindings);
                 b.IsEnabled.Subscribe(x => view.Button.SetEnabled(x)).AddTo(Bindings);
