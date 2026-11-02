@@ -97,21 +97,31 @@ namespace Game.Features.Gameplay
         {
             // The board sizes itself from the screen, so the first level waits for the first layout pass.
             await _context.Screen.WhenLaidOutAsync(_lifetime.SceneToken);
-            StartLevel(_request.Level, _request.StartBoosters);
+            StartLevelAsync(_request.Level, _request.StartBoosters).Forget();
         }
 
         private void Restart()
         {
-            StartLevel(_context.Level, null);
+            StartLevelAsync(_context.Level, null).Forget();
         }
 
-        private void StartLevel(int level, StartBoosters startBoosters)
+        private async UniTaskVoid StartLevelAsync(int level, StartBoosters startBoosters)
         {
             _lifetime.Reset();
+            var token = _lifetime.LevelToken;
             _context.Services.Dialogs.CloseAllAsync().Forget();
+            var prepared = _context.Session.Prepare(level);
+            // Item sprites live in per-level Addressables groups: load this level's before it is drawn.
+            await _context.Services.Content.LoadItemSpritesAsync(LevelItemTypes.Of(prepared), token);
+            if (token.IsCancellationRequested)
+            {
+                // A newer start (restart, next level) replaced this one while its sprites loaded.
+                return;
+            }
+
             _coach.Reset();
             _idle.Touch();
-            _context.Session.Start(level, startBoosters);
+            _context.Session.Start(startBoosters);
             _context.Services.Overlay.SetBackground(_context.Session.IsTricky, false);
             _hud.Bind();
             _boosterBar.Build();

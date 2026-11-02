@@ -64,11 +64,32 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
+  - {fileID: 11400000, guid: 66da16f6fd88cbf4a9d412b92ff12bf6, type: 2}
   - {fileID: 11400000, guid: b939b46fbe6a7b944a26ebacf5f6bd37, type: 2}
+  - {fileID: 11400000, guid: 0ca7c6dcb740366409b300a78dd4c539, type: 2}
+  - {fileID: 11400000, guid: b7b7d509bf9e93740b93dbe80d6bef5d, type: 2}
   - {fileID: 11400000, guid: c04ff55b91f9f814086889f159b99cd1, type: 2}
+  - {fileID: 11400000, guid: ddb9e64712063fe478bc205035c9f87e, type: 2}
+  - {fileID: 11400000, guid: 6f7c0debf48d9c14289c5b3fed965ae3, type: 2}
+  - {fileID: 11400000, guid: c01096b452ec8d34cb6b261ca032645c, type: 2}
   - {fileID: 11400000, guid: 49ab5701329c8b544869bdeaeea06849, type: 2}
+  - {fileID: 11400000, guid: d00b52f4141e6c846a1ac2c3317529df, type: 2}
   - {fileID: 11400000, guid: 1ccef004d7077b5488b76b085b7f4536, type: 2}
+  - {fileID: 11400000, guid: 848335832a255334d90d4226c05631bd, type: 2}
+  - {fileID: 11400000, guid: c92cebe913d8e994b8eff348abb84979, type: 2}
   - {fileID: 11400000, guid: 5a883cf6575d3b042b838cdb92b66766, type: 2}
+  - {fileID: 11400000, guid: ab9aff6494bfc764980a34aee2b706b5, type: 2}
+  - {fileID: 11400000, guid: 01d79daadd5f03342a879c60a7fe260c, type: 2}
+  - {fileID: 11400000, guid: c008084476a8ec14896d4065a83de591, type: 2}
+  - {fileID: 11400000, guid: 9dbf67ffe43f79f449350df49dd36c4d, type: 2}
+  - {fileID: 11400000, guid: f020d42f207e16d4cb03d37d370b230c, type: 2}
+  - {fileID: 11400000, guid: 77846c7005fc5284b9629ea1494ff30f, type: 2}
+  - {fileID: 11400000, guid: b89f29f6b35f35f4196a95d38a10a5ec, type: 2}
+  - {fileID: 11400000, guid: 479b63f6daecf244dbf0526c8c342e57, type: 2}
+  - {fileID: 11400000, guid: 6b300c5c10ee36b4884c5dd91f426d43, type: 2}
+  - {fileID: 11400000, guid: 5de25d8733550fd45ae627a1e5b6bde8, type: 2}
+  - {fileID: 11400000, guid: 57d1fab31948eec468e173a50d287b07, type: 2}
+  - {fileID: 11400000, guid: 62dbe597d780d0a46ab3611a8a4976ae, type: 2}
   - {fileID: 11400000, guid: 5e9005818e991094fa7e753ba0c47e9c, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1

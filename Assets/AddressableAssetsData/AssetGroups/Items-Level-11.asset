@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-11
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-11
+  m_GUID: 193f0f872a03bc44fa3b11ed6c52810f
+  m_SerializeEntries:
+  - m_GUID: 1256750914f125b45a84fcadbdee3447
+    m_Address: item/101_grape-popsicle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6f99bd11311f9264ca3cc02d2e49ae09
+    m_Address: item/031_apple-pie
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82df6f2c2dad3e644ba75d5b75fbc045
+    m_Address: item/123_pear
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a5e9bd190e1daf40a10e537dc4dc46b
+    m_Address: item/084_coffee-beans
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1d730fd6b0edbd42b28b07ae20f1628
+    m_Address: item/002_strawberry-milk
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6fcd03d1c07e804fb76b9fac43ec81b
+    m_Address: item/158_red-tulip
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9cd5bf76474ade54981c0de71e2701f3, type: 2}
+    - {fileID: 11400000, guid: 673c863bb47f9564eabb41fa86072eaf, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-11_BundledAssetGroupSchema
+    - Items-Level-11_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

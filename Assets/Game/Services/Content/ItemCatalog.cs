@@ -8,8 +8,9 @@ namespace Game.Services.Content
     /// shared by the level generator, the shelves, the home showcase and the album.
     /// </summary>
     /// <remarks>
-    /// Item sprites are referenced directly (not via <c>AssetReference</c>): the catalog is one addressable asset
-    /// whose sprites always load together, so per-item handles would add bookkeeping without saving memory.
+    /// Item sprites are <c>AssetReference</c>s in per-level Addressables groups (<c>Items-Level-NN</c> holds the items
+    /// that first appear in level NN of the default curve, <c>Items-Rest</c> the others), so the catalog bundle carries
+    /// only data. Groups and references are rebuilt by <c>Tools/Addressables/Rebuild Level Item Groups</c>.
     /// </remarks>
     [CreateAssetMenu(menuName = "Game/Item Catalog", fileName = "ItemCatalog")]
     public sealed class ItemCatalog : ScriptableObject, IValidatableConfig
@@ -73,7 +74,7 @@ namespace Game.Services.Content
                 {
                     errors.Add($"{name}: item at index {i} has id {it.Id}.");
                 }
-                if (it.Sprite == null)
+                if (it.Sprite == null || !it.Sprite.RuntimeKeyIsValid())
                 {
                     errors.Add($"{name}: item {it.Id} '{it.Name}' has no sprite.");
                 }

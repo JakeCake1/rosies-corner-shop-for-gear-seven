@@ -52,6 +52,7 @@ namespace Game.Features.Album
         {
             _album.MarkSeen();
             _onboarding.SetFlag(Flags.AlbumOpened);
+            await _content.LoadAllItemSpritesAsync(ct);
             await _ui.OpenAsync<AlbumWindow, AlbumViewModel>(new AlbumViewModel(_content, _album, _texts), ct);
         }
 

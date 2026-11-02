@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-05
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-05
+  m_GUID: cb3a236df2f600c4aa99aeb31f75a4ae
+  m_SerializeEntries:
+  - m_GUID: 19c919a95e6eefa45a7ad0bfb02bba3f
+    m_Address: item/081_green-chips
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 455e2f453c871494f86eb919c89c7fed
+    m_Address: item/103_strawberry-ice-cream
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9820e70f1803e0c40824a44831d5be29
+    m_Address: item/154_sponge
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d71281cf5f326974cab8869ffed909a7
+    m_Address: item/036_strawberry-cake
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f216e660f6f4b2243a2bf8b8326a59d7
+    m_Address: item/012_butter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe7b61a81cbfb1c46a60a9b276bddc50
+    m_Address: item/121_red-apple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9de0eb287da587c4fafdd18280d8fb92, type: 2}
+    - {fileID: 11400000, guid: a1ac02c56d99b5c45874e24e0bd4c9ce, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-05_BundledAssetGroupSchema
+    - Items-Level-05_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

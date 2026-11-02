@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-18
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-18
+  m_GUID: 4d0c07f7d4eddf545a5986e193165fe8
+  m_SerializeEntries:
+  - m_GUID: 06ed4fdd87cc01642b7d0a13a4c13e81
+    m_Address: item/104_chocolate-ice-cream
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3837f896086336b46a9f36907b589995
+    m_Address: item/145_yellow-pepper
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ebb54f8284e6f143ac967cd8f869be9
+    m_Address: item/006_cheese
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 787390a2109094d48addff4da0eccd6d
+    m_Address: item/046_water
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf154e917f631664385d0ae126afd862
+    m_Address: item/070_plum-jam
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: caf01608c3328f944ad8fbf80500ede4
+    m_Address: item/030_blueberry-pie
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2da2b439ce4fe45469e7dbea10104f14, type: 2}
+    - {fileID: 11400000, guid: 6a25a8fa95995d547bcf225d64d8fef2, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-18_BundledAssetGroupSchema
+    - Items-Level-18_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

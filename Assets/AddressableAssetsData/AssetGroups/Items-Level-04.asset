@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-04
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-04
+  m_GUID: 8e4970a1b9f14e94f82266344db3d62d
+  m_SerializeEntries:
+  - m_GUID: 0a7ef583a00c55046b706bd7b798e0dc
+    m_Address: item/005_brown-eggs
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1277c78e9038f114c83338c4c4ff94c6
+    m_Address: item/045_berry-soda
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 445a6c560b16dfc45b2cbad01bacc861
+    m_Address: item/017_rye-bread
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c6b368f919e24c4c9168b4e54d15b81
+    m_Address: item/159_yellow-tulip
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e61e3dd02fa1cb48bdd56ff797ceed6
+    m_Address: item/130_tomato
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c52131f1e25f6c04fbda49f6e8841bde
+    m_Address: item/106_pink-lollipop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dfa64f706c837dd43a1d7f0f9f657197
+    m_Address: item/015_farm-cream
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e8888e327672b1d4dbcd1274c37b8363
+    m_Address: item/089_pepper
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 5319e3a6b775b6b4399511ff47105627, type: 2}
+    - {fileID: 11400000, guid: 630ac9a9fb8689649b0f3a5d242f856f, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-04_BundledAssetGroupSchema
+    - Items-Level-04_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

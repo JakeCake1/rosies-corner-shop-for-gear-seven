@@ -1,0 +1,268 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Rest
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Rest
+  m_GUID: 7954fc3469a71884697101dfeb9a14ca
+  m_SerializeEntries:
+  - m_GUID: 07746966a07adb54a9f9a6525b115664
+    m_Address: item/018_baguette
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 15f1eff12983682438ff2b93e9b8a344
+    m_Address: item/144_red-pepper
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 163136168ed73e042bc2d53e2dd04521
+    m_Address: item/086_flour
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 184f755ad67c25844bec44a520a42001
+    m_Address: item/087_sugar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d822f0e4e436c446a5d0c6887829ec1
+    m_Address: item/107_green-lollipop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20a28cfef351c3a44a031bd446e1ee86
+    m_Address: item/065_corn-soup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 27b4eabe9dbee6047b979bcc3afb49f0
+    m_Address: item/057_black-tea
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e8a4027534548240a5d7034aa000c22
+    m_Address: item/082_blue-chips
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 303da8095330f58469e8c0a3718c60d4
+    m_Address: item/028_pretzel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30f94b469ff6f824ab26e3138d38d383
+    m_Address: item/115_gummy-bears
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 353853991f368d341afb68a4a8ee1250
+    m_Address: item/075_roasted-peppers
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b2abe6762cdaf84388c0115be438c32
+    m_Address: item/034_blueberry-muffin
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3cf13f42b4fc66044878de8272e874bc
+    m_Address: item/041_orange-soda
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d7503ff6d936774a8693d15264c5254
+    m_Address: item/099_orange-popsicle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e983b40be0fbd64e9d1e310f77b1637
+    m_Address: item/149_avocado
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5347f9fa7206fad4486285828c591a28
+    m_Address: item/129_watermelon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6667e032899054a439108d77ef725295
+    m_Address: item/090_ketchup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 70fab79a37248c248b05757e2eef65bd
+    m_Address: item/032_chocolate-chip-cookie
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77008efbf4b7ca94ab3979c3fe2bbea0
+    m_Address: item/141_cherries
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7900ae2f9b108c840a38e42cb607da60
+    m_Address: item/042_lime-soda
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bb8d2005d5b3d543b1739291f596d77
+    m_Address: item/074_pickled-beets
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7bb9e04be8a41864fa127440524a6cdc
+    m_Address: item/114_green-candy-cane
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7db375373840ebc4bb2521b0f8020491
+    m_Address: item/126_carrot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8099d8d68f47b4f48a37604b15674a50
+    m_Address: item/059_chamomile-tea
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 81d58b0c47bdc6b4e99913a0e2f0a03e
+    m_Address: item/062_tomato-soup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 83c508ea3ed9aa148bcd9ad87d932c47
+    m_Address: item/078_green-cereal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 845eb35239b07494c83ce9f6e1c4f610
+    m_Address: item/076_blue-cereal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8aa961c5cf6fe134dbd2ee5af42c8745
+    m_Address: item/019_croissant
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94f7e538ab7362f4b8baf47330f2a8a6
+    m_Address: item/133_pumpkin
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9569b01e133b82544a49bb5ce45162f6
+    m_Address: item/056_hot-cocoa
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9eee1ad63dc66714fa94915e4de05246
+    m_Address: item/097_sardines
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afd8879a2a58fb94ab23965f0728b3a7
+    m_Address: item/058_green-tea
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5409d95715f588418f925346fdb1bbb
+    m_Address: item/048_lemonade
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4d632b9bdea8644d9c05678f9a2c53d
+    m_Address: item/142_strawberry
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9743dced1fe3614e8c52227796a2cca
+    m_Address: item/108_orange-lollipop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3d1701f01a060642825bad9b793c228
+    m_Address: item/092_peanut-butter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d75cd33315311e04c9c919d2266cb5fc
+    m_Address: item/068_strawberry-jam
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df9f6b332cb2e8e41976bfd65a3b03b8
+    m_Address: item/073_pickles
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4fd3eee26daf7b4a9f6edc3d87c0606
+    m_Address: item/063_pea-soup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e5c6a171c027086498bd15e59464bc7e
+    m_Address: item/071_olive-oil
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb5a9c9c9298a784dac7e12dbbd99bba
+    m_Address: item/148_pineapple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed8f01efa175f8b449a19e7223e9b9fa
+    m_Address: item/150_broccoli
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2b8e2186017f8142be7e1f96f809bf4
+    m_Address: item/127_corn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f46ea9f0f562c464d9d199d890778dca
+    m_Address: item/033_pink-iced-cookie
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f65968f17fcdce94ba0d61ae2c044fc2
+    m_Address: item/054_berry-juice
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f759075c2d5de774ea1b0e4077885f0c
+    m_Address: item/139_lemon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f91f03082a376e5498d20a34fbebeaae
+    m_Address: item/120_blue-cotton-candy
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fa4d0b7a55595334fa87747591d3f6e8
+    m_Address: item/066_honey
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 543e5ea7d30522547a759faf0b7a1e02, type: 2}
+    - {fileID: 11400000, guid: 72d5ef5c2d218334fb1ec3827bc46cff, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Rest_BundledAssetGroupSchema
+    - Items-Rest_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

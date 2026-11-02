@@ -1,16 +1,18 @@
 using System;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Game.Services.Content
 {
     /// <summary>
     /// One grocery item of the 162-item catalog: identity, the attributes the level generator uses to keep similar
-    /// items apart, and its sprite.
+    /// items apart, and the Addressables reference of its sprite.
     /// </summary>
     [Serializable]
     public sealed class ItemDefinition
     {
-        [SerializeField] private Sprite _sprite;
+        [Tooltip("Item art; lives in the item group of the level where it first appears (Items-Level-NN or Items-Rest).")]
+        [SerializeField] private AssetReferenceSprite _sprite;
         [SerializeField] private int _id;
         [SerializeField] private string _name;
         [Tooltip("Department id: dairy, bakery, drink, pantry, sweet, fresh, home.")]
@@ -22,8 +24,11 @@ namespace Game.Services.Content
         [Tooltip("Dominant color group; each level uses a color group at most once.")]
         [SerializeField] private string _colorBucket;
 
-        /// <summary>Item art; the 40:64 frame includes the shadow the item stands on.</summary>
-        public Sprite Sprite => _sprite;
+        /// <summary>
+        /// Addressables reference of the item art (the 40:64 frame includes the shadow the item stands on). Load it
+        /// through <see cref="IContentService.LoadItemSpritesAsync"/>, read it with <see cref="IContentService.GetItemSprite"/>.
+        /// </summary>
+        public AssetReferenceSprite Sprite => _sprite;
 
         /// <summary>Stable catalog id; saves (album) and the level generator refer to it.</summary>
         public int Id => _id;
@@ -55,9 +60,9 @@ namespace Game.Services.Content
         /// <param name="shape">Product shape.</param>
         /// <param name="silhouette">Outline class.</param>
         /// <param name="colorBucket">Dominant color group.</param>
-        /// <param name="sprite">Item art (40:64 aspect); may be null in tests.</param>
+        /// <param name="sprite">Reference of the item art (40:64 aspect); may be null in tests.</param>
         public ItemDefinition(int id, string name, string family, string shape, string silhouette, string colorBucket,
-            Sprite sprite)
+            AssetReferenceSprite sprite)
         {
             _id = id;
             _name = name;

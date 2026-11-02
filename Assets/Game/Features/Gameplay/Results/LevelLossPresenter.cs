@@ -55,7 +55,7 @@ namespace Game.Features.Gameplay.Results
                 Progress = st.Collected / (float)st.Total,
                 ProgressCaption = texts.Format(CaptionOf(itemsLeft, st.Total), itemsLeft),
             };
-            dialog.Items.AddRange(st.Counter.Select(j => _context.Services.Content.Catalog.Get(j.Type).Sprite));
+            dialog.Items.AddRange(st.Counter.Select(j => _context.Services.Content.GetItemSprite(j.Type)));
             AddAdOffer(dialog);
             AddUndo(dialog);
             AddTidy(dialog);

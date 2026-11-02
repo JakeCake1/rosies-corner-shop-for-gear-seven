@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Levels;
@@ -148,7 +148,7 @@ namespace Game.Features.Home
             var ids = album.Found.Count >= ShowcaseSize
                 ? album.Found.Skip(album.Found.Count - ShowcaseSize).ToList()
                 : _content.Catalog.DefaultShowcase.ToList();
-            _showcase.Value = ids.Select(id => _content.Catalog.Get(id).Sprite).ToList();
+            _showcase.Value = ids.Select(id => _content.GetItemSprite(id)).ToList();
         }
     }
 }

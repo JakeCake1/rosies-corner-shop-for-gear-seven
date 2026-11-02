@@ -8,8 +8,8 @@ using Game.Services.Flow;
 using Game.Services.Levels;
 using Game.Services.Localization;
 using Game.Services.Onboarding;
-using Game.Services.UI.Dialogs;
 using Game.Services.UI;
+using Game.Services.UI.Dialogs;
 using Game.Services.Wallet;
 
 namespace Game.Features.Gameplay
