@@ -1,18 +1,18 @@
 /* Kit sprites (2x art): 9-slice borders from Art/Kit/slices.json, scaled by 0.5. */
 .kit-awning {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/awning.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/awning.png");
 }
 
 .kit-badge-gold {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/badge_gold.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/badge_gold.png");
 }
 
 .kit-badge-red {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/badge_red.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/badge_red.png");
 }
 
 .kit-bar-fill {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/bar_fill.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/bar_fill.png");
     -unity-slice-left: 24;
     -unity-slice-top: 24;
     -unity-slice-right: 24;
@@ -21,7 +21,7 @@
 }
 
 .kit-bar-track {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/bar_track.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/bar_track.png");
     -unity-slice-left: 30;
     -unity-slice-top: 30;
     -unity-slice-right: 30;
@@ -30,7 +30,7 @@
 }
 
 .kit-board {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/board.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/board.png");
     -unity-slice-left: 18;
     -unity-slice-top: 8;
     -unity-slice-right: 18;
@@ -39,7 +39,7 @@
 }
 
 .kit-board-oak {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/board_oak.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/board_oak.png");
     -unity-slice-left: 36;
     -unity-slice-top: 36;
     -unity-slice-right: 36;
@@ -48,7 +48,7 @@
 }
 
 .kit-board-walnut {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/board_walnut.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/board_walnut.png");
     -unity-slice-left: 32;
     -unity-slice-top: 32;
     -unity-slice-right: 32;
@@ -57,7 +57,7 @@
 }
 
 .kit-btn-berry {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/btn_berry.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_berry.png");
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
@@ -66,7 +66,7 @@
 }
 
 .kit-btn-gold {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/btn_gold.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_gold.png");
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
@@ -75,7 +75,7 @@
 }
 
 .kit-btn-green {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/btn_green.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_green.png");
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
@@ -84,7 +84,7 @@
 }
 
 .kit-btn-grey {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/btn_grey.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_grey.png");
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
@@ -93,7 +93,7 @@
 }
 
 .kit-btn-wood {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/btn_wood.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_wood.png");
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
@@ -102,7 +102,7 @@
 }
 
 .kit-cabinet {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/cabinet.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/cabinet.png");
     -unity-slice-left: 36;
     -unity-slice-top: 36;
     -unity-slice-right: 36;
@@ -111,7 +111,7 @@
 }
 
 .kit-card {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/card.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/card.png");
     -unity-slice-left: 54;
     -unity-slice-top: 54;
     -unity-slice-right: 54;
@@ -120,7 +120,7 @@
 }
 
 .kit-chip {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/chip.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/chip.png");
     -unity-slice-left: 32;
     -unity-slice-top: 32;
     -unity-slice-right: 32;
@@ -129,19 +129,19 @@
 }
 
 .kit-circle {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/circle.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/circle.png");
 }
 
 .kit-doily {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/doily.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/doily.png");
 }
 
 .kit-doily-hot {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/doily_hot.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/doily_hot.png");
 }
 
 .kit-ice {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/ice.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ice.png");
     -unity-slice-left: 14;
     -unity-slice-top: 14;
     -unity-slice-right: 14;
@@ -150,11 +150,11 @@
 }
 
 .kit-ledge {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/ledge.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ledge.png");
 }
 
 .kit-pill-white {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/pill_white.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/pill_white.png");
     -unity-slice-left: 30;
     -unity-slice-top: 30;
     -unity-slice-right: 30;
@@ -163,7 +163,7 @@
 }
 
 .kit-plank {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/plank.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/plank.png");
     -unity-slice-left: 12;
     -unity-slice-top: 12;
     -unity-slice-right: 12;
@@ -172,7 +172,7 @@
 }
 
 .kit-ribbon-berry {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/ribbon_berry.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ribbon_berry.png");
     -unity-slice-left: 44;
     -unity-slice-top: 16;
     -unity-slice-right: 44;
@@ -181,7 +181,7 @@
 }
 
 .kit-ribbon-green {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/ribbon_green.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ribbon_green.png");
     -unity-slice-left: 44;
     -unity-slice-top: 16;
     -unity-slice-right: 44;
@@ -190,7 +190,7 @@
 }
 
 .kit-rounded-white {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/rounded_white.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/rounded_white.png");
     -unity-slice-left: 16;
     -unity-slice-top: 16;
     -unity-slice-right: 16;
@@ -199,11 +199,11 @@
 }
 
 .kit-shadow {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/shadow.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shadow.png");
 }
 
 .kit-shelf-back {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/shelf_back.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shelf_back.png");
     -unity-slice-left: 8;
     -unity-slice-top: 8;
     -unity-slice-right: 8;
@@ -212,7 +212,7 @@
 }
 
 .kit-shelf-floor {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/shelf_floor.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shelf_floor.png");
     -unity-slice-left: 8;
     -unity-slice-top: 6;
     -unity-slice-right: 8;
@@ -221,7 +221,7 @@
 }
 
 .kit-shelf-post {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/shelf_post.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shelf_post.png");
     -unity-slice-left: 2;
     -unity-slice-top: 8;
     -unity-slice-right: 2;
@@ -230,11 +230,11 @@
 }
 
 .kit-wainscot {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wainscot.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wainscot.png");
 }
 
 .kit-wainscot-rail {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wainscot_rail.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wainscot_rail.png");
     -unity-slice-left: 2;
     -unity-slice-top: 2;
     -unity-slice-right: 2;
@@ -243,45 +243,45 @@
 }
 
 .kit-wallpaper {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/wallpaper.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wallpaper.png");
 }
 
 .kit-white {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Kit/white.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/white.png");
 }
 
 /* Icons and pictures keep their aspect ratio. */
 .icon-bunting {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/bunting.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/bunting.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-coin {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/coin.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/coin.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-gear {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/gear.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/gear.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-lock {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/lock.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/lock.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-star-off {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/star_off.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/star_off.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-star-on {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/star_on.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/star_on.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .icon-tutorial-hand {
-    background-image: url("project://database/Assets/Game/Services/UI/Art/Icons/tutorial_hand.png");
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/tutorial_hand.png");
     -unity-background-scale-mode: scale-to-fit;
 }

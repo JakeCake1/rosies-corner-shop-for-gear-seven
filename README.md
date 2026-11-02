@@ -7,7 +7,7 @@ Mobile sorting puzzle in a little grocery shop, ported from the Claude HTML prot
 ## Open and run
 
 1. Open the folder in Unity Hub (editor 6000.3.25f1).
-2. Open `Assets/Game/Scenes/Boot.unity` and press Play (Game view 390×844 portrait recommended).
+2. Open `Assets/Game/Content/Scenes/Boot.unity` and press Play (Game view 390×844 portrait recommended).
 3. Code: open `rosies-corner-shop.sln` in Rider. Unity generates it (`com.unity.ide.rider`); if it is missing, use
    **Edit → Preferences → External Tools → Regenerate project files** (the `.sln`/`.csproj` files are git-ignored).
 
@@ -20,7 +20,7 @@ Mobile sorting puzzle in a little grocery shop, ported from the Claude HTML prot
 | `Assets/Game/Services` | Assets, save/progress, content, levels, UI (windows, dialogs, overlay), audio, haptics, pooling, flow interfaces |
 | `Assets/Game/Flow` | Game state machine: Bootstrap → LoadProgress → Home ⇄ Gameplay |
 | `Assets/Game/Bootstrap` | VContainer scopes, settings and entry point; editor-only agent bridge |
-| `Assets/Game/Scenes` | `Boot`, `Home`, `Gameplay` |
+| `Assets/Game/Content` | Every non-code asset: `Scenes`, `Screens` (UXML/USS), `Data` (configs, JSON, localization), `Visual` (sprites, fonts), `Sounds`, `Prefabs` |
 | `Assets/Game/Tests/EditMode` | Rule parity with the prototype, rules, save, progress and config tests |
 | `Packages/` | Embedded UniTask 2.5.11, UniRx 7.1.0 (patched for Unity 6.3: no `WWW`), VContainer 1.19.0, MCP for Unity 10.3.0 |
 | `Tools/Langfuse` | Agent resource-consumption tracking and the Langfuse report |

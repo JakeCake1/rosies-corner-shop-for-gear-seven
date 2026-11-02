@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
     <ui:VisualElement class="banner" picking-mode="Ignore">
         <ui:VisualElement name="ribbon" class="banner__ribbon kit-ribbon-green" picking-mode="Ignore">
             <ui:Label name="title" text="Level 1" class="banner__title" />

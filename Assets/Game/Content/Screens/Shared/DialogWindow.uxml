@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Services/UI/Layouts/Dialog.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Shared/Dialog.uss" />
     <!-- The body is filled from DialogViewModel by DialogWindow. -->
     <ui:VisualElement name="frame" class="dialog-frame" picking-mode="Ignore">
         <ui:VisualElement name="card" class="dialog-card kit-card">

@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
     <!-- Items sit in the slots between the back and the front of the basket. -->
     <ui:VisualElement class="basket" picking-mode="Ignore">
         <ui:VisualElement class="basket__back" picking-mode="Ignore" />

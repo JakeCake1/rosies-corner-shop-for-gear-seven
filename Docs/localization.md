@@ -4,7 +4,7 @@ All player-facing text comes from **Unity Localization** (`com.unity.localizatio
 configs hold only keys. The project has one locale, English (`en`); a new language is a new locale plus its
 tables, with no code change.
 
-## Assets (`Assets/Game/Services/Localization`)
+## Assets (`Assets/Game/Content/Data/Localization`)
 
 | Asset | What it is |
 |---|---|

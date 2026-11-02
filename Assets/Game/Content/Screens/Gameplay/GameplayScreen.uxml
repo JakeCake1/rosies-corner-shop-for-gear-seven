@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Game/Features/Gameplay/Layouts/Gameplay.uss" />
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
     <!-- BoardView positions basket-area, counter and cabinet for the level and screen size. -->
     <ui:VisualElement name="board" class="board" picking-mode="Ignore">
         <ui:VisualElement name="basket-area" class="basket-area" picking-mode="Ignore">
