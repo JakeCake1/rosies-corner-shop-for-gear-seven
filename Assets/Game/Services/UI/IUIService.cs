@@ -18,8 +18,14 @@ namespace Game.Services.UI
         /// <typeparam name="TWindow">Window view type.</typeparam>
         /// <typeparam name="TViewModel">ViewModel type.</typeparam>
         /// <param name="viewModel">ViewModel; disposed when the window closes.</param>
-        /// <param name="ct">Cancels loading and the transition.</param>
+        /// <param name="ct">
+        /// The opener's lifetime (its scene, screen or level): cancelling it stops loading, or closes the window if
+        /// it is already open, so a window never outlives the code that handles its buttons.
+        /// </param>
         /// <returns>The open window.</returns>
+        /// <exception cref="System.OperationCanceledException">
+        /// <paramref name="ct"/> was cancelled before the window finished opening; it is closed or never shown.
+        /// </exception>
         UniTask<TWindow> OpenAsync<TWindow, TViewModel>(TViewModel viewModel, CancellationToken ct)
             where TWindow : WindowView<TViewModel>, new()
             where TViewModel : ViewModel;
@@ -28,7 +34,7 @@ namespace Game.Services.UI
         /// Closes a window.
         /// </summary>
         /// <param name="window">Window to close.</param>
-        /// <returns>Completes when it is removed.</returns>
+        /// <returns>Completes when it is removed, also when it was already closing.</returns>
         UniTask CloseAsync(IWindow window);
 
         /// <summary>
