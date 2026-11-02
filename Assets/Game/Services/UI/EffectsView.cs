@@ -21,6 +21,9 @@ namespace Game.Services.UI
         private const string ComboClass = "praise--combo";
         private const int PoolCapacity = 64;
         private const int PoolMax = 256;
+        private const float PraiseHeight = 40f;
+        // Room for the OutBack overshoot of the pop-in scale and the text outline.
+        private const float PraiseEdgeMargin = 12f;
 
         private static readonly Color[] SparkColors = { new Color(1f, 0.85f, 0.4f), Color.white, new Color(1f, 0.7f, 0.5f) };
         private static readonly Color[] DustColors = { new Color(0.85f, 0.72f, 0.55f), new Color(0.75f, 0.6f, 0.42f) };
@@ -83,9 +86,11 @@ namespace Game.Services.UI
             var label = CreateLabel(text, PraiseClass);
             label.usageHints = UsageHints.DynamicTransform;
             label.EnableInClassList(ComboClass, isCombo);
+            label.style.left = 0f;
+            label.style.top = origin.y - PraiseHeight / 2f;
+            label.style.height = PraiseHeight;
+            KeepPraiseOnScreen(label, origin.x);
             Root.Add(label);
-            var size = new Vector2(260f, 40f);
-            label.PlaceCentered(origin, size);
             VisualElementTweens.SetScale(label, Vector2.one * 0.6f);
             VisualElementTweens.SetTranslate(label, Vector2.zero);
             DOTween.Sequence()
@@ -116,6 +121,28 @@ namespace Game.Services.UI
                 false,
                 PoolCapacity,
                 PoolMax);
+        }
+
+        /// <summary>
+        /// Hides the word until its width is known, then centers it on <paramref name="centerX"/> as far as the
+        /// screen edges allow (words over the side baskets would be cut off otherwise).
+        /// </summary>
+        private void KeepPraiseOnScreen(Label label, float centerX)
+        {
+            label.style.visibility = Visibility.Hidden;
+            EventCallback<GeometryChangedEvent> place = null;
+            place = _ =>
+            {
+                label.UnregisterCallback(place);
+                var width = label.layout.width;
+                var space = Root.layout.width;
+                var min = PraiseEdgeMargin + width / 2f;
+                var max = space - PraiseEdgeMargin - width / 2f;
+                var x = min <= max ? Mathf.Clamp(centerX, min, max) : space / 2f;
+                label.style.left = x - width / 2f;
+                label.style.visibility = Visibility.Visible;
+            };
+            label.RegisterCallback(place);
         }
     }
 }
