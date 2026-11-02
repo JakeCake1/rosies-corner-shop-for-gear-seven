@@ -51,7 +51,9 @@ namespace Game.Services.UI
                 _ = seq.Join(_card.DOScale(1f, FadeSeconds * 1.6f).SetEase(Ease.OutBack));
             }
 
-            await seq.ToUniTask(TweenCancelBehaviour.Kill, ct);
+            // CancelAwait, not Kill: on app quit DOTween clears its tween lists before the scopes dispose and cancel
+            // this token, and killing the stale tween then throws inside DOTween. Unbind kills the tweens by id.
+            await seq.ToUniTask(TweenCancelBehaviour.CancelAwait, ct);
             SetShield(false);
         }
 
@@ -63,7 +65,7 @@ namespace Game.Services.UI
             DOTween.Kill(this);
             SetShield(true);
             await Root.DOFade(0f, FadeSeconds * 0.75f).SetUpdate(true).SetId(this)
-                .ToUniTask(TweenCancelBehaviour.Kill, ct);
+                .ToUniTask(TweenCancelBehaviour.CancelAwait, ct);
         }
 
         /// <inheritdoc/>
