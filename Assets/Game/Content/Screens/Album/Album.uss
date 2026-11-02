@@ -14,8 +14,9 @@
     position: absolute;
     left: 16px;
     top: 15px;
+    /* 40 px face + 5 px lip + 6 px shadow in the sprite */
     width: 65px;
-    height: 40px;
+    height: 46px;
 }
 
 .album-back__text {
@@ -23,70 +24,81 @@
     left: 0;
     right: 0;
     top: 0;
-    bottom: 5px;
+    bottom: 11px;
     font-size: 17px;
+    -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
-    text-shadow: 0 2px 0 rgba(94, 60, 32, 0.45);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
 }
 
+/* Counter pill ("19 / 162"), sized to its text */
 .album-total {
     position: absolute;
     right: 18px;
     top: 17px;
-    width: 86px;
-    height: 32px;
+    height: 34px;
+    padding: 0 14px 2px 14px;
     justify-content: center;
 }
 
 .album-total__text {
     font-size: 16px;
-    color: var(--ink);
+    -unity-font-style: bold;
+    color: #6B4320;
     -unity-text-align: middle-center;
 }
 
+/* Same walnut sign as home: 76 px face, the drop and shadow are inside the sprite's bottom */
 .album-sign {
     position: absolute;
     top: 102px;
     left: 50%;
     width: 340px;
-    height: 76px;
+    height: 90px;
     margin-left: -170px;
+}
+
+/* The ropes reach up to the bunting string, as on home. */
+.album-sign > .sign-rope {
+    top: -90px;
+    height: 94px;
 }
 
 .album-sign__title {
     position: absolute;
     left: 0;
     right: 0;
-    top: 4px;
-    height: 46px;
-    font-size: 32px;
-    color: var(--cream);
+    top: 6px;
+    height: 42px;
+    font-size: 30px;
+    color: #FFF3D6;
     -unity-text-align: middle-center;
+    text-shadow: 0 3px 0 #4A2C12;
 }
 
 .album-sign__subtitle {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 13px;
+    bottom: 24px;
     height: 16px;
     font-size: 11px;
-    letter-spacing: 3px;
-    color: #E2C38A;
+    letter-spacing: 5px;
+    color: #F3D9A8;
     -unity-text-align: middle-center;
 }
 
+/* Ends 16 px above the screen edge with rounded bottom corners. */
 .album-cabinet {
     position: absolute;
     left: 16px;
     right: 16px;
-    top: 191px;
-    bottom: -24px;
-    padding: 8px 8px 0 8px;
+    top: 198px;
+    bottom: 16px;
+    padding: 8px;
     background-color: var(--walnut);
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    border-radius: 24px;
 }
 
 .album-cabinet__inner {
@@ -95,8 +107,7 @@
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/wainscot.png");
     background-repeat: repeat repeat;
     background-size: 42px 60px;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    border-radius: 16px;
     overflow: hidden;
 }
 
@@ -105,7 +116,7 @@
 }
 
 .album-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container {
-    padding: 4px 8px 40px 8px;
+    padding: 4px 8px 16px 8px;
 }
 
 .album-section {

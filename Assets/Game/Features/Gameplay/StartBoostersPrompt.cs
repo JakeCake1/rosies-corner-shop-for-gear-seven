@@ -1,7 +1,9 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Session;
+using Game.Services.Assets;
 using Game.Services.Audio;
 using Game.Services.Balance;
 using Game.Services.Flow;
@@ -11,6 +13,7 @@ using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
 using Game.Services.Wallet;
+using UnityEngine;
 
 namespace Game.Features.Gameplay
 {
@@ -30,6 +33,7 @@ namespace Game.Features.Gameplay
         private readonly IOverlayService _overlay;
         private readonly IAudioService _audio;
         private readonly ILocalizationService _texts;
+        private readonly IAssetProvider _assets;
         private readonly GameBalanceConfig _balance;
 
         /// <summary>
@@ -42,13 +46,15 @@ namespace Game.Features.Gameplay
         /// <param name="curves">Whether the level is tricky.</param>
         /// <param name="overlay">"Not enough coins" toast.</param>
         /// <param name="audio">Coin and click sounds.</param>
-        /// <param name="texts">Card and toggle texts.</param>
+        /// <param name="texts">Card and tile texts.</param>
+        /// <param name="assets">Loads the tile icons (<see cref="GameplayArt"/>).</param>
         /// <param name="balance">Start booster prices and the level the prompt starts at.</param>
         public StartBoostersPrompt(IDialogService dialogs, IBoosterInventory boosters, IWalletService wallet,
             IOnboardingService onboarding, ILevelCurveService curves, IOverlayService overlay, IAudioService audio,
-            ILocalizationService texts, GameBalanceConfig balance)
+            ILocalizationService texts, IAssetProvider assets, GameBalanceConfig balance)
         {
             _texts = texts;
+            _assets = assets;
             _balance = balance;
             _dialogs = dialogs;
             _boosters = boosters;
@@ -82,6 +88,7 @@ namespace Game.Features.Gameplay
                 _onboarding.SetFlag(Flags.StartBoosterGift);
             }
 
+            var art = await _assets.LoadAsync<GameplayArt>(GameplayArt.AddressKey, ct);
             var isFirst = !_onboarding.HasFlag(Flags.StartBoostersSeen);
             _onboarding.SetFlag(Flags.StartBoostersSeen);
             var isHard = _curves.Get(level).IsHard;
@@ -94,13 +101,11 @@ namespace Game.Features.Gameplay
                 Text = _texts.Get(isFirst ? GameplayTexts.StartFirst
                     : isHard ? GameplayTexts.StartTricky : GameplayTexts.StartNormal),
             };
-            var basketLabel = Label(GameplayTexts.StartBasketName, GameplayTexts.StartBasketInfo, BoosterIds.StartBasket,
-                _balance.ExtraBasketPrice);
-            dialog.Toggles.Add(new DialogToggle(basketLabel, false,
+            dialog.Tiles.Add(Tile(art.Basket, GameplayTexts.StartBasketName, GameplayTexts.StartBasketInfo,
+                BoosterIds.StartBasket, _balance.ExtraBasketPrice,
                 on => useBasket = Select(on, BoosterIds.StartBasket, _balance.ExtraBasketPrice)));
-            var quickLabel = Label(GameplayTexts.StartQuickName, GameplayTexts.StartQuickInfo, BoosterIds.StartQuick,
-                _balance.BoosterPrice);
-            dialog.Toggles.Add(new DialogToggle(quickLabel, false,
+            dialog.Tiles.Add(Tile(art.Pick, GameplayTexts.StartQuickName, GameplayTexts.StartQuickInfo,
+                BoosterIds.StartQuick, _balance.BoosterPrice,
                 on => useQuick = Select(on, BoosterIds.StartQuick, _balance.BoosterPrice)));
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartPlay), ButtonStyle.Green, () => play = true));
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartBack), ButtonStyle.WoodSmall, null));
@@ -121,13 +126,16 @@ namespace Game.Features.Gameplay
             return new StartBoosters(useBasket, useQuick);
         }
 
-        private string Label(string nameKey, string infoKey, string id, int price)
+        /// <summary>
+        /// A start booster tile: the badge shows the owned count, or the price in coins when none is owned
+        /// (prototype <c>.preSlot .pc</c>).
+        /// </summary>
+        private DialogTile Tile(Sprite icon, string nameKey, string infoKey, string id, int price,
+            Func<bool, bool> changed)
         {
-            var owned = _boosters.GetStart(id);
-            var cost = owned > 0
-                ? _texts.Format(GameplayTexts.StartOwned, owned)
-                : _texts.Format(GameplayTexts.StartPrice, price);
-            return _texts.Format(GameplayTexts.StartToggle, _texts.Get(nameKey), _texts.Get(infoKey), cost);
+            return new DialogTile(icon, _texts.Get(nameKey), _texts.Get(infoKey), changed,
+                () => _boosters.GetStart(id) > 0 ? _boosters.GetStart(id).ToString() : price.ToString(),
+                () => _boosters.GetStart(id) <= 0);
         }
 
         private bool Select(bool isOn, string id, int price)

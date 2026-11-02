@@ -15,6 +15,7 @@ namespace Game.Services.UI
         private const string SceneName = "scene";
         private const string HudName = "hud";
         private const string ScreensName = "screens";
+        private const string CoachName = "coach";
         private const string PopupsName = "popups";
         private const string OverlayName = "overlay";
         private const string BlockerName = "blocker";
@@ -144,8 +145,9 @@ namespace Game.Services.UI
             _background.Attach(root.Q(BackgroundName));
             _toast = new ToastView();
             _toast.Attach(_overlay);
+            // Below the popups: a modal covers the tutorial instead of the tutorial drawing over it.
             _coach = new CoachView();
-            _coach.Attach(_overlay);
+            _coach.Attach(root.Q(CoachName));
             _effects = new EffectsView();
             _effects.Attach(_overlay);
         }

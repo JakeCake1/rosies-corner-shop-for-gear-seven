@@ -34,7 +34,7 @@ namespace Game.Features.Home
         private readonly ILocalizationService _texts;
         private readonly GameBalanceConfig _balance;
 
-        /// <summary>Shop name on the sign.</summary>
+        /// <summary>Shop name on the sign, broken into two lines (<see cref="SignLines"/>).</summary>
         public IReadOnlyReactiveProperty<string> ShopName => _shopName;
 
         /// <summary>Line under the sign ("Prototype · 20 levels · placeholder art").</summary>
@@ -137,7 +137,7 @@ namespace Game.Features.Home
             var curve = _curves.Active;
             var next = _curves.NextLevel();
             var hard = _curves.Get(next).IsHard;
-            _shopName.Value = string.IsNullOrEmpty(shopName) ? _texts.Get(HomeTexts.DefaultShopName) : shopName;
+            _shopName.Value = SignLines.Split(string.IsNullOrEmpty(shopName) ? _texts.Get(HomeTexts.DefaultShopName) : shopName);
             _subtitle.Value = _texts.Get(curve.SubtitleKey);
             _playLine.Value = _texts.Format(hard ? HomeTexts.PlayLineTricky : HomeTexts.PlayLine, next);
             _isPlayTricky.Value = hard;

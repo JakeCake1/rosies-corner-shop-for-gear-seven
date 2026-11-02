@@ -18,44 +18,86 @@
   8
  ],
  "board_oak.png": [
-  36,
-  44,
-  36,
-  36
+  40,
+  68,
+  40,
+  40
  ],
  "board_walnut.png": [
-  32,
-  40,
-  32,
-  32
+  48,
+  76,
+  48,
+  48
  ],
  "btn_berry.png": [
   38,
-  48,
+  60,
   38,
   38
  ],
+ "btn_berry_pressed.png": [
+  38,
+  60,
+  38,
+  38
+ ],
+ "btn_gear.png": [
+  26,
+  38,
+  26,
+  26
+ ],
+ "btn_gear_pressed.png": [
+  26,
+  38,
+  26,
+  26
+ ],
  "btn_gold.png": [
   38,
-  48,
+  60,
+  38,
+  38
+ ],
+ "btn_gold_pressed.png": [
+  38,
+  60,
   38,
   38
  ],
  "btn_green.png": [
   38,
-  48,
+  60,
+  38,
+  38
+ ],
+ "btn_green_pressed.png": [
+  38,
+  60,
   38,
   38
  ],
  "btn_grey.png": [
   38,
-  48,
+  60,
+  38,
+  38
+ ],
+ "btn_grey_pressed.png": [
+  38,
+  60,
   38,
   38
  ],
  "btn_wood.png": [
   38,
-  48,
+  60,
+  38,
+  38
+ ],
+ "btn_wood_pressed.png": [
+  38,
+  60,
   38,
   38
  ],
@@ -67,7 +109,7 @@
  ],
  "card.png": [
   54,
-  54,
+  74,
   54,
   54
  ],
@@ -83,6 +125,12 @@
   14,
   14
  ],
+ "pill_shadow.png": [
+  42,
+  54,
+  42,
+  38
+ ],
  "pill_white.png": [
   30,
   30,
@@ -91,27 +139,27 @@
  ],
  "plank.png": [
   12,
-  20,
+  26,
   12,
   12
  ],
  "ribbon_berry.png": [
-  44,
-  16,
-  44,
-  16
+  22,
+  0,
+  22,
+  0
  ],
  "ribbon_green.png": [
-  44,
-  16,
-  44,
-  16
+  22,
+  0,
+  22,
+  0
  ],
  "rounded_white.png": [
-  16,
-  16,
-  16,
-  16
+  29,
+  29,
+  29,
+  29
  ],
  "shelf_back.png": [
   8,
@@ -130,6 +178,18 @@
   8,
   2,
   8
+ ],
+ "tile_dashed.png": [
+  40,
+  40,
+  40,
+  40
+ ],
+ "tile_on.png": [
+  40,
+  40,
+  40,
+  40
  ],
  "wainscot_rail.png": [
   2,

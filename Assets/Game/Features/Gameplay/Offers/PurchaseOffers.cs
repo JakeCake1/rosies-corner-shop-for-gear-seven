@@ -125,18 +125,21 @@ namespace Game.Features.Gameplay.Offers
         /// <param name="dialog">The dialog being built.</param>
         /// <param name="labelKey">Key of the button label.</param>
         /// <param name="reward">Granted only when the ad was watched to the end.</param>
-        public void AddAdButton(DialogViewModel dialog, string labelKey, Action reward)
+        /// <returns>The added button, or <c>null</c> when ads haven't started yet.</returns>
+        public DialogButton AddAdButton(DialogViewModel dialog, string labelKey, Action reward)
         {
             if (!_context.HasAds)
             {
-                return;
+                return null;
             }
 
             var label = _context.Services.Texts.Get(labelKey);
-            dialog.Buttons.Add(new DialogButton(label, ButtonStyle.Green, () => RewardAsync(reward).Forget())
+            var button = new DialogButton(label, ButtonStyle.Green, () => RewardAsync(reward).Forget())
             {
                 Badge = ButtonBadge.Ad,
-            });
+            };
+            dialog.Buttons.Add(button);
+            return button;
         }
 
         /// <summary>

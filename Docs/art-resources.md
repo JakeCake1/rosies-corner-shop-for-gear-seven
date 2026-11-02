@@ -31,7 +31,7 @@ Shelf states (ice, boards, twine, second-row ghost) and wood/awning/wallpaper su
 | `png@4x/items/**`, `items/items.json` | `Content/Visual/Items/` and `Content/Data/Items/items.json`, referenced by `Content/Data/Items/ItemCatalog.asset` (addressable `config/item-catalog`) through `AssetReference`s; the sprites live in per-level groups `Items-Level-NN` / `Items-Rest` (see below) |
 | `png@4x/tools`, `basket`, `boosters`, `shelf` | `Content/Visual/Gameplay/` |
 | `png@4x/ui` | `Content/Visual/UI/Icons/` |
-| CSS surfaces (wood, awning, wallpaper, chips, buttons, ribbons, doilies) | 9-slice sprites in `Content/Visual/UI/Kit/`, made by `Tools/Art/generate_ui_kit.py`; slicing is set in USS (`Kit.uss`, `-unity-slice-*`) |
+| CSS surfaces (wood, awning, wallpaper, chips, buttons, ribbons, doilies, tricky gingham, start-booster tiles) | 9-slice sprites in `Content/Visual/UI/Kit/`, made by `Tools/Art/generate_ui_kit.py`; slicing is set in USS (`Kit.uss`, `-unity-slice-*`) |
 | `layout/styles.css`, `layout/LAYOUT.md` | USS next to each layout (`Content/Screens/Shared/*.uss`, `Content/Screens/<Feature>/*.uss`); colors as variables in `Game.uss` |
 | Fonts (Fredoka, Yeseva One) | `Content/Visual/Fonts/`, set with `-unity-font` in `Game.uss` (no TextMesh Pro) |
 | `screens/*.png` | The reference for every layout: compare Play mode at 390×844 with the matching screenshot |
@@ -39,6 +39,14 @@ Shelf states (ice, boards, twine, second-row ghost) and wood/awning/wallpaper su
 The UI is UI Toolkit with one `PanelSettings` at the 390×844 reference resolution, so the CSS pixel values from
 `styles.css`, `LAYOUT.md` and the screenshots (which are @2x: divide by 2) go into USS unchanged. Scenes, layouts,
 styles and configs are authored assets; there is no editor code that generates them.
+
+Kit sprites: the generator draws at 2 texture px per CSS px and the sprites import at 200 PPU, so on the 100 PPU
+panel they already come out at CSS size. Use `-unity-slice-scale: 1px` with the borders from `slices.json` (its order
+is left, bottom, right, top); a smaller slice scale shrinks the corners twice. UI Toolkit has no box-shadow, so drop
+shadows and button lips are drawn into the sprites. Pressable buttons have a `*_pressed` sprite with a shorter lip that
+`Game.uss` swaps in on `:active` together with a `translate` sink. Run the generator into a scratch folder
+(`python Tools/Art/generate_ui_kit.py <folder>`) and copy only the sprites you changed: Pillow re-encodes every PNG.
+A new sprite needs a `.meta` with a new guid (Sprite, single, 200 PPU).
 
 Sprite atlases (Sprite Atlas V2, `Content/Visual/Atlases/`): `UI` packs the shared kit and icons
 (`Content/Visual/UI`), `Gameplay` packs the board art (`Content/Visual/Gameplay`). A sprite added to one of those

@@ -8,7 +8,7 @@
     <ui:Button name="back" class="btn kit-btn-wood album-back">
         <ui:Label name="back-text" text="Back" class="album-back__text" />
     </ui:Button>
-    <ui:VisualElement class="album-total kit-pill-white" picking-mode="Ignore">
+    <ui:VisualElement class="album-total chip kit-chip" picking-mode="Ignore">
         <ui:Label name="total" text="0 / 162" class="album-total__text" />
     </ui:VisualElement>
     <ui:VisualElement class="album-sign kit-board-walnut" picking-mode="Ignore">

@@ -1,4 +1,4 @@
-/* Kit sprites (2x art): 9-slice borders from Art/Kit/slices.json, scaled by 0.5. */
+/* Kit sprites (2x art, imported at 200 PPU, which already halves the 9-slice borders on the 100 PPU panel): borders from Art/Kit/slices.json. */
 .kit-awning {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/awning.png");
 }
@@ -17,7 +17,7 @@
     -unity-slice-top: 24;
     -unity-slice-right: 24;
     -unity-slice-bottom: 24;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-bar-track {
@@ -26,7 +26,7 @@
     -unity-slice-top: 30;
     -unity-slice-right: 30;
     -unity-slice-bottom: 30;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-board {
@@ -35,25 +35,25 @@
     -unity-slice-top: 8;
     -unity-slice-right: 18;
     -unity-slice-bottom: 8;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-board-oak {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/board_oak.png");
-    -unity-slice-left: 36;
-    -unity-slice-top: 36;
-    -unity-slice-right: 36;
-    -unity-slice-bottom: 44;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-left: 40;
+    -unity-slice-top: 40;
+    -unity-slice-right: 40;
+    -unity-slice-bottom: 68;
+    -unity-slice-scale: 1px;
 }
 
 .kit-board-walnut {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/board_walnut.png");
-    -unity-slice-left: 32;
-    -unity-slice-top: 32;
-    -unity-slice-right: 32;
-    -unity-slice-bottom: 40;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-left: 48;
+    -unity-slice-top: 48;
+    -unity-slice-right: 48;
+    -unity-slice-bottom: 76;
+    -unity-slice-scale: 1px;
 }
 
 .kit-btn-berry {
@@ -61,8 +61,17 @@
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
-    -unity-slice-bottom: 48;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 1px;
+}
+
+.kit-btn-gear {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_gear.png");
+    -unity-slice-left: 26;
+    -unity-slice-top: 26;
+    -unity-slice-right: 26;
+    -unity-slice-bottom: 38;
+    -unity-slice-scale: 1px;
 }
 
 .kit-btn-gold {
@@ -70,8 +79,8 @@
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
-    -unity-slice-bottom: 48;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 1px;
 }
 
 .kit-btn-green {
@@ -79,8 +88,8 @@
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
-    -unity-slice-bottom: 48;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 1px;
 }
 
 .kit-btn-grey {
@@ -88,8 +97,8 @@
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
-    -unity-slice-bottom: 48;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 1px;
 }
 
 .kit-btn-wood {
@@ -97,8 +106,33 @@
     -unity-slice-left: 38;
     -unity-slice-top: 38;
     -unity-slice-right: 38;
-    -unity-slice-bottom: 48;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 60;
+    -unity-slice-scale: 1px;
+}
+
+/* Pressed buttons: same slices; .btn:active (Game.uss) moves the button down so the 1 px lip keeps its ground. */
+.kit-btn-berry:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_berry_pressed.png");
+}
+
+.kit-btn-gear:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_gear_pressed.png");
+}
+
+.kit-btn-gold:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_gold_pressed.png");
+}
+
+.kit-btn-green:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_green_pressed.png");
+}
+
+.kit-btn-grey:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_grey_pressed.png");
+}
+
+.kit-btn-wood:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/btn_wood_pressed.png");
 }
 
 .kit-cabinet {
@@ -107,7 +141,7 @@
     -unity-slice-top: 36;
     -unity-slice-right: 36;
     -unity-slice-bottom: 40;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-card {
@@ -115,8 +149,8 @@
     -unity-slice-left: 54;
     -unity-slice-top: 54;
     -unity-slice-right: 54;
-    -unity-slice-bottom: 54;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 74;
+    -unity-slice-scale: 1px;
 }
 
 .kit-chip {
@@ -125,7 +159,7 @@
     -unity-slice-top: 32;
     -unity-slice-right: 32;
     -unity-slice-bottom: 32;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-circle {
@@ -146,7 +180,7 @@
     -unity-slice-top: 14;
     -unity-slice-right: 14;
     -unity-slice-bottom: 14;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-ledge {
@@ -159,7 +193,7 @@
     -unity-slice-top: 30;
     -unity-slice-right: 30;
     -unity-slice-bottom: 30;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-plank {
@@ -167,35 +201,35 @@
     -unity-slice-left: 12;
     -unity-slice-top: 12;
     -unity-slice-right: 12;
-    -unity-slice-bottom: 20;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-bottom: 26;
+    -unity-slice-scale: 1px;
 }
 
 .kit-ribbon-berry {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ribbon_berry.png");
-    -unity-slice-left: 44;
-    -unity-slice-top: 16;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 16;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-left: 22;
+    -unity-slice-top: 0;
+    -unity-slice-right: 22;
+    -unity-slice-bottom: 0;
+    -unity-slice-scale: 1px;
 }
 
 .kit-ribbon-green {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ribbon_green.png");
-    -unity-slice-left: 44;
-    -unity-slice-top: 16;
-    -unity-slice-right: 44;
-    -unity-slice-bottom: 16;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-left: 22;
+    -unity-slice-top: 0;
+    -unity-slice-right: 22;
+    -unity-slice-bottom: 0;
+    -unity-slice-scale: 1px;
 }
 
 .kit-rounded-white {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/rounded_white.png");
-    -unity-slice-left: 16;
-    -unity-slice-top: 16;
-    -unity-slice-right: 16;
-    -unity-slice-bottom: 16;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-left: 29;
+    -unity-slice-top: 29;
+    -unity-slice-right: 29;
+    -unity-slice-bottom: 29;
+    -unity-slice-scale: 1px;
 }
 
 .kit-shadow {
@@ -208,7 +242,7 @@
     -unity-slice-top: 8;
     -unity-slice-right: 8;
     -unity-slice-bottom: 8;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-shelf-floor {
@@ -217,7 +251,7 @@
     -unity-slice-top: 6;
     -unity-slice-right: 8;
     -unity-slice-bottom: 6;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-shelf-post {
@@ -226,7 +260,7 @@
     -unity-slice-top: 8;
     -unity-slice-right: 2;
     -unity-slice-bottom: 8;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-wainscot {
@@ -239,7 +273,7 @@
     -unity-slice-top: 2;
     -unity-slice-right: 2;
     -unity-slice-bottom: 2;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .kit-wallpaper {
@@ -268,6 +302,11 @@
 
 .icon-lock {
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Icons/lock.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.icon-snowflake {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/snowflake.png");
     -unity-background-scale-mode: scale-to-fit;
 }
 
