@@ -126,7 +126,10 @@ namespace Game.Features.Home
             {
                 var has = i < sprites.Count;
                 _showcase[i].SetVisible(has);
-                if (has) _showcase[i].SetSprite(sprites[i]);
+                if (has)
+                {
+                    _showcase[i].SetSprite(sprites[i]);
+                }
             }
         }
 
@@ -134,7 +137,10 @@ namespace Game.Features.Home
         {
             _albumPulse?.Kill();
             VisualElementTweens.SetScale(_album, Vector2.one);
-            if (isOn) _albumPulse = _album.DOScale(1.06f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetId(this);
+            if (isOn)
+            {
+                _albumPulse = _album.DOScale(1.06f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetId(this);
+            }
         }
     }
 }

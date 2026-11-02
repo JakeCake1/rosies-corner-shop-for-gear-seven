@@ -71,7 +71,10 @@ namespace Game.Features.Gameplay.Hud
         private void Refresh()
         {
             var st = _session.State;
-            if (st == null) return;
+            if (st == null)
+            {
+                return;
+            }
 
             _isTricky.Value = _session.IsTricky;
             _badgeTitle.Value = _texts.Get(_session.IsTricky ? GameplayTexts.BadgeTricky : GameplayTexts.BadgeLevel);

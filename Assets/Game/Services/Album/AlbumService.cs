@@ -45,16 +45,25 @@ namespace Game.Services.Album
         /// <inheritdoc/>
         public string RegisterFound(int itemId)
         {
-            if (Data.Found.Contains(itemId)) return null;
+            if (Data.Found.Contains(itemId))
+            {
+                return null;
+            }
 
             Data.Found.Add(itemId);
             Data.NewCount++;
             var family = _content.Catalog.Get(itemId).Family;
             var isCompleted = !Data.CompletedFamilies.Contains(family) &&
                               _content.Catalog.Items.Where(i => i.Family == family).All(i => Data.Found.Contains(i.Id));
-            if (isCompleted) Data.CompletedFamilies.Add(family);
+            if (isCompleted)
+            {
+                Data.CompletedFamilies.Add(family);
+            }
             MarkChanged();
-            if (!isCompleted) return null;
+            if (!isCompleted)
+            {
+                return null;
+            }
 
             _wallet.Add(FamilyBonus);
             return family;
@@ -63,7 +72,10 @@ namespace Game.Services.Album
         /// <inheritdoc/>
         public void MarkSeen()
         {
-            if (Data.NewCount == 0) return;
+            if (Data.NewCount == 0)
+            {
+                return;
+            }
 
             Data.NewCount = 0;
             MarkChanged();

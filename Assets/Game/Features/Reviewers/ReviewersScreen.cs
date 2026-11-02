@@ -68,7 +68,10 @@ namespace Game.Features.Reviewers
             var curveIndex = 0;
             for (var i = 0; i < _curves.Curves.Count; i++)
             {
-                if (_curves.Curves[i] == _curves.Active) curveIndex = i;
+                if (_curves.Curves[i] == _curves.Active)
+                {
+                    curveIndex = i;
+                }
             }
 
             var labels = new string[_curves.Curves.Count];
@@ -94,7 +97,10 @@ namespace Game.Features.Reviewers
             }));
             dialog.Buttons.Add(new DialogButton(_texts.Get(ReviewersTexts.Close), ButtonStyle.Berry, null));
             await _dialogs.ShowAsync(dialog, ct);
-            if (!reopen) return;
+            if (!reopen)
+            {
+                return;
+            }
 
             await _flow.GoHomeAsync();
             // Going home hid the old home screen and cancelled ct with it; the refreshed screen's popups are closed
@@ -107,7 +113,10 @@ namespace Game.Features.Reviewers
             // Levels before the chosen one count as cleared so progression and milestones stay consistent.
             for (var k = 1; k < level; k++)
             {
-                if (!_levels.IsCompleted(k)) _levels.Complete(k, 1);
+                if (!_levels.IsCompleted(k))
+                {
+                    _levels.Complete(k, 1);
+                }
             }
 
             _flow.PlayLevelAsync(level).Forget();

@@ -55,7 +55,10 @@ namespace Game.Tests.EditMode.Features.Gameplay
 
         private static JObject Fixture()
         {
-            if (_fixture != null) return _fixture;
+            if (_fixture != null)
+            {
+                return _fixture;
+            }
 
             var path = "Assets/Game/Tests/EditMode/Features/Gameplay/Fixtures/prototype_playthrough.json";
             _fixture = JObject.Parse(File.ReadAllText(path));
@@ -70,14 +73,20 @@ namespace Game.Tests.EditMode.Features.Gameplay
                 var shipped = false;
                 for (var s = 0; s < LevelState.MaxBaskets; s++)
                 {
-                    if (st.Baskets[s] == null || !st.Baskets[s].IsDone) continue;
+                    if (st.Baskets[s] == null || !st.Baskets[s].IsDone)
+                    {
+                        continue;
+                    }
 
                     LevelRules.CompleteBasket(st, s, new List<LevelEvent>());
                     steps.Add("ship" + s + " " + Compact(st));
                     shipped = true;
                 }
 
-                if (shipped) continue;
+                if (shipped)
+                {
+                    continue;
+                }
                 if (LevelRules.IsWon(st))
                 {
                     steps.Add("WON");
@@ -130,8 +139,14 @@ namespace Game.Tests.EditMode.Features.Gameplay
 
         private static string Jar(Jar j)
         {
-            if (j == null) return ".";
-            if (j.IsTool) return "H";
+            if (j == null)
+            {
+                return ".";
+            }
+            if (j.IsTool)
+            {
+                return "H";
+            }
 
             return (j.IsWrapped ? "w" : string.Empty) + j.Type + (j.Back != null ? "/" + j.Back.Type : string.Empty);
         }

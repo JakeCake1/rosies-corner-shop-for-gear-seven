@@ -31,7 +31,10 @@ namespace Game.Services.Levels
         /// <inheritdoc/>
         public void MarkFailed(int level)
         {
-            if (Data.FailedLevels.Add(level)) MarkChanged();
+            if (Data.FailedLevels.Add(level))
+            {
+                MarkChanged();
+            }
         }
 
         /// <inheritdoc/>

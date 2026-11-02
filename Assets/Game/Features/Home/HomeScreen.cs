@@ -115,7 +115,10 @@ namespace Game.Features.Home
 
         private void CancelShown()
         {
-            if (_shown == null) return;
+            if (_shown == null)
+            {
+                return;
+            }
 
             _shown.Cancel();
             _shown.Dispose();
@@ -124,7 +127,10 @@ namespace Game.Features.Home
 
         private void OnCommand(HomeCommand command, CancellationToken shown)
         {
-            if (_ui.IsPopupOpen) return;
+            if (_ui.IsPopupOpen)
+            {
+                return;
+            }
 
             switch (command)
             {
@@ -148,19 +154,34 @@ namespace Game.Features.Home
 
         private async UniTaskVoid ShowMilestonesAsync(CancellationToken ct)
         {
-            if (_curves.Active.IsOriginal) return;
+            if (_curves.Active.IsOriginal)
+            {
+                return;
+            }
 
             var levels = _progress.Levels;
             var onboarding = _progress.Onboarding;
             var album = levels.IsCompleted(AlbumFromLevel) && !onboarding.HasFlag(Flags.AlbumIntro);
             var name = levels.IsCompleted(NameShopAfterLevel) && !onboarding.HasFlag(Flags.NameAsked);
-            if (!album && !name) return;
+            if (!album && !name)
+            {
+                return;
+            }
 
             await UniTask.Delay(MilestoneDelayMs, cancellationToken: ct);
-            if (_window == null || _ui.IsPopupOpen) return;
+            if (_window == null || _ui.IsPopupOpen)
+            {
+                return;
+            }
 
-            if (album) await _album.IntroAsync(ct);
-            else await _namePrompt.AskAsync(ct);
+            if (album)
+            {
+                await _album.IntroAsync(ct);
+            }
+            else
+            {
+                await _namePrompt.AskAsync(ct);
+            }
         }
     }
 }

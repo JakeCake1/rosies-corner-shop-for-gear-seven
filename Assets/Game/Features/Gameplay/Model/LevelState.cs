@@ -151,8 +151,14 @@ namespace Game.Features.Gameplay.Model
             var map = new Dictionary<Jar, Jar>();
             Jar Copy(Jar j)
             {
-                if (j == null) return null;
-                if (map.TryGetValue(j, out var c)) return c;
+                if (j == null)
+                {
+                    return null;
+                }
+                if (map.TryGetValue(j, out var c))
+                {
+                    return c;
+                }
                 c = new Jar
                 {
                     Id = j.Id, Type = j.Type, IsTool = j.IsTool, TargetBlockId = j.TargetBlockId,
@@ -192,7 +198,10 @@ namespace Game.Features.Gameplay.Model
             for (var i = 0; i < MaxBaskets; i++)
             {
                 var b = Baskets[i];
-                if (b == null) continue;
+                if (b == null)
+                {
+                    continue;
+                }
 
                 var copy = new Basket { Id = b.Id, Type = b.Type, IsDone = b.IsDone };
                 copy.Jars.AddRange(b.Jars.Select(Copy));

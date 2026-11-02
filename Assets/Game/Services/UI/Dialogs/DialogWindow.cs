@@ -54,8 +54,14 @@ namespace Game.Services.UI.Dialogs
                 icon.SetSprite(vm.Icon);
             }
 
-            if (vm.Stars.HasValue) BuildStars(vm.Stars.Value);
-            if (!string.IsNullOrEmpty(vm.Headline)) Spawn(_body, CreateLabel(vm.Headline, "dialog-headline"));
+            if (vm.Stars.HasValue)
+            {
+                BuildStars(vm.Stars.Value);
+            }
+            if (!string.IsNullOrEmpty(vm.Headline))
+            {
+                Spawn(_body, CreateLabel(vm.Headline, "dialog-headline"));
+            }
             foreach (var (label, value) in vm.Stats)
             {
                 var row = Spawn(_body, CreateElement("dialog-stat", "kit-rounded-white"));
@@ -63,9 +69,18 @@ namespace Game.Services.UI.Dialogs
                 row.Add(CreateLabel(value, "dialog-stat__value"));
             }
 
-            if (!string.IsNullOrEmpty(vm.Text)) Spawn(_body, CreateLabel(vm.Text, "dialog-text"));
-            if (vm.Progress.HasValue) BuildProgress(vm.Progress.Value, vm.ProgressCaption);
-            if (vm.Items.Count > 0) BuildItems(vm.Items);
+            if (!string.IsNullOrEmpty(vm.Text))
+            {
+                Spawn(_body, CreateLabel(vm.Text, "dialog-text"));
+            }
+            if (vm.Progress.HasValue)
+            {
+                BuildProgress(vm.Progress.Value, vm.ProgressCaption);
+            }
+            if (vm.Items.Count > 0)
+            {
+                BuildItems(vm.Items);
+            }
             if (!string.IsNullOrEmpty(vm.Reward))
             {
                 var reward = Spawn(_body, CreateElement("dialog-reward"));
@@ -78,14 +93,23 @@ namespace Game.Services.UI.Dialogs
                 BuildToggle(t);
             }
 
-            if (vm.Input != null) BuildInput(vm);
-            if (vm.Grid.Count > 0) BuildGrid(vm);
+            if (vm.Input != null)
+            {
+                BuildInput(vm);
+            }
+            if (vm.Grid.Count > 0)
+            {
+                BuildGrid(vm);
+            }
             foreach (var s in vm.Segments)
             {
                 BuildSegments(s);
             }
 
-            if (!string.IsNullOrEmpty(vm.Note)) Spawn(_body, CreateLabel(vm.Note, "dialog-note"));
+            if (!string.IsNullOrEmpty(vm.Note))
+            {
+                Spawn(_body, CreateLabel(vm.Note, "dialog-note"));
+            }
             BuildButtons(vm);
         }
 
@@ -98,7 +122,10 @@ namespace Game.Services.UI.Dialogs
                 var star = CreateElement("dialog-star", isOn ? "icon-star-on" : "icon-star-off");
                 star.EnableInClassList("dialog-star--big", i == 1);
                 row.Add(star);
-                if (!isOn) continue;
+                if (!isOn)
+                {
+                    continue;
+                }
 
                 VisualElementTweens.SetScale(star, Vector2.zero);
                 star.DOScale(1f, 0.35f).SetDelay(0.15f + i * StarDelay).SetEase(Ease.OutBack, 2f).SetUpdate(true).SetId(this);
@@ -230,7 +257,10 @@ namespace Game.Services.UI.Dialogs
                 var parent = _body;
                 if (b.IsInRow)
                 {
-                    if (row == null) row = Spawn(_body, CreateElement("dialog-row"));
+                    if (row == null)
+                    {
+                        row = Spawn(_body, CreateElement("dialog-row"));
+                    }
                     parent = row;
                 }
                 else
@@ -239,8 +269,14 @@ namespace Game.Services.UI.Dialogs
                 }
 
                 var view = DialogButtonView.Create(b, vm.AdBadgeText);
-                if (parent == _body) Spawn(_body, view.Root);
-                else parent.Add(view.Root);
+                if (parent == _body)
+                {
+                    Spawn(_body, view.Root);
+                }
+                else
+                {
+                    parent.Add(view.Root);
+                }
                 var button = b;
                 view.Button.OnTapAsObservable().Subscribe(_ => vm.Press(button)).AddTo(Bindings);
                 b.IsEnabled.Subscribe(x => view.Button.SetEnabled(x)).AddTo(Bindings);

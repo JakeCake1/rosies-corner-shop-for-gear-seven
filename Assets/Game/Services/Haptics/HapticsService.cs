@@ -24,7 +24,10 @@ namespace Game.Services.Haptics
         public void Pulse(HapticKind kind)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            if (!_settings.IsHapticsOn || kind == HapticKind.Tap) return;
+            if (!_settings.IsHapticsOn || kind == HapticKind.Tap)
+            {
+                return;
+            }
 
             Handheld.Vibrate();
 #endif

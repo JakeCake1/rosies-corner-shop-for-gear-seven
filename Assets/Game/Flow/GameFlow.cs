@@ -42,7 +42,10 @@ namespace Game.Flow
             if (startBoosters == null && _startBoosters.IsNeeded(level))
             {
                 startBoosters = await _startBoosters.AskAsync(level, _lifetimeToken);
-                if (startBoosters == null) return;
+                if (startBoosters == null)
+                {
+                    return;
+                }
             }
 
             _request.Level = level;

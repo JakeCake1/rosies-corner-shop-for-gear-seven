@@ -71,7 +71,10 @@ namespace Game.Features.Gameplay.Board
             _perRow = perRow;
             EnsureParts(rows * perRow, rows);
             _rowsBadge.SetVisible(rows > 1);
-            if (rows > 1) _rowsText.text = rowsText;
+            if (rows > 1)
+            {
+                _rowsText.text = rowsText;
+            }
             Resize(width, rowHeight, itemSize);
         }
 
@@ -117,7 +120,10 @@ namespace Game.Features.Gameplay.Board
         {
             var g = _ghosts[slot];
             g.SetVisible(sprite != null);
-            if (sprite != null) g.SetSprite(sprite);
+            if (sprite != null)
+            {
+                g.SetSprite(sprite);
+            }
         }
 
         /// <summary>
@@ -132,7 +138,10 @@ namespace Game.Features.Gameplay.Board
             _ties.SetVisible(isLocked);
             _keyTag.SetVisible(hasKey);
             _ice.SetVisible(frozen > 0);
-            if (frozen > 0) _iceText.text = frozen.ToString();
+            if (frozen > 0)
+            {
+                _iceText.text = frozen.ToString();
+            }
             _boardLayer.SetVisible(isBoarded);
             _content.style.opacity = isLocked ? 0.7f : 1f;
             _cellLayer.SetVisible(!isBoarded);
@@ -217,8 +226,14 @@ namespace Game.Features.Gameplay.Board
 
             for (var i = 0; i < _cells.Count; i++)
             {
-                if (i < cells) _cellLayer.Add(_cells[i]);
-                else _cells[i].RemoveFromHierarchy();
+                if (i < cells)
+                {
+                    _cellLayer.Add(_cells[i]);
+                }
+                else
+                {
+                    _cells[i].RemoveFromHierarchy();
+                }
             }
 
             while (_floors.Count < rows)
@@ -230,8 +245,14 @@ namespace Game.Features.Gameplay.Board
 
             for (var i = 0; i < _floors.Count; i++)
             {
-                if (i < rows) _floorLayer.Add(_floors[i]);
-                else _floors[i].RemoveFromHierarchy();
+                if (i < rows)
+                {
+                    _floorLayer.Add(_floors[i]);
+                }
+                else
+                {
+                    _floors[i].RemoveFromHierarchy();
+                }
             }
         }
     }

@@ -68,7 +68,10 @@ namespace Game.Features.Album
             dialog.Buttons.Add(new DialogButton(_texts.Get(AlbumTexts.IntroLater), ButtonStyle.WoodSmall, null));
             _audio.Play(SoundId.Win);
             await _dialogs.ShowAsync(dialog, ct);
-            if (open) await OpenAsync(ct);
+            if (open)
+            {
+                await OpenAsync(ct);
+            }
         }
     }
 }

@@ -103,9 +103,15 @@ namespace Game.Services.UI.Dialogs
         /// <param name="button">The tapped button.</param>
         public void Press(DialogButton button)
         {
-            if (!button.IsEnabled.Value) return;
+            if (!button.IsEnabled.Value)
+            {
+                return;
+            }
 
-            if (button.IsClosing) Close();
+            if (button.IsClosing)
+            {
+                Close();
+            }
             button.Action?.Invoke();
         }
     }

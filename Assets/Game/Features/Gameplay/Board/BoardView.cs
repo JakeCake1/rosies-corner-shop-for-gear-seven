@@ -161,7 +161,10 @@ namespace Game.Features.Gameplay.Board
             _state = state;
             var now = Time.unscaledTime;
             var instant = change.Kind == BoardChangeKind.Rebuild;
-            if (change.Kind == BoardChangeKind.Layout) Layout(state);
+            if (change.Kind == BoardChangeKind.Layout)
+            {
+                Layout(state);
+            }
 
             PlayEvents(state, change);
             RenderBaskets(state, now, instant);
@@ -178,7 +181,10 @@ namespace Game.Features.Gameplay.Board
         {
             _counter.Kill(true);
             _counter.DOShake(0.4f, new Vector2(10f, 0f), 18);
-            if (_items.TryGetValue(jarId, out var item)) item.Nope();
+            if (_items.TryGetValue(jarId, out var item))
+            {
+                item.Nope();
+            }
         }
 
         /// <summary>
@@ -187,7 +193,10 @@ namespace Game.Features.Gameplay.Board
         /// <param name="notice">The shipment.</param>
         public void PlayShipping(ShipNotice notice)
         {
-            if (!_baskets.TryGetValue(notice.BasketId, out var basket)) return;
+            if (!_baskets.TryGetValue(notice.BasketId, out var basket))
+            {
+                return;
+            }
 
             basket.CoverWithNapkin();
             var at = basket.Root.worldBound.center;
@@ -270,7 +279,10 @@ namespace Game.Features.Gameplay.Board
         private void OnGeometryChanged(GeometryChangedEvent e)
         {
             // Screen rotated or the window was resized: lay the level out again for the new size.
-            if (_state != null && Root.layout.size != _laidOutSize) Rebuild(_state, false);
+            if (_state != null && Root.layout.size != _laidOutSize)
+            {
+                Rebuild(_state, false);
+            }
         }
 
         private void ClearAll()
@@ -384,7 +396,10 @@ namespace Game.Features.Gameplay.Board
                         if (_items.TryGetValue(e.Id, out var item))
                         {
                             var jar = FindJar(state, e.Id);
-                            if (jar != null) item.Unwrap(SpriteOf(jar.Type));
+                            if (jar != null)
+                            {
+                                item.Unwrap(SpriteOf(jar.Type));
+                            }
                         }
 
                         break;
@@ -414,7 +429,10 @@ namespace Game.Features.Gameplay.Board
 
         private void FlyKey(int fromBlock, int toBlock)
         {
-            if (!_shelves.TryGetValue(toBlock, out var target)) return;
+            if (!_shelves.TryGetValue(toBlock, out var target))
+            {
+                return;
+            }
 
             var start = _shelves.TryGetValue(fromBlock, out var source) ? source.KeyCenter() : target.Root.worldBound.center;
             var key = CreateElement("key-flyer");
@@ -446,7 +464,10 @@ namespace Game.Features.Gameplay.Board
                 var b = state.Baskets[i];
                 var isLockedSlot = i >= state.UnlockedBaskets;
                 SetLock(i, isLockedSlot && (state.LevelNumber >= GameplayBalance.ExtraBasketSlotLevel || state.LevelNumber == 0));
-                if (b == null) continue;
+                if (b == null)
+                {
+                    continue;
+                }
 
                 live.Add(b.Id);
                 if (!_baskets.TryGetValue(b.Id, out var view))
@@ -500,7 +521,10 @@ namespace Game.Features.Gameplay.Board
                 return;
             }
 
-            if (_locks[slot] == null) _locks[slot] = CreateLock();
+            if (_locks[slot] == null)
+            {
+                _locks[slot] = CreateLock();
+            }
             var element = _locks[slot];
             _basketArea.Add(element);
             element.style.left = SlotLeft(slot);
@@ -538,7 +562,10 @@ namespace Game.Features.Gameplay.Board
         {
             foreach (var item in items)
             {
-                if (_leavingItems.Remove(item)) _itemPool.Release(item);
+                if (_leavingItems.Remove(item))
+                {
+                    _itemPool.Release(item);
+                }
             }
         }
 
@@ -562,7 +589,10 @@ namespace Game.Features.Gameplay.Board
                 var stock = col.Queue.Count;
                 var hasHammer = col.Queue.Any(j => j.IsTool);
                 var tiedHammer = col.Blocks.Any(b => b.IsLocked && b.Slots.Any(j => j != null && j.IsTool));
-                if (hasHammer) stock--;
+                if (hasHammer)
+                {
+                    stock--;
+                }
                 _stockLabels[c].text = stock > 0
                     ? _texts.Format(GameplayTexts.Stock, stock)
                     : _texts.Get(GameplayTexts.StockEmpty);
@@ -593,7 +623,10 @@ namespace Game.Features.Gameplay.Board
                             view.Root.style.bottom = _visibleRows * _rowHeight + 20f + fresh * _rowHeight * 0.5f;
                             var drop = view.Root.DOBottom(bottom, ShelfDropSeconds).SetDelay(delay).SetEase(Ease.OutBack, 1.3f).SetId(this);
                             // The level session plays one roll for the whole opening drop; later shelves each get their own.
-                            if (!isStart) drop.OnStart(() => _audio.Play(SoundId.Roll));
+                            if (!isStart)
+                            {
+                                drop.OnStart(() => _audio.Play(SoundId.Roll));
+                            }
                             view.SettledAt = now + delay + ShelfDropSeconds;
                             fresh++;
                         }
@@ -657,7 +690,10 @@ namespace Game.Features.Gameplay.Board
                     for (var i = 0; i < b.Slots.Length; i++)
                     {
                         var j = b.Slots[i];
-                        if (j != null) wanted[j.Id] = (shelf.Cell(i), j, shelf.SettledAt, false, null);
+                        if (j != null)
+                        {
+                            wanted[j.Id] = (shelf.Cell(i), j, shelf.SettledAt, false, null);
+                        }
                     }
                 }
             }
@@ -669,7 +705,10 @@ namespace Game.Features.Gameplay.Board
 
             foreach (var b in state.Baskets)
             {
-                if (b == null || !_baskets.TryGetValue(b.Id, out var basket)) continue;
+                if (b == null || !_baskets.TryGetValue(b.Id, out var basket))
+                {
+                    continue;
+                }
 
                 for (var i = 0; i < b.Jars.Count; i++)
                 {
@@ -699,7 +738,10 @@ namespace Game.Features.Gameplay.Board
                     continue;
                 }
 
-                if (view.Destination == cell) continue;
+                if (view.Destination == cell)
+                {
+                    continue;
+                }
 
                 if (instant)
                 {
@@ -710,7 +752,10 @@ namespace Game.Features.Gameplay.Board
                 var fromCounter = view.Destination != null && _counterSlots.Contains(view.Destination);
                 var hop = isCounter && fromCounter;
                 var lift = isCounter ? 46f : 72f;
-                if (change.Kind == BoardChangeKind.Shuffle) lift = 34f;
+                if (change.Kind == BoardChangeKind.Shuffle)
+                {
+                    lift = 34f;
+                }
                 Detach(view, view.Root.worldBound.center, view.Root.layout.size);
                 // Items sliding along the counter after one leaves are not new arrivals: no landing sound.
                 Fly(view, cell, Mathf.Max(0f, ready - now), hop ? 0f : lift, hop ? CounterHopSeconds : FlightSeconds,
@@ -767,7 +812,10 @@ namespace Game.Features.Gameplay.Board
                 {
                     var end = _flight.WorldToLocal(cell.worldBound.center);
                     var endSize = cell.layout.size;
-                    if (float.IsNaN(endSize.x)) endSize = startSize;
+                    if (float.IsNaN(endSize.x))
+                    {
+                        endSize = startSize;
+                    }
                     var p = Vector2.Lerp(start, end, t) + Vector2.down * (lift * 4f * t * (1f - t));
                     root.PlaceCentered(p, Vector2.Lerp(startSize, endSize, t));
                     VisualElementTweens.SetRotation(root, lift > 0f ? -8f * Mathf.Sin(t * Mathf.PI) : 0f);
@@ -778,10 +826,16 @@ namespace Game.Features.Gameplay.Board
                 .SetId(this)
                 .OnComplete(() =>
                 {
-                    if (view.Destination != cell) return;
+                    if (view.Destination != cell)
+                    {
+                        return;
+                    }
 
                     view.Snap(cell);
-                    if (landing.HasValue) _audio.Play(landing.Value);
+                    if (landing.HasValue)
+                    {
+                        _audio.Play(landing.Value);
+                    }
                 });
         }
 
@@ -796,7 +850,10 @@ namespace Game.Features.Gameplay.Board
                 .Join(view.Root.DOScale(0.35f, 0.48f))
                 .OnComplete(() =>
                 {
-                    if (_leavingItems.Remove(view)) _itemPool.Release(view);
+                    if (_leavingItems.Remove(view))
+                    {
+                        _itemPool.Release(view);
+                    }
                 });
         }
 
@@ -810,7 +867,10 @@ namespace Game.Features.Gameplay.Board
                 {
                     foreach (var j in b.Slots)
                     {
-                        if (j != null && j.Id == jarId) return j;
+                        if (j != null && j.Id == jarId)
+                        {
+                            return j;
+                        }
                     }
                 }
             }
