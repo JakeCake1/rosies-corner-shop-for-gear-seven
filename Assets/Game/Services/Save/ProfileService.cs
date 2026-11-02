@@ -47,22 +47,23 @@ namespace Game.Services.Save
         /// <inheritdoc/>
         public void Load()
         {
-            var isAnyStored = false;
+            var missing = new List<IProfileChunk>();
             foreach (var chunk in _chunks)
             {
                 if (_save.TryLoad(chunk))
                 {
-                    isAnyStored = true;
+                    continue;
                 }
                 else
                 {
                     chunk.Restore(null);
+                    missing.Add(chunk);
                 }
             }
 
-            if (!isAnyStored)
+            if (missing.Count > 0)
             {
-                _save.TryMigrateLegacy(_chunks);
+                _save.TryMigrateLegacy(missing);
             }
             _isLoaded = true;
             _changed.OnNext(Unit.Default);

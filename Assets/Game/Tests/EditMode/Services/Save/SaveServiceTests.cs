@@ -49,6 +49,34 @@ namespace Game.Tests.EditMode.Services.Save
             Assert.That(_chunk.Name, Is.EqualTo("none"));
         }
 
+        [Test]
+        public void TryLoad_WhenMainReadFails_UsesBackup()
+        {
+            _storage.HasReadFailure = true;
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"backup\"}";
+            LogAssert.Expect(LogType.Error, new Regex("could not be read"));
+
+            var isLoaded = _service.TryLoad(_chunk);
+
+            Assert.That(isLoaded, Is.True);
+            Assert.That(_chunk.Name, Is.EqualTo("backup"));
+        }
+
+        [Test]
+        public void TryLoad_WhenQuarantineFails_UsesBackup()
+        {
+            _storage.Main[TestKey] = "{ broken";
+            _storage.HasQuarantineFailure = true;
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"backup\"}";
+            LogAssert.Expect(LogType.Error, new Regex("is broken, trying the backup"));
+            LogAssert.Expect(LogType.Error, new Regex("could not be quarantined"));
+
+            var isLoaded = _service.TryLoad(_chunk);
+
+            Assert.That(isLoaded, Is.True);
+            Assert.That(_chunk.Name, Is.EqualTo("backup"));
+        }
+
         [UnityTest]
         public IEnumerator SaveAsync_ThenTryLoad_RestoresChunk() => UniTask.ToCoroutine(async () =>
         {

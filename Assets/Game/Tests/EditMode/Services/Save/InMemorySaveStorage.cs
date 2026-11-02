@@ -14,8 +14,17 @@ namespace Game.Tests.EditMode.Services.Save
         public readonly List<string> Quarantined = new List<string>();
         public readonly List<string> Deleted = new List<string>();
         public bool IsFull;
+        public bool HasReadFailure;
+        public bool HasQuarantineFailure;
 
-        public string ReadMain(string key) => Main.TryGetValue(key, out var v) ? v : null;
+        public string ReadMain(string key)
+        {
+            if (HasReadFailure)
+            {
+                throw new IOException("Read failed");
+            }
+            return Main.TryGetValue(key, out var v) ? v : null;
+        }
 
         public string ReadBackup(string key) => Backup.TryGetValue(key, out var v) ? v : null;
 
@@ -35,6 +44,10 @@ namespace Game.Tests.EditMode.Services.Save
 
         public void Quarantine(string key)
         {
+            if (HasQuarantineFailure)
+            {
+                throw new IOException("Quarantine failed");
+            }
             Main.Remove(key);
             Quarantined.Add(key);
         }

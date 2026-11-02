@@ -22,6 +22,7 @@ namespace Game.Services.UI
         private const string AddressPrefix = "ui/";
         private const string WindowClass = "window";
 
+        private readonly Dictionary<Type, SemaphoreSlim> _openGates = new Dictionary<Type, SemaphoreSlim>();
         private readonly UIRoot _root;
         private readonly IAssetProvider _assets;
         private readonly IObjectResolver _resolver;
@@ -61,33 +62,48 @@ namespace Game.Services.UI
             where TWindow : WindowView<TViewModel>, new()
             where TViewModel : ViewModel
         {
-            var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
-            // Closed after the load, not before: two opens racing through the load (a double tap) would otherwise
-            // both find no window to replace and stack two copies.
-            await CloseAsync<TWindow>();
-            ct.ThrowIfCancellationRequested();
-            var element = layout.Instantiate();
-            element.AddToClassList(WindowClass);
-            element.pickingMode = PickingMode.Ignore;
-            element.Stretch();
+            var type = typeof(TWindow);
+            if (!_openGates.TryGetValue(type, out var gate))
+            {
+                gate = new SemaphoreSlim(1, 1);
+                _openGates.Add(type, gate);
+            }
 
-            var window = new TWindow();
-            _resolver.Inject(window);
-            window.Attach(element);
-            _root.GetLayer(window.Layer).Add(element);
+            await gate.WaitAsync(ct);
+            try
+            {
+                var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
+                // Closed after the load, not before: two opens racing through the load (a double tap) would otherwise
+                // both find no window to replace and stack two copies.
+                await CloseAsync<TWindow>();
+                ct.ThrowIfCancellationRequested();
+                var element = layout.Instantiate();
+                element.AddToClassList(WindowClass);
+                element.pickingMode = PickingMode.Ignore;
+                element.Stretch();
 
-            var entry = new OpenWindow(window, viewModel);
-            entry.CloseSubscription = window.CloseRequested.Subscribe(w => CloseAsync(w).Forget());
-            _stacks[window.Layer].Add(entry);
-            window.Bind(viewModel);
-            UpdateBlocker();
-            // The window lives no longer than its opener: a dialog of an unloaded scene or a hidden screen must not
-            // stay on top of the next one (an open popup blocks input everywhere through IsPopupOpen).
-            entry.OpenerRegistration = ct.Register(() => CloseAsync(window).Forget());
-            await window.ShowAsync(_lifetimeToken);
-            // Tween cancellation completes the transition instead of throwing, so report it here.
-            ct.ThrowIfCancellationRequested();
-            return window;
+                var window = new TWindow();
+                _resolver.Inject(window);
+                window.Attach(element);
+                _root.GetLayer(window.Layer).Add(element);
+
+                var entry = new OpenWindow(window, viewModel);
+                entry.CloseSubscription = window.CloseRequested.Subscribe(w => CloseAsync(w).Forget());
+                _stacks[window.Layer].Add(entry);
+                window.Bind(viewModel);
+                UpdateBlocker();
+                // The window lives no longer than its opener: a dialog of an unloaded scene or a hidden screen must not
+                // stay on top of the next one (an open popup blocks input everywhere through IsPopupOpen).
+                entry.OpenerRegistration = ct.Register(() => CloseAsync(window).Forget());
+                await window.ShowAsync(_lifetimeToken);
+                // Tween cancellation completes the transition instead of throwing, so report it here.
+                ct.ThrowIfCancellationRequested();
+                return window;
+            }
+            finally
+            {
+                gate.Release();
+            }
         }
 
         /// <inheritdoc/>

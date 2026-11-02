@@ -40,6 +40,20 @@ namespace Game.Tests.EditMode.Services.Save
         }
 
         [Test]
+        public void Load_WhenMigrationWasPartiallyWritten_RestoresMissingChunksFromLegacy()
+        {
+            _save.Storage.Main["profile_wallet"] = "{\"version\":1,\"coins\":5}";
+            _save.Storage.Main[SaveService.LegacyKey] = "{\"version\":1,\"coins\":77,\"music\":false,\"offer\":\"slot\"}";
+
+            _profile.Load();
+
+            Assert.That(_wallet.Coins.Value, Is.EqualTo(5));
+            Assert.That(_settings.IsMusicOn, Is.False);
+            Assert.That(_experiments.LossOffer, Is.EqualTo("slot"));
+            Assert.That(_save.Storage.Deleted, Does.Contain(SaveService.LegacyKey));
+        }
+
+        [Test]
         public void Load_RestoresEachChunkFromItsOwnFile()
         {
             _save.Storage.Main["profile_wallet"] = "{\"version\":1,\"coins\":9}";

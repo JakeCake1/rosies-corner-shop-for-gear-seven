@@ -56,7 +56,7 @@ namespace Game.Services.Save
         public bool TryLoad(IProfileChunk chunk)
         {
             var key = StorageKey(chunk);
-            var main = TryParse(chunk, _storage.ReadMain(key), out var mainError);
+            var main = TryParse(chunk, ReadSafely(key, false), out var mainError);
             if (main != null)
             {
                 chunk.Restore(main);
@@ -66,10 +66,17 @@ namespace Game.Services.Save
             if (mainError != null)
             {
                 Debug.LogError($"Save '{key}' is broken, trying the backup: {mainError}");
-                _storage.Quarantine(key);
+                try
+                {
+                    _storage.Quarantine(key);
+                }
+                catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+                {
+                    Debug.LogError($"Save '{key}' could not be quarantined: {e.Message}");
+                }
             }
 
-            var backup = TryParse(chunk, _storage.ReadBackup(key), out var backupError);
+            var backup = TryParse(chunk, ReadSafely(key, true), out var backupError);
             if (backup != null)
             {
                 chunk.Restore(backup);
@@ -182,6 +189,19 @@ namespace Game.Services.Save
             var data = JObject.FromObject(chunk.Data, Serializer);
             data.AddFirst(new JProperty(VersionField, chunk.Version));
             return data.ToString(Formatting.Indented);
+        }
+
+        private string ReadSafely(string key, bool isBackup)
+        {
+            try
+            {
+                return isBackup ? _storage.ReadBackup(key) : _storage.ReadMain(key);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                Debug.LogError($"Save '{key}' could not be read (backup: {isBackup}): {e.Message}");
+                return null;
+            }
         }
 
         private static string StorageKey(IProfileChunk chunk) => ChunkKeyPrefix + chunk.Key;
