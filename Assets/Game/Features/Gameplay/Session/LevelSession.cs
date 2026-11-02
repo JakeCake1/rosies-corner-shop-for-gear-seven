@@ -188,7 +188,7 @@ namespace Game.Features.Gameplay.Session
             }
 
             SetSnapshot(snapshot);
-            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapSoft);
+            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapRound);
             else _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
             _haptics.Pulse(HapticKind.Tap);
             if (result.Basket == null && !result.IsTool) _combo = -1;
@@ -405,7 +405,7 @@ namespace Game.Features.Gameplay.Session
                 _combo++;
                 var word = _combo > 0 ? ComboWord(_combo) : Praises[_praiseIndex++ % Praises.Length];
                 _shipping.OnNext(new ShipNotice(slot, basketId, _combo, word));
-                _audio.Play(SoundId.Ship, 1f + Math.Min(_combo, 8) * 0.06f);
+                _audio.PlayShip(_combo);
                 _haptics.Pulse(HapticKind.Ship);
                 _notice.OnNext("ship");
                 await UniTask.Delay(GameplayBalance.ShipLeaveMs, cancellationToken: ct);
