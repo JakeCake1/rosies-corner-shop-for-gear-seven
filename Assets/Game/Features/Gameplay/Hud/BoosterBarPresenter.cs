@@ -63,10 +63,10 @@ namespace Game.Features.Gameplay.Hud
         }
 
         /// <summary>
-        /// Makes the booster's button glow as Rosie's gift.
+        /// Makes the booster's icon pulse as Rosie's gift.
         /// </summary>
         /// <param name="boosterId">The gifted booster.</param>
-        /// <param name="button">The glowing button, the anchor of the gift's coach tip; null when there is none.</param>
+        /// <param name="button">The gifted button, the anchor of the gift's coach tip; null when there is none.</param>
         /// <returns>False when the bar has no button for the booster.</returns>
         public bool TryMarkGift(string boosterId, out VisualElement button)
         {

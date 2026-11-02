@@ -9,7 +9,7 @@ namespace Game.Features.Gameplay.Hud
 {
     /// <summary>
     /// One booster button under the cabinet (<c>Booster.uxml</c>): tile with icon, count badge, title, pulse when
-    /// it would help, glow when it was just gifted.
+    /// it would help, a pulsing icon while Rosie's gift is unused.
     /// </summary>
     public sealed class BoosterButtonView : View<BoosterViewModel>
     {
@@ -18,17 +18,19 @@ namespace Game.Features.Gameplay.Hud
         private const string TitleName = "title";
         private const string BadgeName = "badge";
         private const string CountName = "count";
-        private const string GlowName = "glow";
         private const string PlusClass = "booster__badge--plus";
+        private const float PulseScale = 1.08f;
+        private const float PulseSeconds = 0.45f;
+        private const float GiftScale = 1.18f;
+        private const float GiftSeconds = 0.5f;
 
         private Button _tile;
         private VisualElement _icon;
         private Label _title;
         private VisualElement _badge;
         private Label _count;
-        private VisualElement _glow;
         private Tween _pulse;
-        private Tween _glowTween;
+        private Tween _giftTween;
 
         /// <summary>
         /// Sets the booster picture.
@@ -44,8 +46,6 @@ namespace Game.Features.Gameplay.Hud
             _title = Q<Label>(TitleName);
             _badge = Q(BadgeName);
             _count = Q<Label>(CountName);
-            _glow = Q(GlowName);
-            _glow.SetVisible(false);
         }
 
         /// <inheritdoc/>
@@ -56,7 +56,7 @@ namespace Game.Features.Gameplay.Hud
             vm.IsPlus.Subscribe(p => _badge.EnableInClassList(PlusClass, p)).AddTo(Bindings);
             vm.IsDimmed.Subscribe(d => Root.style.opacity = d ? 0.5f : 1f).AddTo(Bindings);
             vm.IsPulsing.Subscribe(SetPulse).AddTo(Bindings);
-            vm.IsGift.Subscribe(SetGlow).AddTo(Bindings);
+            vm.IsGift.Subscribe(SetGiftPulse).AddTo(Bindings);
             _tile.OnTapAsObservable().Subscribe(_ => vm.Use()).AddTo(Bindings);
         }
 
@@ -64,7 +64,7 @@ namespace Game.Features.Gameplay.Hud
         protected override void OnUnbind()
         {
             SetPulse(false);
-            SetGlow(false);
+            SetGiftPulse(false);
         }
 
         private void SetPulse(bool isOn)
@@ -73,21 +73,19 @@ namespace Game.Features.Gameplay.Hud
             VisualElementTweens.SetScale(Root, Vector2.one);
             if (isOn)
             {
-                _pulse = Root.DOScale(1.08f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetId(this);
+                _pulse = Root.DOScale(PulseScale, PulseSeconds).SetLoops(-1, LoopType.Yoyo).SetId(this);
             }
         }
 
-        private void SetGlow(bool isOn)
+        private void SetGiftPulse(bool isOn)
         {
-            _glowTween?.Kill();
-            _glow.SetVisible(isOn);
-            if (!isOn)
+            _giftTween?.Kill();
+            VisualElementTweens.SetScale(_icon, Vector2.one);
+            if (isOn)
             {
-                return;
+                _giftTween = _icon.DOScale(GiftScale, GiftSeconds).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo)
+                    .SetId(this);
             }
-
-            _glow.style.opacity = 0.9f;
-            _glowTween = _glow.DOFade(0.3f, 0.6f).SetLoops(-1, LoopType.Yoyo).SetId(this);
         }
     }
 }
