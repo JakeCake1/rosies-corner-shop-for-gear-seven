@@ -27,6 +27,9 @@ namespace Game.Services.UI.Dialogs
         /// <summary>Coin price shown with the coin badge.</summary>
         public int Price { get; set; }
 
+        /// <summary>Optional helper text shown right under the button ("A third basket opens...").</summary>
+        public string Note { get; set; }
+
         /// <summary>Shares a row with the previous button marked the same way.</summary>
         public bool IsInRow { get; set; }
 

@@ -121,6 +121,11 @@ namespace Game.Services.UI.Dialogs
                 Spawn(_body, DialogControls.Toggle(toggle, Bindings));
             }
 
+            if (vm.Tiles.Count > 0)
+            {
+                Spawn(_body, DialogControls.Tiles(vm.Tiles, Bindings));
+            }
+
             if (vm.Input != null)
             {
                 Spawn(_body, DialogControls.Input(vm, Bindings));
@@ -143,7 +148,10 @@ namespace Game.Services.UI.Dialogs
             for (var i = 0; i < StarCount; i++)
             {
                 var isOn = i < earned;
-                var star = CreateElement("dialog-star", isOn ? "icon-star-on" : "icon-star-off");
+                var icon = isOn ? "icon-star-on" : "icon-star-off";
+                var star = CreateElement("dialog-star");
+                star.Add(CreateElement("dialog-star__shadow", icon));
+                star.Add(CreateElement("dialog-star__face", icon));
                 star.EnableInClassList("dialog-star--big", i == BigStar);
                 row.Add(star);
                 if (!isOn)
@@ -161,8 +169,8 @@ namespace Game.Services.UI.Dialogs
         {
             var block = Spawn(_body, CreateElement("dialog-progress"));
             block.Add(CreateLabel(caption ?? string.Empty, "dialog-progress__caption"));
-            var track = CreateElement("dialog-progress__track", "kit-bar-track");
-            var fill = CreateElement("dialog-progress__fill", "kit-bar-fill");
+            var track = CreateElement("dialog-progress__track", "kit-rounded-white");
+            var fill = CreateElement("dialog-progress__fill", "kit-rounded-white");
             fill.style.width = Length.Percent(Mathf.Clamp01(fraction) * 100f);
             track.Add(fill);
             block.Add(track);
@@ -207,6 +215,12 @@ namespace Game.Services.UI.Dialogs
                 else
                 {
                     parent.Add(view.Root);
+                }
+
+                if (!string.IsNullOrEmpty(b.Note))
+                {
+                    Spawn(_body, CreateLabel(b.Note, "dialog-note", "dialog-note--button"));
+                    row = null;
                 }
 
                 var button = b;

@@ -8,6 +8,9 @@ namespace Game.Features.Gameplay
     [CreateAssetMenu(menuName = "Game/Gameplay Art", fileName = "GameplayArt")]
     public sealed class GameplayArt : ScriptableObject
     {
+        /// <summary>Addressables address; the start-boosters prompt loads it before the gameplay scene.</summary>
+        public const string AddressKey = "config/gameplay-art";
+
         [SerializeField] private Sprite _undo;
         [SerializeField] private Sprite _pick;
         [SerializeField] private Sprite _tidy;

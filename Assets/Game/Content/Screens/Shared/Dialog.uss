@@ -13,39 +13,48 @@
 
 .dialog-card {
     width: 330px;
-    /* Every body child adds 10 px below itself, so the bottom padding is 22 - 10. */
-    padding: 40px 20px 12px 20px;
+    /* Every body child adds 14 px below itself (buttons 4 px + 6 px of shadow in their sprite); the card's 10 px lip
+       is inside the bottom padding. */
+    padding: 36px 20px 16px 20px;
 }
 
 /* The ribbon hugs its title, as in the mockups ("Settings" ~130px, "Tricky level complete" ~240px). */
 .dialog-ribbon-row {
     position: absolute;
-    top: -23px;
+    top: -22px;
     left: 0;
     right: 0;
-    height: 46px;
+    height: 40px;
     flex-direction: row;
     justify-content: center;
 }
 
 .dialog-ribbon {
-    height: 46px;
+    /* 36 px band + 4 px lip, drawn at this height */
+    height: 40px;
     min-width: 130px;
     max-width: 310px;
     justify-content: center;
 }
 
 .dialog-ribbon__title {
-    font-size: 21px;
+    font-size: 18px;
     -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
-    margin: 0 30px 8px 30px;
+    margin: 0 30px 4px 30px;
     white-space: nowrap;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
 }
 
 .dialog-body > * {
-    margin-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+/* Buttons are 10 px apart (.col gap); 6 px of that is the shadow inside their sprite. */
+.dialog-body > .dialog-button,
+.dialog-body > .dialog-row {
+    margin-bottom: 4px;
 }
 
 .dialog-icon {
@@ -53,76 +62,97 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* .stars: 62 px stars, the middle one 78 px and 10 px higher; each has a soft drop shadow below. */
 .dialog-stars {
-    height: 72px;
+    height: 92px;
     flex-direction: row;
     justify-content: center;
-    align-items: flex-start;
+    align-items: flex-end;
 }
 
 .dialog-star {
-    width: 52px;
-    height: 52px;
-    margin: 10px 5px 0 5px;
+    width: 62px;
+    height: 62px;
+    margin: 0 3px 4px 3px;
 }
 
 .dialog-star--big {
-    width: 68px;
-    height: 68px;
-    margin-top: 0;
+    width: 78px;
+    height: 78px;
+    margin-bottom: 14px;
+}
+
+.dialog-star__shadow,
+.dialog-star__face {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.dialog-star__shadow {
+    translate: 0 4px;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.2);
 }
 
 .dialog-headline {
-    -unity-font: url("project://database/Assets/Game/Content/Visual/Fonts/YesevaOne-Regular.ttf");
-    -unity-font-definition: initial;
-    font-size: 26px;
+    font-size: 24px;
+    -unity-font-style: bold;
     color: var(--walnut);
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
 .dialog-text {
-    font-size: 17px;
-    color: var(--ink);
+    font-size: 15px;
+    color: var(--ink-2);
     -unity-text-align: middle-center;
     white-space: normal;
 }
 
 .dialog-stat {
-    height: 34px;
+    height: 36px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding: 0 14px;
     -unity-background-image-tint-color: #F3E8D8;
+    /* .stat div: 12 px radius (the sprite has 14) */
+    -unity-slice-scale: 0.86px;
 }
 
 .dialog-stat__label {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--ink-2);
 }
 
 .dialog-stat__value {
-    font-size: 17px;
+    font-size: 15px;
     -unity-font-style: bold;
     color: var(--ink);
 }
 
 .dialog-progress__caption {
-    font-size: 19px;
+    font-size: 18px;
     -unity-font-style: bold;
     color: var(--walnut);
     -unity-text-align: middle-center;
     margin-bottom: 6px;
 }
 
+/* Light track with a berry fill (6 px radius from the 14 px sprite) */
 .dialog-progress__track {
-    height: 20px;
-    padding: 3px;
+    height: 12px;
+    margin: 0 10px;
+    -unity-background-image-tint-color: #E8E0D4;
+    -unity-slice-scale: 0.43px;
 }
 
 .dialog-progress__fill {
     height: 100%;
+    -unity-background-image-tint-color: var(--berry);
+    -unity-slice-scale: 0.43px;
 }
 
 .dialog-items {
@@ -167,12 +197,12 @@
 
 .dialog-toggle__label {
     flex-grow: 1;
-    font-size: 18px;
+    font-size: 17px;
     color: var(--ink);
 }
 
 .dialog-switch {
-    width: 52px;
+    width: 54px;
     height: 30px;
     -unity-background-image-tint-color: rgb(191, 179, 163);
 }
@@ -191,7 +221,91 @@
 }
 
 .dialog-switch--on > .dialog-switch__knob {
-    left: 25px;
+    left: 27px;
+}
+
+/* Start booster tiles (.preSlot): two in a row, dashed when off, green when on, badge in the corner. */
+.dialog-tiles {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+.dialog-tile {
+    width: 140px;
+    height: 140px;
+    padding: 12px 6px 12px 6px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/tile_dashed.png");
+    -unity-slice-left: 40;
+    -unity-slice-top: 40;
+    -unity-slice-right: 40;
+    -unity-slice-bottom: 40;
+    -unity-slice-scale: 1px;
+}
+
+.dialog-tile--on {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/tile_on.png");
+}
+
+.dialog-tile:active {
+    scale: 0.96 0.96;
+}
+
+.dialog-tile__icon {
+    width: 72px;
+    height: 56px;
+    margin-bottom: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.dialog-tile__name {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: var(--walnut);
+    -unity-text-align: middle-center;
+}
+
+.dialog-tile__info {
+    font-size: 12px;
+    color: var(--walnut);
+    opacity: 0.8;
+    -unity-text-align: upper-center;
+    white-space: normal;
+}
+
+.dialog-tile__badge {
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    justify-content: center;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/pill_white.png");
+    -unity-slice-left: 30;
+    -unity-slice-top: 30;
+    -unity-slice-right: 30;
+    -unity-slice-bottom: 30;
+    -unity-slice-scale: 0.8px;
+    -unity-background-image-tint-color: #D8343E;
+}
+
+.dialog-tile__badge--price {
+    -unity-background-image-tint-color: #EDB53F;
+}
+
+.dialog-tile__badge-text {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.dialog-tile__badge--price > .dialog-tile__badge-text {
+    color: #5A3A0A;
 }
 
 .dialog-input__field {
@@ -205,7 +319,7 @@
     -unity-slice-top: 16;
     -unity-slice-right: 16;
     -unity-slice-bottom: 16;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
     padding: 0 12px;
@@ -240,40 +354,53 @@
 
 .dialog-grid__cell {
     width: 44px;
-    height: 40px;
+    height: 36px;
     margin: 3px;
-    font-size: 18px;
-    color: white;
-    -unity-background-image-tint-color: #E7B77C;
+    font-size: 15px;
+    color: var(--walnut);
+    -unity-background-image-tint-color: #EEDFC4;
+    /* .revLv: 10 px radius */
+    -unity-slice-scale: 0.72px;
 }
 
+/* Tricky levels (.revLv.hard) */
 .dialog-grid__cell--current {
-    -unity-background-image-tint-color: var(--berry);
+    -unity-background-image-tint-color: #E9B3B3;
+    color: #7A1C24;
 }
 
 .dialog-segments__label {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--ink-2);
     margin-bottom: 4px;
 }
 
 .dialog-segments__options {
-    height: 36px;
+    /* .seg: light track with a white pill on the selected option */
+    height: 38px;
     flex-direction: row;
+    padding: 3px;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/rounded_white.png");
+    -unity-slice-left: 29;
+    -unity-slice-top: 29;
+    -unity-slice-right: 29;
+    -unity-slice-bottom: 29;
+    -unity-slice-scale: 0.86px;
+    -unity-background-image-tint-color: #EEDFC4;
 }
 
 .dialog-segment {
     flex-grow: 1;
     flex-basis: 0;
-    margin: 0 3px;
-    font-size: 15px;
-    color: var(--ink);
-    -unity-background-image-tint-color: rgb(247, 237, 209);
+    margin: 0 2px;
+    font-size: 13px;
+    color: var(--walnut);
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0);
+    -unity-slice-scale: 0.64px;
 }
 
 .dialog-segment--on {
-    -unity-background-image-tint-color: var(--leaf);
-    color: white;
+    -unity-background-image-tint-color: white;
 }
 
 .dialog-note {
@@ -281,6 +408,12 @@
     color: var(--ink-2);
     -unity-text-align: middle-center;
     white-space: normal;
+}
+
+/* Helper text right under its button */
+.dialog-note--button {
+    margin-top: -2px;
+    font-size: 14px;
 }
 
 .dialog-row {
@@ -293,16 +426,17 @@
     margin: 0 5px;
 }
 
+/* Heights include the 5 px lip and 6 px shadow of the button sprite. */
 .dialog-button {
-    height: 58px;
+    height: 62px;
 }
 
 .dialog-button--small {
-    height: 44px;
+    height: 52px;
 }
 
 .dialog-button--tall {
-    height: 70px;
+    height: 76px;
 }
 
 .dialog-button__content {
@@ -310,44 +444,53 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 4px 10px 9px 10px;
+    margin: 0 10px 11px 10px;
 }
 
 .dialog-button__labels {
     align-items: center;
+    flex-shrink: 1;
 }
 
 .dialog-button__label {
-    font-size: 22px;
+    font-size: 19px;
     -unity-font-style: bold;
     color: white;
-    white-space: nowrap;
-}
-
-.dialog-button--small .dialog-button__label {
-    font-size: 18px;
+    -unity-text-align: middle-center;
+    white-space: normal;
 }
 
 .dialog-button__sub {
-    font-size: 14px;
+    font-size: 13px;
     color: white;
 }
 
 .dialog-button__label,
 .dialog-button__sub {
-    text-shadow: 0 2px 0 rgba(94, 60, 32, 0.45);
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
 }
 
+.kit-btn-gold .dialog-button__label,
+.kit-btn-gold .dialog-button__sub {
+    color: #5A3A0A;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* .btn .ad: small dark pill inside the button */
 .dialog-button__ad {
-    width: 32px;
-    height: 22px;
+    height: 18px;
+    padding: 0 6px;
     margin-right: 8px;
+    flex-shrink: 0;
     justify-content: center;
+    -unity-background-image-tint-color: rgba(0, 0, 0, 0.22);
+    -unity-slice-scale: 0.43px;
 }
 
 .dialog-button__ad-text {
-    font-size: 13px;
-    color: var(--leaf);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: white;
     -unity-text-align: middle-center;
 }
 
