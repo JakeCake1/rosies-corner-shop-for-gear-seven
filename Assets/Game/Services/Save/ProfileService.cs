@@ -19,6 +19,9 @@ namespace Game.Services.Save
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private bool _isLoaded;
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Changed => _changed;
+
         /// <summary>
         /// Creates the service and follows the chunks' changes; call <see cref="Load"/> before use.
         /// </summary>
@@ -40,9 +43,6 @@ namespace Game.Services.Save
                 chunk.Changed.Subscribe(_ => OnChunkChanged(chunk)).AddTo(_subscriptions);
             }
         }
-
-        /// <inheritdoc/>
-        public IObservable<Unit> Changed => _changed;
 
         /// <inheritdoc/>
         public void Load()

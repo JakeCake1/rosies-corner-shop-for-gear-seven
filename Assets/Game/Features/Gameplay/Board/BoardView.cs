@@ -57,6 +57,7 @@ namespace Game.Features.Gameplay.Board
         private const float ShelfDropSeconds = 0.52f;
         private const float FlightSeconds = 0.43f;
         private const float CounterHopSeconds = 0.22f;
+
         private static readonly Color[] IceColors = { Color.white, new Color(0.75f, 0.89f, 1f), new Color(0.5f, 0.75f, 0.94f) };
 
         private readonly Dictionary<int, ItemView> _items = new Dictionary<int, ItemView>();
@@ -99,6 +100,21 @@ namespace Game.Features.Gameplay.Board
         private LevelState _state;
         private Vector2 _laidOutSize;
 
+        /// <summary>Emits the jar id of a tapped item.</summary>
+        public IObservable<int> ItemTapped => _itemTapped;
+
+        /// <summary>Emits when a locked basket slot's "+" is tapped.</summary>
+        public IObservable<Unit> ExtraBasketClicked => _extraBasketClicked;
+
+        /// <summary>The counter panel (anchor for coach tips and the banner).</summary>
+        public VisualElement Counter => _counter;
+
+        /// <summary>The basket ledge (anchor for the "ship" tip).</summary>
+        public VisualElement BasketArea => _basketArea;
+
+        /// <summary>The stock tabs row (anchor for the "stock" tip).</summary>
+        public VisualElement StockLabels => _tabs;
+
         /// <summary>
         /// Creates the board view.
         /// </summary>
@@ -123,21 +139,6 @@ namespace Game.Features.Gameplay.Board
             _audio = audio;
             _progressTarget = progressTarget;
         }
-
-        /// <summary>Emits the jar id of a tapped item.</summary>
-        public IObservable<int> ItemTapped => _itemTapped;
-
-        /// <summary>Emits when a locked basket slot's "+" is tapped.</summary>
-        public IObservable<Unit> ExtraBasketClicked => _extraBasketClicked;
-
-        /// <summary>The counter panel (anchor for coach tips and the banner).</summary>
-        public VisualElement Counter => _counter;
-
-        /// <summary>The basket ledge (anchor for the "ship" tip).</summary>
-        public VisualElement BasketArea => _basketArea;
-
-        /// <summary>The stock tabs row (anchor for the "stock" tip).</summary>
-        public VisualElement StockLabels => _tabs;
 
         /// <summary>
         /// Clears the board and draws a new level; the opening shelves drop in column by column.

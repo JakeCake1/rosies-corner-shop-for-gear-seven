@@ -27,6 +27,14 @@ namespace Game.Bootstrap.Editor.Agent
     public static class AgentBridge
     {
         /// <summary>
+        /// Scripting defines the stack rules require (UniTask awaiting DOTween tweens).
+        /// </summary>
+        public const string RequiredDefines = "UNITASK_DOTWEEN_SUPPORT";
+
+        private const string BridgeFolder = "AgentBridge";
+        private const double PollIntervalSeconds = 1.0;
+
+        /// <summary>
         /// Registry packages the project needs; versions are left to the Editor so it picks the ones verified for it.
         /// </summary>
         public static readonly string[] RequiredPackages =
@@ -35,14 +43,6 @@ namespace Game.Bootstrap.Editor.Agent
             "com.unity.nuget.newtonsoft-json",
             "com.unity.test-framework",
         };
-
-        /// <summary>
-        /// Scripting defines the stack rules require (UniTask awaiting DOTween tweens).
-        /// </summary>
-        public const string RequiredDefines = "UNITASK_DOTWEEN_SUPPORT";
-
-        private const string BridgeFolder = "AgentBridge";
-        private const double PollIntervalSeconds = 1.0;
 
         private static readonly List<string> _compileMessages = new List<string>();
         private static AddAndRemoveRequest _packageRequest;

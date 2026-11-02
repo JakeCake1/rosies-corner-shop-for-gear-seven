@@ -63,31 +63,6 @@ namespace Game.Features.Gameplay.Session
         private int _comboIndex;
         private bool _isWarned;
 
-        /// <summary>
-        /// Creates the session; <see cref="Start"/> loads a level.
-        /// </summary>
-        /// <param name="curves">Active level curve.</param>
-        /// <param name="content">Item catalog.</param>
-        /// <param name="wallet">Level rewards.</param>
-        /// <param name="boosters">Owned boosters.</param>
-        /// <param name="album">Found items.</param>
-        /// <param name="levels">Stars and lost levels.</param>
-        /// <param name="audio">Sound effects.</param>
-        /// <param name="haptics">Vibration.</param>
-        public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
-            IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
-            IHapticsService haptics)
-        {
-            _curves = curves;
-            _content = content;
-            _wallet = wallet;
-            _boosters = boosters;
-            _album = album;
-            _levels = levels;
-            _audio = audio;
-            _haptics = haptics;
-        }
-
         /// <summary>The level in play; replaced on undo, so don't cache it across changes.</summary>
         public LevelState State { get; private set; }
 
@@ -134,6 +109,31 @@ namespace Game.Features.Gameplay.Session
 
         /// <summary>Whether this level uses the original curve (all boosters unlocked).</summary>
         public bool IsOriginalCurve => _curves.Active.IsOriginal;
+
+        /// <summary>
+        /// Creates the session; <see cref="Start"/> loads a level.
+        /// </summary>
+        /// <param name="curves">Active level curve.</param>
+        /// <param name="content">Item catalog.</param>
+        /// <param name="wallet">Level rewards.</param>
+        /// <param name="boosters">Owned boosters.</param>
+        /// <param name="album">Found items.</param>
+        /// <param name="levels">Stars and lost levels.</param>
+        /// <param name="audio">Sound effects.</param>
+        /// <param name="haptics">Vibration.</param>
+        public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
+            IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
+            IHapticsService haptics)
+        {
+            _curves = curves;
+            _content = content;
+            _wallet = wallet;
+            _boosters = boosters;
+            _album = album;
+            _levels = levels;
+            _audio = audio;
+            _haptics = haptics;
+        }
 
         /// <summary>
         /// Starts (or restarts) a level.

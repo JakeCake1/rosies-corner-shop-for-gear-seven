@@ -21,27 +21,6 @@ namespace Game.Features.Gameplay.Hud
         private readonly LevelSession _session;
         private readonly ILocalizationService _texts;
 
-        /// <summary>
-        /// Creates the view model and follows the session and the wallet.
-        /// </summary>
-        /// <param name="session">Level in play.</param>
-        /// <param name="wallet">Coins.</param>
-        /// <param name="texts">Badge title ("LEVEL" or "TRICKY").</param>
-        public HudViewModel(LevelSession session, IWalletService wallet, ILocalizationService texts)
-        {
-            _session = session;
-            _texts = texts;
-            Coins = wallet.Coins;
-            Disposables.Add(_badgeTitle);
-            Disposables.Add(_levelNumber);
-            Disposables.Add(_isTricky);
-            Disposables.Add(_progressText);
-            Disposables.Add(_progress);
-            Disposables.Add(_settingsRequested);
-            session.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
-            Refresh();
-        }
-
         /// <summary>"LEVEL" or "TRICKY" above the number.</summary>
         public IReadOnlyReactiveProperty<string> BadgeTitle => _badgeTitle;
 
@@ -62,6 +41,27 @@ namespace Game.Features.Gameplay.Hud
 
         /// <summary>Emits when the gear is tapped; the presenter opens settings.</summary>
         public IObservable<Unit> SettingsRequested => _settingsRequested;
+
+        /// <summary>
+        /// Creates the view model and follows the session and the wallet.
+        /// </summary>
+        /// <param name="session">Level in play.</param>
+        /// <param name="wallet">Coins.</param>
+        /// <param name="texts">Badge title ("LEVEL" or "TRICKY").</param>
+        public HudViewModel(LevelSession session, IWalletService wallet, ILocalizationService texts)
+        {
+            _session = session;
+            _texts = texts;
+            Coins = wallet.Coins;
+            Disposables.Add(_badgeTitle);
+            Disposables.Add(_levelNumber);
+            Disposables.Add(_isTricky);
+            Disposables.Add(_progressText);
+            Disposables.Add(_progress);
+            Disposables.Add(_settingsRequested);
+            session.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
+            Refresh();
+        }
 
         /// <summary>
         /// Called by the view when the gear is tapped.

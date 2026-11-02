@@ -9,6 +9,18 @@ namespace Game.Services.UI.Dialogs
     /// </summary>
     public sealed class DialogSegments
     {
+        /// <summary>Row label.</summary>
+        public string Label { get; }
+
+        /// <summary>Option labels.</summary>
+        public IReadOnlyList<string> Options { get; }
+
+        /// <summary>Initially selected index.</summary>
+        public int Selected { get; }
+
+        /// <summary>Called with the new index.</summary>
+        public Action<int> SelectedChanged { get; }
+
         /// <summary>
         /// Creates a segmented control.
         /// </summary>
@@ -23,17 +35,5 @@ namespace Game.Services.UI.Dialogs
             Selected = selected;
             SelectedChanged = selectedChanged;
         }
-
-        /// <summary>Row label.</summary>
-        public string Label { get; }
-
-        /// <summary>Option labels.</summary>
-        public IReadOnlyList<string> Options { get; }
-
-        /// <summary>Initially selected index.</summary>
-        public int Selected { get; }
-
-        /// <summary>Called with the new index.</summary>
-        public Action<int> SelectedChanged { get; }
     }
 }

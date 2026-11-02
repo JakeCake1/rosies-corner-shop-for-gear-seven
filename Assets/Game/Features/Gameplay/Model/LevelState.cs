@@ -53,6 +53,11 @@ namespace Game.Features.Gameplay.Model
         public LevelMechanics Mechanics { get; set; } = new LevelMechanics();
 
         /// <summary>
+        /// Column of the hammer (or of the shelf holding it) at generation; -1 without a hammer.
+        /// </summary>
+        public int HammerColumn { get; set; } = -1;
+
+        /// <summary>
         /// 1-based level number in the active curve.
         /// </summary>
         public int LevelNumber { get; set; }
@@ -121,11 +126,6 @@ namespace Game.Features.Gameplay.Model
         /// Where the hammer was placed at generation.
         /// </summary>
         public HammerPlace HammerPlace { get; set; }
-
-        /// <summary>
-        /// Column of the hammer (or of the shelf holding it) at generation; -1 without a hammer.
-        /// </summary>
-        public int HammerColumn { get; set; } = -1;
 
         /// <summary>
         /// Returns the next in-level random value; deterministic for a given seed and draw count.

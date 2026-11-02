@@ -9,6 +9,24 @@ namespace Game.Features.Gameplay.Model
     {
         private static readonly IReadOnlyList<LevelEvent> NoEvents = new LevelEvent[0];
 
+        /// <summary>Events to animate: unwraps, folds, unlocks, arrivals, unboarding.</summary>
+        public IReadOnlyList<LevelEvent> Events { get; }
+
+        /// <summary>The moved item (a fresh object without bag or second row) or the hammer.</summary>
+        public Jar Jar { get; }
+
+        /// <summary>The basket that received the item; null when it went to the counter or for the hammer.</summary>
+        public Basket Basket { get; }
+
+        /// <summary>Whether the move happened; a refused move changes nothing.</summary>
+        public bool IsOk { get; }
+
+        /// <summary>Refused because the counter is full and no basket wants the item; the counter shakes.</summary>
+        public bool IsCounterFull { get; }
+
+        /// <summary>The hammer was used on the nailed shelf.</summary>
+        public bool IsTool { get; }
+
         /// <summary>
         /// Creates a result.
         /// </summary>
@@ -28,24 +46,6 @@ namespace Game.Features.Gameplay.Model
             IsTool = isTool;
             Events = events ?? NoEvents;
         }
-
-        /// <summary>Events to animate: unwraps, folds, unlocks, arrivals, unboarding.</summary>
-        public IReadOnlyList<LevelEvent> Events { get; }
-
-        /// <summary>The moved item (a fresh object without bag or second row) or the hammer.</summary>
-        public Jar Jar { get; }
-
-        /// <summary>The basket that received the item; null when it went to the counter or for the hammer.</summary>
-        public Basket Basket { get; }
-
-        /// <summary>Whether the move happened; a refused move changes nothing.</summary>
-        public bool IsOk { get; }
-
-        /// <summary>Refused because the counter is full and no basket wants the item; the counter shakes.</summary>
-        public bool IsCounterFull { get; }
-
-        /// <summary>The hammer was used on the nailed shelf.</summary>
-        public bool IsTool { get; }
 
         /// <summary>
         /// A refused move.

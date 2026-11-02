@@ -14,7 +14,24 @@ namespace Game.Features.Album
     /// </summary>
     public sealed class AlbumViewModel : ViewModel
     {
+        /// <summary>Departments in album order.</summary>
+        public List<AlbumSection> Sections { get; } = new List<AlbumSection>();
         private readonly Subject<Unit> _closeRequested = new Subject<Unit>();
+
+        /// <summary>"<b>found</b> / total".</summary>
+        public string Total { get; }
+
+        /// <summary>Caption of the back button.</summary>
+        public string BackText { get; }
+
+        /// <summary>Title on the album sign ("My Album").</summary>
+        public string Title { get; }
+
+        /// <summary>Line under the sign title.</summary>
+        public string Subtitle { get; }
+
+        /// <summary>Emits when the back button is tapped.</summary>
+        public System.IObservable<Unit> CloseRequested => _closeRequested;
 
         /// <summary>
         /// Builds the album content from the catalog and the found items.
@@ -49,24 +66,6 @@ namespace Game.Features.Album
             Title = texts.Get(AlbumTexts.Title);
             Subtitle = texts.Get(AlbumTexts.Subtitle);
         }
-
-        /// <summary>Departments in album order.</summary>
-        public List<AlbumSection> Sections { get; } = new List<AlbumSection>();
-
-        /// <summary>"<b>found</b> / total".</summary>
-        public string Total { get; }
-
-        /// <summary>Caption of the back button.</summary>
-        public string BackText { get; }
-
-        /// <summary>Title on the album sign ("My Album").</summary>
-        public string Title { get; }
-
-        /// <summary>Line under the sign title.</summary>
-        public string Subtitle { get; }
-
-        /// <summary>Emits when the back button is tapped.</summary>
-        public System.IObservable<Unit> CloseRequested => _closeRequested;
 
         /// <summary>
         /// Back button.

@@ -11,6 +11,24 @@ namespace Game.Features.Home
     /// </summary>
     public sealed class HomeProgress
     {
+        /// <summary>Emits after any chunk changed.</summary>
+        public IProfileService Profile { get; }
+
+        /// <summary>Coin chip.</summary>
+        public IWalletService Wallet { get; }
+
+        /// <summary>Next level and milestones.</summary>
+        public ILevelProgressService Levels { get; }
+
+        /// <summary>Album badge and showcase.</summary>
+        public IAlbumService Album { get; }
+
+        /// <summary>Milestone popups and the album button pulse.</summary>
+        public IOnboardingService Onboarding { get; }
+
+        /// <summary>Name on the sign.</summary>
+        public IShopProfile Shop { get; }
+
         /// <summary>
         /// Creates the bundle; resolved by VContainer.
         /// </summary>
@@ -30,23 +48,5 @@ namespace Game.Features.Home
             Onboarding = onboarding;
             Shop = shop;
         }
-
-        /// <summary>Emits after any chunk changed.</summary>
-        public IProfileService Profile { get; }
-
-        /// <summary>Coin chip.</summary>
-        public IWalletService Wallet { get; }
-
-        /// <summary>Next level and milestones.</summary>
-        public ILevelProgressService Levels { get; }
-
-        /// <summary>Album badge and showcase.</summary>
-        public IAlbumService Album { get; }
-
-        /// <summary>Milestone popups and the album button pulse.</summary>
-        public IOnboardingService Onboarding { get; }
-
-        /// <summary>Name on the sign.</summary>
-        public IShopProfile Shop { get; }
     }
 }

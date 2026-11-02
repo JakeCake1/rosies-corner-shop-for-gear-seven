@@ -31,6 +31,9 @@ namespace Game.Services.UI
         // Cached: reading Token from the disposed source throws, and windows still close after Dispose at shutdown.
         private readonly CancellationToken _lifetimeToken;
 
+        /// <inheritdoc/>
+        public bool IsPopupOpen => _stacks[UILayer.Popups].Count > 0;
+
         /// <summary>
         /// Creates the service.
         /// </summary>
@@ -52,9 +55,6 @@ namespace Game.Services.UI
             _root.Blocker.RegisterCallback(_onBlockerClicked);
             UpdateBlocker();
         }
-
-        /// <inheritdoc/>
-        public bool IsPopupOpen => _stacks[UILayer.Popups].Count > 0;
 
         /// <inheritdoc/>
         public async UniTask<TWindow> OpenAsync<TWindow, TViewModel>(TViewModel viewModel, CancellationToken ct)

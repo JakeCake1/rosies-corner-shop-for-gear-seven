@@ -12,6 +12,18 @@ namespace Game.Features.Album
     /// </summary>
     public sealed class AlbumSection
     {
+        /// <summary>Department name.</summary>
+        public string Title { get; }
+
+        /// <summary>"n / total · reward" line.</summary>
+        public string Count { get; }
+
+        /// <summary>All items found.</summary>
+        public bool IsDone { get; }
+
+        /// <summary>Items in catalog order.</summary>
+        public List<AlbumEntry> Entries { get; }
+
         /// <summary>
         /// Creates a section.
         /// </summary>
@@ -26,17 +38,5 @@ namespace Game.Features.Album
             IsDone = isDone;
             Entries = entries;
         }
-
-        /// <summary>Department name.</summary>
-        public string Title { get; }
-
-        /// <summary>"n / total · reward" line.</summary>
-        public string Count { get; }
-
-        /// <summary>All items found.</summary>
-        public bool IsDone { get; }
-
-        /// <summary>Items in catalog order.</summary>
-        public List<AlbumEntry> Entries { get; }
     }
 }

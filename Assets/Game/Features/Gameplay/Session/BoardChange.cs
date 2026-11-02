@@ -11,6 +11,18 @@ namespace Game.Features.Gameplay.Session
         private static readonly IReadOnlyList<LevelEvent> NoEvents = new LevelEvent[0];
         private static readonly IReadOnlyDictionary<int, int> NoMap = new Dictionary<int, int>();
 
+        /// <summary>What caused the change.</summary>
+        public BoardChangeKind Kind { get; }
+
+        /// <summary>Rule events (folds, unlocks, arrivals...).</summary>
+        public IReadOnlyList<LevelEvent> Events { get; }
+
+        /// <summary>Items pulled out of a stockroom by Quick Pick, by jar id.</summary>
+        public IReadOnlyDictionary<int, int> FromStock { get; }
+
+        /// <summary>Items returned to a stockroom by Tidy Up, by jar id.</summary>
+        public IReadOnlyDictionary<int, int> ToStock { get; }
+
         /// <summary>
         /// Creates a change notice.
         /// </summary>
@@ -26,17 +38,5 @@ namespace Game.Features.Gameplay.Session
             FromStock = fromStock ?? NoMap;
             ToStock = toStock ?? NoMap;
         }
-
-        /// <summary>What caused the change.</summary>
-        public BoardChangeKind Kind { get; }
-
-        /// <summary>Rule events (folds, unlocks, arrivals...).</summary>
-        public IReadOnlyList<LevelEvent> Events { get; }
-
-        /// <summary>Items pulled out of a stockroom by Quick Pick, by jar id.</summary>
-        public IReadOnlyDictionary<int, int> FromStock { get; }
-
-        /// <summary>Items returned to a stockroom by Tidy Up, by jar id.</summary>
-        public IReadOnlyDictionary<int, int> ToStock { get; }
     }
 }

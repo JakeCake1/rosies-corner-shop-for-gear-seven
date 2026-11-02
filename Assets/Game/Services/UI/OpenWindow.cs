@@ -9,17 +9,6 @@ namespace Game.Services.UI
     /// </summary>
     internal sealed class OpenWindow
     {
-        /// <summary>
-        /// Creates the record when <see cref="UIService"/> opens a window.
-        /// </summary>
-        /// <param name="window">The opened window; disposed by the UI service when it closes.</param>
-        /// <param name="viewModel">The window's view model; disposed together with the window.</param>
-        public OpenWindow(IWindow window, ViewModel viewModel)
-        {
-            Window = window;
-            ViewModel = viewModel;
-        }
-
         /// <summary>The opened window.</summary>
         public IWindow Window { get; }
 
@@ -34,5 +23,16 @@ namespace Game.Services.UI
 
         /// <summary>True while the hide animation runs, so a second close request is ignored.</summary>
         public bool IsClosing { get; set; }
+
+        /// <summary>
+        /// Creates the record when <see cref="UIService"/> opens a window.
+        /// </summary>
+        /// <param name="window">The opened window; disposed by the UI service when it closes.</param>
+        /// <param name="viewModel">The window's view model; disposed together with the window.</param>
+        public OpenWindow(IWindow window, ViewModel viewModel)
+        {
+            Window = window;
+            ViewModel = viewModel;
+        }
     }
 }

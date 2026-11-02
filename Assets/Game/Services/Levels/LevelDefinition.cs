@@ -39,54 +39,6 @@ namespace Game.Services.Levels
         [Tooltip("UI string table key of the banner tip at level start (tip.*). Empty for none.")]
         [SerializeField] private string _tipKey = string.Empty;
 
-        /// <summary>
-        /// Creates a level definition; used by the JSON importer and by tests.
-        /// </summary>
-        /// <param name="seed">Seed of the deterministic layout.</param>
-        /// <param name="jarsPerRow">Items per shelf row (2 or 3).</param>
-        /// <param name="visibleRows">Visible column height in rows.</param>
-        /// <param name="sizes">Possible heights of new shelves; repeats weight the choice.</param>
-        /// <param name="types">Distinct item types.</param>
-        /// <param name="perType">Copies of each type (6 or 9).</param>
-        /// <param name="locks">Tied shelves.</param>
-        /// <param name="frozen">Frozen shelves to sprinkle over the level.</param>
-        /// <param name="thaw">Baskets that thaw a frozen shelf.</param>
-        /// <param name="boarded">Nailed shelves (0 or 1).</param>
-        /// <param name="hammerMode">0 open shelf, 1 stockroom, 2 inside a tied shelf.</param>
-        /// <param name="wrap">Paper bag chance (0..1).</param>
-        /// <param name="deep">Second-row chance (0..1).</param>
-        /// <param name="family">Department of the day, or empty.</param>
-        /// <param name="look">Lookalike strictness (0..2).</param>
-        /// <param name="isHard">Tricky level with double rewards.</param>
-        /// <param name="tipKey">UI string table key of the banner tip at level start, empty for none.</param>
-        /// <param name="capacity">Counter capacity override, 0 for default.</param>
-        /// <param name="baskets">Open baskets at start, 0 for default.</param>
-        public LevelDefinition(long seed, int jarsPerRow, int visibleRows, int[] sizes, int types, int perType,
-            int locks = 0, int frozen = 0, int thaw = 3, int boarded = 0, int hammerMode = 0, float wrap = 0f,
-            float deep = 0f, string family = "", int look = 0, bool isHard = false, string tipKey = "", int capacity = 0,
-            int baskets = 0)
-        {
-            _seed = seed;
-            _jarsPerRow = jarsPerRow;
-            _visibleRows = visibleRows;
-            _sizes = sizes;
-            _types = types;
-            _perType = perType;
-            _locks = locks;
-            _frozen = frozen;
-            _thaw = thaw;
-            _boarded = boarded;
-            _hammerMode = hammerMode;
-            _wrap = wrap;
-            _deep = deep;
-            _family = family ?? string.Empty;
-            _look = look;
-            _isHard = isHard;
-            _tipKey = tipKey ?? string.Empty;
-            _capacity = capacity;
-            _baskets = baskets;
-        }
-
         /// <summary>Possible heights of new shelves in rows; repeating a value makes it more likely.</summary>
         public int[] Sizes => _sizes;
 
@@ -148,5 +100,53 @@ namespace Game.Services.Levels
 
         /// <summary>Total items in the level; the progress bar's denominator.</summary>
         public int TotalItems => _types * _perType;
+
+        /// <summary>
+        /// Creates a level definition; used by the JSON importer and by tests.
+        /// </summary>
+        /// <param name="seed">Seed of the deterministic layout.</param>
+        /// <param name="jarsPerRow">Items per shelf row (2 or 3).</param>
+        /// <param name="visibleRows">Visible column height in rows.</param>
+        /// <param name="sizes">Possible heights of new shelves; repeats weight the choice.</param>
+        /// <param name="types">Distinct item types.</param>
+        /// <param name="perType">Copies of each type (6 or 9).</param>
+        /// <param name="locks">Tied shelves.</param>
+        /// <param name="frozen">Frozen shelves to sprinkle over the level.</param>
+        /// <param name="thaw">Baskets that thaw a frozen shelf.</param>
+        /// <param name="boarded">Nailed shelves (0 or 1).</param>
+        /// <param name="hammerMode">0 open shelf, 1 stockroom, 2 inside a tied shelf.</param>
+        /// <param name="wrap">Paper bag chance (0..1).</param>
+        /// <param name="deep">Second-row chance (0..1).</param>
+        /// <param name="family">Department of the day, or empty.</param>
+        /// <param name="look">Lookalike strictness (0..2).</param>
+        /// <param name="isHard">Tricky level with double rewards.</param>
+        /// <param name="tipKey">UI string table key of the banner tip at level start, empty for none.</param>
+        /// <param name="capacity">Counter capacity override, 0 for default.</param>
+        /// <param name="baskets">Open baskets at start, 0 for default.</param>
+        public LevelDefinition(long seed, int jarsPerRow, int visibleRows, int[] sizes, int types, int perType,
+            int locks = 0, int frozen = 0, int thaw = 3, int boarded = 0, int hammerMode = 0, float wrap = 0f,
+            float deep = 0f, string family = "", int look = 0, bool isHard = false, string tipKey = "", int capacity = 0,
+            int baskets = 0)
+        {
+            _seed = seed;
+            _jarsPerRow = jarsPerRow;
+            _visibleRows = visibleRows;
+            _sizes = sizes;
+            _types = types;
+            _perType = perType;
+            _locks = locks;
+            _frozen = frozen;
+            _thaw = thaw;
+            _boarded = boarded;
+            _hammerMode = hammerMode;
+            _wrap = wrap;
+            _deep = deep;
+            _family = family ?? string.Empty;
+            _look = look;
+            _isHard = isHard;
+            _tipKey = tipKey ?? string.Empty;
+            _capacity = capacity;
+            _baskets = baskets;
+        }
     }
 }
