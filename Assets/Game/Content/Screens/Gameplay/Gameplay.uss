@@ -34,35 +34,46 @@
 }
 
 .hud-badge {
+    /* .lvlBadge: 52 px disc at (6, 2) in the 64 x 68 sprite (lip and shadow below it) */
     position: absolute;
-    left: 0;
-    top: -2px;
-    width: 52px;
-    height: 54px;
+    left: -6px;
+    top: -4px;
+    width: 64px;
+    height: 68px;
 }
 
 .hud-badge__title {
     position: absolute;
-    top: 8px;
-    left: 0;
-    right: 0;
+    top: 11px;
+    left: 6px;
+    right: 6px;
     height: 12px;
-    font-size: 9px;
-    letter-spacing: 1px;
-    color: var(--walnut);
+    font-size: 10px;
+    letter-spacing: 0.6px;
+    color: #5A3A0A;
     -unity-text-align: middle-center;
 }
 
 .hud-badge__number {
     position: absolute;
-    top: 14px;
-    bottom: 4px;
-    left: 0;
-    right: 0;
-    font-size: 24px;
+    top: 21px;
+    height: 26px;
+    left: 6px;
+    right: 6px;
+    font-size: 22px;
     -unity-font-style: bold;
-    color: var(--walnut);
+    color: #5A3A0A;
     -unity-text-align: middle-center;
+}
+
+/* Tricky levels: red badge with white "TRICKY" and number (03_game_L20_tricky.png) */
+.hud-badge.kit-badge-red > .hud-badge__title {
+    color: white;
+}
+
+.hud-badge.kit-badge-red > .hud-badge__number {
+    color: white;
+    text-shadow: 0 2px 0 rgba(122, 28, 36, 0.5);
 }
 
 .hud-progress {
@@ -113,16 +124,17 @@
     position: absolute;
     right: 0;
     top: 3px;
-    width: 42px;
-    height: 44px;
+    /* .gear: 40 x 40 face, 2 px lip and 4 px shadow in the sprite */
+    width: 40px;
+    height: 46px;
 }
 
 .hud-settings__icon {
     position: absolute;
     left: 9px;
-    right: 9px;
-    top: 12px;
-    bottom: 8px;
+    top: 9px;
+    width: 22px;
+    height: 22px;
 }
 
 /* Baskets */
@@ -134,10 +146,11 @@
 }
 
 .basket-area__ledge {
+    /* The baskets stand on the plank: the basket art ends 89 px down its 92 px box. */
     position: absolute;
     left: -2%;
     right: -2%;
-    bottom: 16px;
+    top: 87px;
     height: 22px;
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ledge.png");
     background-repeat: repeat no-repeat;
@@ -222,19 +235,20 @@
     width: 64px;
     height: 30px;
     flex-direction: row;
+    justify-content: center;
     align-items: center;
 }
 
 .basket__tag-icon {
     width: 16px;
-    height: 26px;
-    margin-left: 6px;
+    height: 24px;
+    margin-bottom: 2px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
 .basket__tag-count {
     margin-left: 4px;
-    padding-bottom: 3px;
+    padding-bottom: 2px;
     font-size: 17px;
     -unity-font-style: bold;
     color: var(--ink);
@@ -283,6 +297,8 @@
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/awning.png");
     background-repeat: repeat no-repeat;
     background-size: 52px 38px;
+    /* Tiles from the middle so both ends cut the stripes the same way. */
+    background-position-x: center;
 }
 
 .cabinet__tabs {
@@ -298,21 +314,30 @@
     flex-grow: 1;
     flex-basis: 0;
     margin: 0 2px;
+    align-items: center;
     justify-content: center;
+}
+
+/* .colTag: compact pill sized to its text, centred over its column */
+.stock-tab__pill {
+    height: 22px;
+    padding: 0 9px 1px 9px;
+    flex-direction: row;
+    align-items: center;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.85);
 }
 
 .stock-tab__text {
-    margin: 0 18px 2px 4px;
-    font-size: 13px;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+    -unity-font-style: bold;
     color: var(--ink-2);
     -unity-text-align: middle-center;
 }
 
 .stock-tab__hammer {
-    position: absolute;
-    right: 4px;
-    top: 3px;
+    margin-left: 3px;
     width: 14px;
     height: 20px;
     background-image: url("project://database/Assets/Game/Content/Visual/Gameplay/tools/hammer.png");
@@ -322,8 +347,9 @@
 
 .cabinet__columns {
     position: absolute;
-    left: 9px;
-    right: 9px;
+    /* BoardLayout.ColumnInset: a gap between the outer columns and the cabinet frame */
+    left: 13px;
+    right: 13px;
     bottom: 11px;
     height: 300px;
     flex-direction: row;
@@ -335,6 +361,14 @@
     flex-basis: 0;
     margin: 0 2px;
     overflow: hidden;
+    /* The back panel stays where shelves have gone (02_game_L01_midplay.png). */
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shelf_back.png");
+    -unity-slice-left: 8;
+    -unity-slice-top: 8;
+    -unity-slice-right: 8;
+    -unity-slice-bottom: 8;
+    -unity-slice-scale: 1px;
+    -unity-background-image-tint-color: rgba(255, 255, 255, 0.7);
 }
 
 /* Shelves */
@@ -392,20 +426,54 @@
 
 .shelf__rows {
     position: absolute;
-    top: -7px;
+    top: -8px;
     left: 50%;
-    width: 64px;
-    height: 18px;
-    margin-left: -32px;
-    -unity-background-image-tint-color: var(--walnut);
+    width: 52px;
+    height: 17px;
+    margin-left: -26px;
+    -unity-background-image-tint-color: #5A3A1C;
     justify-content: center;
 }
 
 .shelf__rows-text {
-    font-size: 12px;
+    font-size: 10px;
+    -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
+}
+
+/*
+ * .s.hasBack::after: "+1" on a slot with an item behind it. ShelfView places it (26 x 16 at the slot's top right).
+ * UI Toolkit has no dashed borders; a solid 1px border keeps the look.
+ */
+.shelf__back-mark {
+    position: absolute;
+    width: 26px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+    -unity-font-style: bold;
+    color: #7A4A9A;
+    -unity-text-align: middle-center;
+    background-color: rgba(255, 248, 234, 0.92);
+    border-width: 1px;
+    border-color: #7A4A9A;
+    border-radius: 8px;
+}
+
+/* Frame tone by block height (.blk.h2 orange, .blk.h3 walnut); the kit sprites are light oak. */
+.shelf--h2 .shelf__post,
+.shelf--h2 .shelf__cap,
+.shelf--h2 .shelf__floor {
+    -unity-background-image-tint-color: #E0904A;
+}
+
+.shelf--h3 .shelf__post,
+.shelf--h3 .shelf__cap,
+.shelf--h3 .shelf__floor {
+    -unity-background-image-tint-color: #7A4E2C;
 }
 
 .shelf__twine {
@@ -446,19 +514,36 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* .blk .ice: inset 3px 1px 0 */
+.shelf__ice {
+    left: 1px;
+    top: 3px;
+    right: 1px;
+    bottom: 0;
+}
+
+/* ".ice b": blue pill centred on the block, "snowflake N" */
 .shelf__ice-badge {
     position: absolute;
-    top: 4px;
+    top: 50%;
     left: 50%;
-    width: 48px;
-    height: 22px;
-    margin-left: -24px;
+    height: 26px;
+    padding: 0 10px 0 8px;
+    translate: -50% -50%;
+    flex-direction: row;
+    align-items: center;
     -unity-background-image-tint-color: #2F7BD6;
-    justify-content: center;
+}
+
+.shelf__ice-flake {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
 }
 
 .shelf__ice-text {
-    font-size: 14px;
+    font-size: 16px;
+    -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
     padding-bottom: 2px;
@@ -504,15 +589,6 @@
     position: absolute;
 }
 
-.item__glow {
-    position: absolute;
-    left: -8px;
-    right: -8px;
-    top: 6px;
-    bottom: -6px;
-    -unity-background-image-tint-color: rgb(255, 219, 102);
-}
-
 .item__image {
     position: absolute;
     left: 0;
@@ -531,50 +607,65 @@
     width: 358px;
     height: 90px;
     margin-left: -179px;
+    padding: 0 12px;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
 .booster-slot {
     width: 70px;
     height: 88px;
-    margin: 0 11px;
 }
 
 .booster__glow {
     position: absolute;
     left: -3px;
-    top: -6px;
+    top: -9px;
     width: 76px;
     height: 76px;
     -unity-background-image-tint-color: rgb(255, 217, 102);
 }
 
 .booster__tile {
+    /* .bst .ic: 58 px face at (6, 2) in the 70 x 78 sprite (lip and shadow below it) */
     position: absolute;
-    left: 5px;
-    top: 0;
-    width: 60px;
-    height: 60px;
-    -unity-background-image-tint-color: #FFF8EA;
+    left: 0;
+    top: -2px;
+    width: 70px;
+    height: 78px;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/booster_tile.png");
+    transition-property: translate;
+    transition-duration: 0.08s;
 }
 
+/* .bst:active .ic: down 3 px, the pressed sprite has a 1 px lip */
+.booster__tile:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/booster_tile_pressed.png");
+    translate: 0 3px;
+}
+
+/* .bst .ic svg: 38 px, centred on the face */
 .booster__icon {
     position: absolute;
-    left: 7px;
-    top: 7px;
-    right: 7px;
-    bottom: 7px;
+    left: 16px;
+    top: 12px;
+    width: 38px;
+    height: 38px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* .bst .cnt: top -6px, 9 px past the face's right edge */
 .booster__badge {
     position: absolute;
-    right: -8px;
-    top: -8px;
-    width: 24px;
-    height: 24px;
+    right: -5px;
+    top: -6px;
+    /* 22 px disc plus the 2 px white outline (0 0 0 2px #fff) */
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+    border-color: white;
+    border-radius: 13px;
     -unity-background-image-tint-color: var(--berry);
     justify-content: center;
 }
@@ -584,7 +675,7 @@
 }
 
 .booster__count {
-    font-size: 14px;
+    font-size: 13px;
     -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
@@ -599,10 +690,9 @@
     height: 22px;
     font-size: 13px;
     -unity-font-style: bold;
-    color: white;
+    color: #FFF8EA;
     -unity-text-align: middle-center;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgb(63, 39, 20);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 /* Level banner */
@@ -611,12 +701,14 @@
     height: 110px;
 }
 
+/* Hugs its title ("Level 1" ~200 px in 02_game_L01_start.png), centred over the counter */
 .banner__ribbon {
     position: absolute;
     top: 0;
-    left: 10px;
-    width: 300px;
+    left: 50%;
     height: 52px;
+    padding: 0 40px;
+    translate: -50% 0;
     justify-content: center;
 }
 

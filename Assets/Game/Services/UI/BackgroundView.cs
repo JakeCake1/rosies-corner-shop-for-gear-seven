@@ -5,14 +5,14 @@ using UnityEngine.UIElements;
 namespace Game.Services.UI
 {
     /// <summary>
-    /// Full-screen shop background behind every layer: wallpaper, wainscot, bunting and the red tint of tricky levels.
+    /// Full-screen shop background behind every layer: wallpaper, wainscot, bunting and the gingham of tricky levels.
     /// </summary>
     public sealed class BackgroundView : ElementView
     {
         private const string TintName = "tricky-tint";
         private const string BuntingName = "bunting";
         private const float TintSeconds = 0.4f;
-        private const float TrickyOpacity = 0.16f;
+        private const float TrickyOpacity = 1f;
 
         private VisualElement _tint;
         private VisualElement _bunting;

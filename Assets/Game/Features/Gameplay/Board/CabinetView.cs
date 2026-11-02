@@ -106,6 +106,9 @@ namespace Game.Features.Gameplay.Board
                     }
 
                     ShowBlock(view, block);
+                    // Bottom to top, each sent to the back of the column: the lower shelf ends up drawn last, so its "N rows"
+                    // badge and "+1" stickers that stick out over the shelf above stay visible.
+                    view.Root.SendToBack();
                     offset += block.Height;
                 }
             }
@@ -172,7 +175,7 @@ namespace Game.Features.Gameplay.Board
             var rowsText = block.Height > 1 ? _texts.Format(GameplayTexts.ShelfRows, block.Height) : null;
             _animator.Prepare(view, block.Height, layout);
             view.Setup(block.Id, block.Height, layout.JarsPerRow, layout.ColumnWidth, layout.RowHeight,
-                layout.ItemSize, rowsText);
+                layout.ItemSize, rowsText, _texts.Get(GameplayTexts.BackMark));
             _shelves[block.Id] = view;
             return view;
         }

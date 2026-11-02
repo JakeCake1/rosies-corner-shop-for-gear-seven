@@ -1,59 +1,57 @@
-/* Home window. Positions follow the prototype mockup (01_home.png), in prototype CSS pixels. */
+/* Home: sign at the top; the rest is laid out bottom-up from the wainscot (play button, coins + album, showcase). */
 
 .home-settings {
     position: absolute;
-    top: 8px;
-    right: 14px;
-    width: 42px;
+    top: 6px;
+    right: 10px;
+    /* .homeGear: 38 x 38 face, 2 px lip and 4 px shadow in the sprite */
+    width: 38px;
     height: 44px;
 }
 
 .home-settings__icon {
     position: absolute;
-    left: 9px;
-    right: 9px;
-    top: 12px;
-    bottom: 8px;
+    left: 7px;
+    top: 7px;
+    width: 24px;
+    height: 24px;
+}
+
+/* Sign and the line under it */
+
+.home-top {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    align-items: center;
 }
 
 .home-sign {
-    position: absolute;
-    top: 62px;
-    left: 50%;
     width: 340px;
-    height: 92px;
-    margin-left: -170px;
+    /* 12 px drop + soft shadow are inside the sprite's bottom */
+    padding: 14px 16px 30px 16px;
+    align-items: center;
 }
 
 .home-sign__name {
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    top: 8px;
-    bottom: 30px;
-    font-size: 40px;
-    color: var(--cream);
+    font-size: 36px;
+    color: #FFF3D6;
     -unity-text-align: middle-center;
     white-space: nowrap;
+    text-shadow: 0 3px 0 #4A2C12;
 }
 
 .home-sign__tagline {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 12px;
-    height: 20px;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: #E2C38A;
+    margin-top: 4px;
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: #F3D9A8;
     -unity-text-align: middle-center;
 }
 
 .home-subtitle-row {
-    position: absolute;
-    top: 160px;
-    left: 0;
-    right: 0;
+    margin-top: 2px;
     height: 22px;
     flex-direction: row;
     justify-content: center;
@@ -76,89 +74,96 @@
     color: var(--walnut);
 }
 
-.home-showcase {
+/* Bottom block: anchored above the wainscot (its rail is at y = 724). */
+
+.home-bottom {
     position: absolute;
-    top: 210px;
-    left: 50%;
-    width: 370px;
-    height: 96px;
-    margin-left: -185px;
+    left: 16px;
+    right: 16px;
+    bottom: 132px;
+    align-items: stretch;
+}
+
+.home-showcase {
+    height: 98px;
+    margin: 0 -6px 18px -6px;
 }
 
 .home-showcase__items {
     position: absolute;
-    left: 10px;
-    right: 10px;
+    left: 0;
+    right: 0;
     top: 0;
-    bottom: 16px;
+    bottom: 21px;
     flex-direction: row;
     justify-content: center;
     align-items: flex-end;
 }
 
 .home-showcase__item {
-    width: 44px;
-    height: 74px;
-    margin: 0 3px;
+    width: 42px;
+    height: 67px;
+    margin: 0 1px;
     -unity-background-scale-mode: scale-to-fit;
     background-position-y: bottom;
 }
 
+/* 16 px plank + 7 px shadow */
 .home-showcase__plank {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 20px;
+    height: 23px;
 }
 
+.home-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+/* .coins: pill sized to its content */
 .home-coins {
-    position: absolute;
-    top: 326px;
-    left: 16px;
-    width: 118px;
-    height: 40px;
+    height: 32px;
+    margin-top: 6px;
+    padding: 0 12px 2px 4px;
 }
 
 .home-coins__icon {
-    width: 28px;
-    height: 28px;
-    margin-left: 8px;
+    width: 24px;
+    height: 24px;
 }
 
 .home-coins__value {
-    margin-left: 6px;
-    padding-bottom: 3px;
-    font-size: 20px;
+    margin-left: 5px;
+    font-size: 16px;
     -unity-font-style: bold;
-    color: var(--ink);
+    color: #6B4320;
 }
 
+/* Sized to its content: 44 px face + 5 px lip + 6 px shadow below (in the sprite) */
 .home-album {
-    position: absolute;
-    top: 322px;
-    right: 16px;
-    width: 150px;
-    height: 48px;
+    height: 55px;
+    padding: 0 18px 11px 18px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .home-album__text {
-    position: absolute;
-    left: 0;
-    right: 22px;
-    top: 0;
-    bottom: 6px;
-    font-size: 20px;
+    font-size: 16px;
+    -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
 }
 
 .home-album__lock {
-    position: absolute;
-    right: 14px;
-    top: 12px;
-    width: 18px;
-    height: 20px;
+    width: 14px;
+    height: 16px;
+    margin-left: 8px;
 }
 
 .home-album__badge {
@@ -177,25 +182,22 @@
     -unity-text-align: middle-center;
 }
 
+/* 77 px face + 5 px lip + 6 px shadow */
 .home-play {
-    position: absolute;
-    bottom: 250px;
-    left: 50%;
-    width: 350px;
-    height: 82px;
-    margin-left: -175px;
+    height: 88px;
 }
 
 .home-play__title {
     position: absolute;
     left: 0;
     right: 0;
-    top: 8px;
-    bottom: 34px;
-    font-size: 30px;
+    top: 12px;
+    height: 32px;
+    font-size: 24px;
     -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
 }
 
 .home-play__line {
@@ -203,8 +205,15 @@
     left: 0;
     right: 0;
     top: 44px;
-    bottom: 12px;
-    font-size: 17px;
+    height: 20px;
+    font-size: 15px;
     color: white;
     -unity-text-align: middle-center;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.home-play.kit-btn-gold > .home-play__title,
+.home-play.kit-btn-gold > .home-play__line {
+    color: #5A3A0A;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }

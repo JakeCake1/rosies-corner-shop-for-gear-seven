@@ -19,6 +19,7 @@ namespace Game.Features.Gameplay
         private const string BerryClass = "kit-ribbon-berry";
         private const float HoldSeconds = 2.4f;
         private const float Width = 320f;
+        private const float RibbonHalfHeight = 26f;
 
         private readonly VisualTreeAsset _layout;
         private readonly VisualElement _parent;
@@ -64,6 +65,8 @@ namespace Game.Features.Gameplay
 
             Root.style.position = Position.Absolute;
             Root.style.width = Width;
+            // Grow from the ribbon's centre, not from the element's corner.
+            Root.style.transformOrigin = new TransformOrigin(Length.Percent(50f), RibbonHalfHeight);
             Root.style.opacity = 0f;
             Root.style.visibility = Visibility.Hidden;
             VisualElementTweens.SetScale(Root, Vector2.one * 0.6f);
@@ -92,9 +95,18 @@ namespace Game.Features.Gameplay
 
         private void Play(VisualElement anchor)
         {
-            var center = _parent.WorldToLocal(anchor.worldBound.center);
+            // The counter may not have been laid out yet (zero or NaN rect): wait for the next pass instead of
+            // placing the banner at the panel's corner.
+            var bounds = anchor.worldBound;
+            if (float.IsNaN(bounds.width) || bounds.width <= 0f)
+            {
+                Root.schedule.Execute(() => Play(anchor));
+                return;
+            }
+
+            var center = _parent.WorldToLocal(bounds.center);
             Root.style.left = center.x - Width / 2f;
-            Root.style.top = center.y - 26f;
+            Root.style.top = center.y - RibbonHalfHeight;
             Root.style.visibility = Visibility.Visible;
             _sequence = DOTween.Sequence()
                 .Append(Root.DOFade(1f, 0.25f))

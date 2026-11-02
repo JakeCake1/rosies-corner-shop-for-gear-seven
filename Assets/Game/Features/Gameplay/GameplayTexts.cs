@@ -23,6 +23,9 @@ namespace Game.Features.Gameplay
         /// <summary>English: "{0} rows". Arguments: {0} rows of a tall shelf (2 or more).</summary>
         internal const string ShelfRows = "gameplay.shelf_rows";
 
+        /// <summary>English: "+1". Sticker on a shelf slot that has another item behind it.</summary>
+        internal const string BackMark = "gameplay.back_mark";
+
         /// <summary>English: "LEVEL".</summary>
         internal const string BadgeLevel = "gameplay.badge_level";
 
@@ -333,26 +336,14 @@ namespace Game.Features.Gameplay
         /// <summary>English: "Extra basket".</summary>
         internal const string StartBasketName = "gameplay.start_basket_name";
 
-        /// <summary>English: "start with three baskets".</summary>
+        /// <summary>English: "Start with three baskets".</summary>
         internal const string StartBasketInfo = "gameplay.start_basket_info";
 
         /// <summary>English: "Quick Pick".</summary>
         internal const string StartQuickName = "gameplay.start_quick_name";
 
-        /// <summary>English: "one extra for this level".</summary>
+        /// <summary>English: "One extra for this level".</summary>
         internal const string StartQuickInfo = "gameplay.start_quick_info";
-
-        /// <summary>English: "{0} left". Arguments: {0} owned start boosters.</summary>
-        internal const string StartOwned = "gameplay.start_owned";
-
-        /// <summary>English: "{0} coins". Arguments: {0} price in coins.</summary>
-        internal const string StartPrice = "gameplay.start_price";
-
-        /// <summary>
-        /// English: "&lt;b&gt;{0}&lt;/b&gt; &lt;size=75%&gt;{1} · {2}&lt;/size&gt;". Arguments: {0} booster name, {1}
-        /// what it does, {2} owned count or price.
-        /// </summary>
-        internal const string StartToggle = "gameplay.start_toggle";
 
         /// <summary>English: "Play".</summary>
         internal const string StartPlay = "gameplay.start_play";

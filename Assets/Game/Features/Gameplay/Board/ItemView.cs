@@ -13,11 +13,11 @@ namespace Game.Features.Gameplay.Board
     public sealed class ItemView : PooledElementView
     {
         private const string ItemClass = "item";
-        private const string GlowClass = "item__glow";
         private const string ImageClass = "item__image";
-        private const float HintPulseSeconds = 0.5f;
+        // Prototype .jar.hint: @keyframes hint { 50% { translateY(-6px) } }, 1 s ease-in-out.
+        private const float HintLift = 6f;
+        private const float HintHalfSeconds = 0.5f;
 
-        private VisualElement _glow;
         private VisualElement _image;
         private Action<ItemView> _tapped;
         private Tween _hintTween;
@@ -72,20 +72,20 @@ namespace Game.Features.Gameplay.Board
         }
 
         /// <summary>
-        /// Turns the soft gold hint glow on or off.
+        /// Starts or stops the hint: the item bobs up and down.
         /// </summary>
-        /// <param name="isOn">Glow.</param>
+        /// <param name="isOn">Bob.</param>
         public void SetHint(bool isOn)
         {
             _hintTween?.Kill();
-            _glow.SetVisible(isOn);
+            _image.style.translate = new Translate(0f, 0f);
             if (!isOn)
             {
                 return;
             }
 
-            _glow.style.opacity = 0.9f;
-            _hintTween = _glow.DOFade(0.25f, HintPulseSeconds).SetLoops(-1, LoopType.Yoyo);
+            _hintTween = _image.DOTranslate(new Vector2(0f, -HintLift), HintHalfSeconds).SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
         }
 
         /// <summary>
@@ -127,7 +127,6 @@ namespace Game.Features.Gameplay.Board
             _image.Kill();
             ResetTransform(_image);
             _hintTween?.Kill();
-            _glow.SetVisible(false);
             _tapped = null;
             Destination = null;
             JarId = 0;
@@ -138,12 +137,8 @@ namespace Game.Features.Gameplay.Board
         protected override void OnAttached()
         {
             Root.AddToClassList(ItemClass);
-            _glow = CreateElement(GlowClass, "kit-circle");
-            _glow.pickingMode = PickingMode.Ignore;
-            _glow.SetVisible(false);
             _image = CreateElement(ImageClass);
             _image.pickingMode = PickingMode.Ignore;
-            Root.Add(_glow);
             Root.Add(_image);
             Root.RegisterCallback<PointerDownEvent>(_ => _tapped?.Invoke(this));
         }

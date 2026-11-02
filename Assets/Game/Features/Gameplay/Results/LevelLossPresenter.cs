@@ -96,12 +96,16 @@ namespace Game.Features.Gameplay.Results
             switch (ChooseAdOffer())
             {
                 case BasketOffer:
-                    _offers.AddAdButton(dialog, GameplayTexts.CallCustomer, () =>
+                    var call = _offers.AddAdButton(dialog, GameplayTexts.CallCustomer, () =>
                     {
                         session.OpenExtraBasket();
                         services.Overlay.Toast(services.Texts.Get(GameplayTexts.CustomerArrived));
                     });
-                    dialog.Note = services.Texts.Get(GameplayTexts.CustomerNote);
+                    if (call != null)
+                    {
+                        call.Note = services.Texts.Get(GameplayTexts.CustomerNote);
+                    }
+
                     break;
                 case SlotOffer:
                     _offers.AddAdButton(dialog, GameplayTexts.ExtraSpot, () =>

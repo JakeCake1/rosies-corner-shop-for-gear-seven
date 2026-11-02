@@ -16,6 +16,13 @@ namespace Game.Services.UI
         void Toast(string message, bool isWarning = false);
 
         /// <summary>
+        /// Pops a white tip up above an element ("Album opens after level 9" over the locked album button).
+        /// </summary>
+        /// <param name="message">Text.</param>
+        /// <param name="anchor">Element the tip points at.</param>
+        void ToastAbove(string message, VisualElement anchor);
+
+        /// <summary>
         /// Shows a coach bubble next to an element.
         /// </summary>
         /// <param name="message">Rich text.</param>
