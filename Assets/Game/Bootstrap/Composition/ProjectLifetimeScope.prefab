@@ -52,3 +52,4 @@ MonoBehaviour:
   _curves:
   - {fileID: 11400000, guid: 3ead73019f4caad46925b6d5f73c6531, type: 2}
   - {fileID: 11400000, guid: dbcf351dd49eceb4ab3ae14fbd339bed, type: 2}
+  _balance: {fileID: 11400000, guid: 9975546076509c44ab126ac4c6b403bc, type: 2}

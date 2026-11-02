@@ -1,6 +1,7 @@
-using System;
 using System.Threading;
+using System;
 using Cysharp.Threading.Tasks;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Levels;
@@ -18,8 +19,6 @@ namespace Game.Features.Home
     public sealed class HomeScreen : IDisposable
     {
         private const int MilestoneDelayMs = 700;
-        private const int AlbumFromLevel = 9;
-        private const int NameShopAfterLevel = 10;
 
         private readonly IUIService _ui;
         private readonly IOverlayService _overlay;
@@ -32,6 +31,7 @@ namespace Game.Features.Home
         private readonly IAlbumScreen _album;
         private readonly IReviewersScreen _reviewers;
         private readonly ILocalizationService _texts;
+        private readonly GameBalanceConfig _balance;
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private HomeWindow _window;
         private CancellationTokenSource _shown;
@@ -50,11 +50,13 @@ namespace Game.Features.Home
         /// <param name="album">Album screen.</param>
         /// <param name="reviewers">Reviewers panel.</param>
         /// <param name="texts">Home texts.</param>
+        /// <param name="balance">Album and shop naming milestones.</param>
         public HomeScreen(IUIService ui, IOverlayService overlay, HomeProgress progress, ILevelCurveService curves,
             IContentService content, IGameFlow flow, ISettingsScreen settings, IShopNamePrompt namePrompt,
-            IAlbumScreen album, IReviewersScreen reviewers, ILocalizationService texts)
+            IAlbumScreen album, IReviewersScreen reviewers, ILocalizationService texts, GameBalanceConfig balance)
         {
             _texts = texts;
+            _balance = balance;
             _ui = ui;
             _overlay = overlay;
             _progress = progress;
@@ -84,7 +86,7 @@ namespace Game.Features.Home
             var shown = _shown.Token;
             _overlay.SetBackground(false, true);
             _subscriptions.Clear();
-            var vm = new HomeViewModel(_progress, _curves, _content, _texts);
+            var vm = new HomeViewModel(_progress, _curves, _content, _texts, _balance);
             vm.Commands.Subscribe(command => OnCommand(command, shown)).AddTo(_subscriptions);
             _window = await _ui.OpenAsync<HomeWindow, HomeViewModel>(vm, shown);
             ShowMilestonesAsync(shown).Forget();
@@ -141,7 +143,7 @@ namespace Game.Features.Home
                     _album.OpenAsync(shown).Forget();
                     break;
                 case HomeCommand.AlbumLocked:
-                    _overlay.Toast(_texts.Format(HomeTexts.AlbumLocked, AlbumFromLevel));
+                    _overlay.Toast(_texts.Format(HomeTexts.AlbumLocked, _balance.AlbumFromLevel));
                     break;
                 case HomeCommand.Settings:
                     _settings.OpenAsync(null, shown).Forget();
@@ -161,8 +163,8 @@ namespace Game.Features.Home
 
             var levels = _progress.Levels;
             var onboarding = _progress.Onboarding;
-            var album = levels.IsCompleted(AlbumFromLevel) && !onboarding.HasFlag(Flags.AlbumIntro);
-            var name = levels.IsCompleted(NameShopAfterLevel) && !onboarding.HasFlag(Flags.NameAsked);
+            var album = levels.IsCompleted(_balance.AlbumFromLevel) && !onboarding.HasFlag(Flags.AlbumIntro);
+            var name = levels.IsCompleted(_balance.NameShopAfterLevel) && !onboarding.HasFlag(Flags.NameAsked);
             if (!album && !name)
             {
                 return;

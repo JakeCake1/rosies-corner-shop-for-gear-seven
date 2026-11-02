@@ -3,13 +3,14 @@ using DG.Tweening;
 using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Localization;
-using Game.Services.UI;
 using Game.Services.UI.Elements;
+using Game.Services.UI;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine;
 
 namespace Game.Features.Gameplay.Board
 {
@@ -32,6 +33,7 @@ namespace Game.Features.Gameplay.Board
         private readonly ILocalizationService _texts;
         private readonly BoardSprites _sprites;
         private readonly VisualElement _progressTarget;
+        private readonly GameBalanceConfig _balance;
         private CounterView _counter;
         private CabinetView _cabinet;
         private ItemLayerView _items;
@@ -68,9 +70,11 @@ namespace Game.Features.Gameplay.Board
         /// </param>
         /// <param name="progressTarget">HUD progress bar that shipped baskets fly into.</param>
         /// <param name="texts">Stock tabs, shelf rows badges and praise words.</param>
+        /// <param name="balance">Level from which the extra basket slot is shown.</param>
         public BoardView(GameplayLayouts layouts, IOverlayService overlay, IContentService content, GameplayArt art,
-            IAudioService audio, VisualElement progressTarget, ILocalizationService texts)
+            IAudioService audio, VisualElement progressTarget, ILocalizationService texts, GameBalanceConfig balance)
         {
+            _balance = balance;
             _layouts = layouts;
             _overlay = overlay;
             _audio = audio;
@@ -169,7 +173,8 @@ namespace Game.Features.Gameplay.Board
             _cabinet.Attach(Q(CabinetName));
             _items = new ItemLayerView(_sprites, _audio, _overlay, this);
             _items.Attach(Q(FlightName));
-            _baskets = new BasketLedgeView(_layouts.Basket, _sprites, _items, _overlay, _texts, _progressTarget);
+            _baskets = new BasketLedgeView(_layouts.Basket, _sprites, _items, _overlay, _texts, _progressTarget,
+                _balance.ExtraBasketSlotLevel);
             _baskets.Attach(Q(BasketAreaName));
             _cells = new BoardCells(_cabinet, _counter, _baskets, _layout);
             _effects = new BoardEventEffects(_cabinet, _items, _sprites, _overlay, _audio);

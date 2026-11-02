@@ -1,12 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Model;
 using Game.Services.Album;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Haptics;
@@ -46,6 +47,7 @@ namespace Game.Features.Gameplay.Session
         private readonly ILevelProgressService _levels;
         private readonly IAudioService _audio;
         private readonly IHapticsService _haptics;
+        private readonly GameBalanceConfig _balance;
         private readonly Subject<BoardChange> _changed = new Subject<BoardChange>();
         private readonly Subject<int> _refused = new Subject<int>();
         private readonly Subject<ShipNotice> _shipping = new Subject<ShipNotice>();
@@ -121,9 +123,10 @@ namespace Game.Features.Gameplay.Session
         /// <param name="levels">Stars and lost levels.</param>
         /// <param name="audio">Sound effects.</param>
         /// <param name="haptics">Vibration.</param>
+        /// <param name="balance">Free undos, extended capacity, booster unlock levels and coin rewards.</param>
         public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
             IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
-            IHapticsService haptics)
+            IHapticsService haptics, GameBalanceConfig balance)
         {
             _curves = curves;
             _content = content;
@@ -133,6 +136,7 @@ namespace Game.Features.Gameplay.Session
             _levels = levels;
             _audio = audio;
             _haptics = haptics;
+            _balance = balance;
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace Game.Features.Gameplay.Session
             _combo = -1;
             _isWarned = false;
             IsOver = false;
-            _undoLeft.Value = GameplayBalance.FreeUndosPerLevel;
+            _undoLeft.Value = _balance.FreeUndosPerLevel;
             _bonusPick.Value = startBoosters != null && startBoosters.HasQuickPick ? 1 : 0;
             _canUndo.Value = false;
             if (startBoosters != null && startBoosters.HasExtraBasket)
@@ -383,7 +387,7 @@ namespace Game.Features.Gameplay.Session
         /// </summary>
         public void ExtendCounter()
         {
-            State.Capacity = GameplayBalance.ExtendedCapacity;
+            State.Capacity = _balance.ExtendedCapacity;
             IsOver = false;
             _changed.OnNext(new BoardChange(BoardChangeKind.Layout));
             CheckEnd();
@@ -409,9 +413,9 @@ namespace Game.Features.Gameplay.Session
 
             switch (boosterId)
             {
-                case BoosterIds.Undo: return LevelNumber >= GameplayBalance.UndoUnlockLevel;
-                case BoosterIds.Tidy: return LevelNumber >= GameplayBalance.TidyUnlockLevel;
-                case BoosterIds.Pick: return LevelNumber >= GameplayBalance.PickUnlockLevel;
+                case BoosterIds.Undo: return LevelNumber >= _balance.UndoUnlockLevel;
+                case BoosterIds.Tidy: return LevelNumber >= _balance.TidyUnlockLevel;
+                case BoosterIds.Pick: return LevelNumber >= _balance.PickUnlockLevel;
                 default: return false;
             }
         }
@@ -570,7 +574,7 @@ namespace Game.Features.Gameplay.Session
 
             IsOver = true;
             var stars = GameplayBalance.StarsFor(State.Peak, LevelNumber);
-            var reward = stars * GameplayBalance.CoinsPerStar * (IsTricky ? 2 : 1);
+            var reward = stars * _balance.CoinsPerStar * (IsTricky ? 2 : 1);
             _levels.Complete(LevelNumber, stars);
             _wallet.Add(reward);
             _audio.Play(SoundId.Win);

@@ -3,12 +3,13 @@ using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Flow;
 using Game.Services.Levels;
 using Game.Services.Localization;
 using Game.Services.Onboarding;
-using Game.Services.UI;
 using Game.Services.UI.Dialogs;
+using Game.Services.UI;
 using Game.Services.Wallet;
 
 namespace Game.Features.Gameplay
@@ -19,8 +20,6 @@ namespace Game.Features.Gameplay
     /// </summary>
     public sealed class StartBoostersPrompt
     {
-        private const int ExtraBasketPrice = GameplayBalance.ExtraBasketPrice;
-        private const int QuickPickPrice = GameplayBalance.BoosterPrice;
         private const int StartGift = 2;
 
         private readonly IDialogService _dialogs;
@@ -31,6 +30,7 @@ namespace Game.Features.Gameplay
         private readonly IOverlayService _overlay;
         private readonly IAudioService _audio;
         private readonly ILocalizationService _texts;
+        private readonly GameBalanceConfig _balance;
 
         /// <summary>
         /// Creates the prompt.
@@ -43,11 +43,13 @@ namespace Game.Features.Gameplay
         /// <param name="overlay">"Not enough coins" toast.</param>
         /// <param name="audio">Coin and click sounds.</param>
         /// <param name="texts">Card and toggle texts.</param>
+        /// <param name="balance">Start booster prices and the level the prompt starts at.</param>
         public StartBoostersPrompt(IDialogService dialogs, IBoosterInventory boosters, IWalletService wallet,
             IOnboardingService onboarding, ILevelCurveService curves, IOverlayService overlay, IAudioService audio,
-            ILocalizationService texts)
+            ILocalizationService texts, GameBalanceConfig balance)
         {
             _texts = texts;
+            _balance = balance;
             _dialogs = dialogs;
             _boosters = boosters;
             _wallet = wallet;
@@ -62,7 +64,7 @@ namespace Game.Features.Gameplay
         /// </summary>
         /// <param name="level">Level number.</param>
         /// <returns>True from level 11 on the new curve.</returns>
-        public bool IsNeeded(int level) => level >= GameplayBalance.StartBoostersFromLevel && !_curves.Active.IsOriginal;
+        public bool IsNeeded(int level) => level >= _balance.StartBoostersFromLevel && !_curves.Active.IsOriginal;
 
         /// <summary>
         /// Shows the prompt. The first time Rosie gives two of each start booster.
@@ -93,13 +95,13 @@ namespace Game.Features.Gameplay
                     : isHard ? GameplayTexts.StartTricky : GameplayTexts.StartNormal),
             };
             var basketLabel = Label(GameplayTexts.StartBasketName, GameplayTexts.StartBasketInfo, BoosterIds.StartBasket,
-                ExtraBasketPrice);
+                _balance.ExtraBasketPrice);
             dialog.Toggles.Add(new DialogToggle(basketLabel, false,
-                on => useBasket = Select(on, BoosterIds.StartBasket, ExtraBasketPrice)));
+                on => useBasket = Select(on, BoosterIds.StartBasket, _balance.ExtraBasketPrice)));
             var quickLabel = Label(GameplayTexts.StartQuickName, GameplayTexts.StartQuickInfo, BoosterIds.StartQuick,
-                QuickPickPrice);
+                _balance.BoosterPrice);
             dialog.Toggles.Add(new DialogToggle(quickLabel, false,
-                on => useQuick = Select(on, BoosterIds.StartQuick, QuickPickPrice)));
+                on => useQuick = Select(on, BoosterIds.StartQuick, _balance.BoosterPrice)));
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartPlay), ButtonStyle.Green, () => play = true));
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartBack), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, ct);

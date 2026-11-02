@@ -36,7 +36,7 @@ namespace Game.Features.Gameplay.Coach
         /// </summary>
         public void Tick()
         {
-            if (!IsAllowed() || Time.unscaledTime - _lastActionTime < GameplayBalance.HintIdleSeconds)
+            if (!IsAllowed() || Time.unscaledTime - _lastActionTime < _context.Services.Balance.HintIdleSeconds)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace Game.Features.Gameplay.Coach
             }
 
             var level = _context.Level;
-            return level <= GameplayBalance.HintUntilLevel || _context.Services.Levels.HasFailed(level);
+            return level <= _context.Services.Balance.HintUntilLevel || _context.Services.Levels.HasFailed(level);
         }
     }
 }
