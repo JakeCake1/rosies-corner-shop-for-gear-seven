@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Board;
 using Game.Features.Gameplay.Hud;
+using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.Localization;
 using Game.Services.UI;
@@ -35,9 +36,9 @@ namespace Game.Features.Gameplay
         /// <param name="overlay">Effects for the board.</param>
         /// <param name="content">Item catalog.</param>
         /// <param name="art">Gameplay pictures.</param>
-        /// <param name="texts">Counter caption and the board's texts.</param>
+        /// <param name="audio">Landing, shelf and key sounds of the board.</param>
         public GameplayScreen(UIRoot root, GameplayLayouts layouts, IOverlayService overlay, IContentService content,
-            GameplayArt art, ILocalizationService texts)
+            GameplayArt art, IAudioService audio, ILocalizationService texts)
         {
             _layouts = layouts;
             _element = layouts.Screen.Instantiate();
@@ -47,7 +48,7 @@ namespace Game.Features.Gameplay
 
             Hud = new HudView();
             Hud.Attach(_element.Q(HudName));
-            Board = new BoardView(layouts, overlay, content, art, Hud.ProgressBar, texts);
+            Board = new BoardView(layouts, overlay, content, art, audio, Hud.ProgressBar, texts);
             Board.Attach(_element.Q(BoardName));
             _element.Q<Label>(CounterLabelName).text = texts.Get(GameplayTexts.Counter);
             _boosterBar = _element.Q(BoostersName);
