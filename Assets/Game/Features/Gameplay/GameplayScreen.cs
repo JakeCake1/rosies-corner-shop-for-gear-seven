@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Board;
 using Game.Features.Gameplay.Hud;
+using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.UI;
 using Game.Services.UI.Elements;
@@ -33,8 +34,9 @@ namespace Game.Features.Gameplay
         /// <param name="overlay">Effects for the board.</param>
         /// <param name="content">Item catalog.</param>
         /// <param name="art">Gameplay pictures.</param>
+        /// <param name="audio">Landing, shelf and key sounds of the board.</param>
         public GameplayScreen(UIRoot root, GameplayLayouts layouts, IOverlayService overlay, IContentService content,
-            GameplayArt art)
+            GameplayArt art, IAudioService audio)
         {
             _layouts = layouts;
             _element = layouts.Screen.Instantiate();
@@ -44,7 +46,7 @@ namespace Game.Features.Gameplay
 
             Hud = new HudView();
             Hud.Attach(_element.Q(HudName));
-            Board = new BoardView(layouts, overlay, content, art, Hud.ProgressBar);
+            Board = new BoardView(layouts, overlay, content, art, audio, Hud.ProgressBar);
             Board.Attach(_element.Q(BoardName));
             _boosterBar = _element.Q(BoostersName);
             Banner = new LevelBannerView(layouts.Banner, Board.Root);

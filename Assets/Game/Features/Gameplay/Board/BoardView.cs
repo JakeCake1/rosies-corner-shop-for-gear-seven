@@ -4,6 +4,7 @@ using System.Linq;
 using DG.Tweening;
 using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
+using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.Pooling;
 using Game.Services.UI;
@@ -73,6 +74,7 @@ namespace Game.Features.Gameplay.Board
         private readonly Subject<Unit> _extraBasketClicked = new Subject<Unit>();
         private readonly GameplayLayouts _layouts;
         private readonly IOverlayService _overlay;
+        private readonly IAudioService _audio;
         private readonly ItemCatalog _catalog;
         private readonly GameplayArt _art;
         private readonly VisualElement _progressTarget;
@@ -102,14 +104,19 @@ namespace Game.Features.Gameplay.Board
         /// <param name="overlay">Bursts and praise.</param>
         /// <param name="content">Item catalog for pictures.</param>
         /// <param name="art">Hammer and paper-bag pictures.</param>
+        /// <param name="audio">
+        /// Sounds tied to animation moments: items landing, shelves folding and dropping in, the key and the hammer.
+        /// Sounds of the move itself (tap, ship, boosters) are played by the level session.
+        /// </param>
         /// <param name="progressTarget">HUD progress bar that shipped baskets fly into.</param>
         public BoardView(GameplayLayouts layouts, IOverlayService overlay, IContentService content, GameplayArt art,
-            VisualElement progressTarget)
+            IAudioService audio, VisualElement progressTarget)
         {
             _layouts = layouts;
             _overlay = overlay;
             _catalog = content.Catalog;
             _art = art;
+            _audio = audio;
             _progressTarget = progressTarget;
         }
 
@@ -385,6 +392,8 @@ namespace Game.Features.Gameplay.Board
                         {
                             _overlay.Burst(nailed.Root.worldBound.center, EffectKind.Dust, 18);
                             nailed.KnockBoardsOff();
+                            _audio.Play(SoundId.Snip);
+                            _audio.Play(SoundId.Fold);
                         }
 
                         break;
@@ -420,6 +429,7 @@ namespace Game.Features.Gameplay.Board
                 .OnComplete(() =>
                 {
                     key.RemoveFromHierarchy();
+                    _audio.Play(SoundId.Snip);
                     _overlay.Burst(target.Root.worldBound.center, EffectKind.Spark, 16);
                 });
         }
@@ -574,7 +584,9 @@ namespace Game.Features.Gameplay.Board
                         {
                             var delay = dropBase + (isStart ? c * 0.12f : 0f) + fresh * 0.1f;
                             view.Root.style.bottom = _visibleRows * _rowHeight + 20f + fresh * _rowHeight * 0.5f;
-                            view.Root.DOBottom(bottom, ShelfDropSeconds).SetDelay(delay).SetEase(Ease.OutBack, 1.3f).SetId(this);
+                            var drop = view.Root.DOBottom(bottom, ShelfDropSeconds).SetDelay(delay).SetEase(Ease.OutBack, 1.3f).SetId(this);
+                            // The level session plays one roll for the whole opening drop; later shelves each get their own.
+                            if (!isStart) drop.OnStart(() => _audio.Play(SoundId.Roll));
                             view.SettledAt = now + delay + ShelfDropSeconds;
                             fresh++;
                         }
@@ -616,6 +628,7 @@ namespace Game.Features.Gameplay.Board
 
                 _leavingShelves.Add(view);
                 _overlay.Burst(view.Root.worldBound.center, EffectKind.Dust, 16);
+                _audio.Play(SoundId.Fold);
                 view.Root.Kill();
                 view.Root.DOScale(new Vector2(1f, 0f), 0.3f).SetEase(Ease.InBack).SetId(this)
                     .OnComplete(() =>
@@ -628,7 +641,7 @@ namespace Game.Features.Gameplay.Board
 
         private void RenderItems(LevelState state, BoardChange change, float now, bool instant)
         {
-            var wanted = new Dictionary<int, (VisualElement Cell, Jar Jar, float Ready, bool IsCounter)>();
+            var wanted = new Dictionary<int, (VisualElement Cell, Jar Jar, float Ready, bool IsCounter, SoundId? Landing)>();
             foreach (var col in state.Columns)
             {
                 foreach (var b in col.Blocks)
@@ -637,14 +650,14 @@ namespace Game.Features.Gameplay.Board
                     for (var i = 0; i < b.Slots.Length; i++)
                     {
                         var j = b.Slots[i];
-                        if (j != null) wanted[j.Id] = (shelf.Cell(i), j, shelf.SettledAt, false);
+                        if (j != null) wanted[j.Id] = (shelf.Cell(i), j, shelf.SettledAt, false, null);
                     }
                 }
             }
 
             for (var i = 0; i < state.Counter.Count; i++)
             {
-                wanted[state.Counter[i].Id] = (_counterSlots[i], state.Counter[i], 0f, true);
+                wanted[state.Counter[i].Id] = (_counterSlots[i], state.Counter[i], 0f, true, SoundId.Counter);
             }
 
             foreach (var b in state.Baskets)
@@ -653,13 +666,13 @@ namespace Game.Features.Gameplay.Board
 
                 for (var i = 0; i < b.Jars.Count; i++)
                 {
-                    wanted[b.Jars[i].Id] = (basket.Slot(i), b.Jars[i], basket.SettledAt, false);
+                    wanted[b.Jars[i].Id] = (basket.Slot(i), b.Jars[i], basket.SettledAt, false, SoundId.Clink);
                 }
             }
 
             foreach (var kv in wanted)
             {
-                var (cell, jar, ready, isCounter) = kv.Value;
+                var (cell, jar, ready, isCounter, landing) = kv.Value;
                 if (!_items.TryGetValue(kv.Key, out var view))
                 {
                     view = _itemPool.Get();
@@ -669,7 +682,7 @@ namespace Game.Features.Gameplay.Board
                     if (change.FromStock.TryGetValue(jar.Id, out var column))
                     {
                         Detach(view, _stockLabels[column].worldBound.center, _itemSize);
-                        Fly(view, cell, Mathf.Max(0f, ready - now) + 0.06f, 70f, FlightSeconds);
+                        Fly(view, cell, Mathf.Max(0f, ready - now) + 0.06f, 70f, FlightSeconds, landing);
                     }
                     else
                     {
@@ -692,7 +705,9 @@ namespace Game.Features.Gameplay.Board
                 var lift = isCounter ? 46f : 72f;
                 if (change.Kind == BoardChangeKind.Shuffle) lift = 34f;
                 Detach(view, view.Root.worldBound.center, view.Root.layout.size);
-                Fly(view, cell, Mathf.Max(0f, ready - now), hop ? 0f : lift, hop ? CounterHopSeconds : FlightSeconds);
+                // Items sliding along the counter after one leaves are not new arrivals: no landing sound.
+                Fly(view, cell, Mathf.Max(0f, ready - now), hop ? 0f : lift, hop ? CounterHopSeconds : FlightSeconds,
+                    hop ? null : landing);
             }
 
             foreach (var id in _items.Keys.Where(id => !wanted.ContainsKey(id)).ToList())
@@ -735,7 +750,7 @@ namespace Game.Features.Gameplay.Board
             view.Root.style.bottom = StyleKeyword.Null;
         }
 
-        private void Fly(ItemView view, VisualElement cell, float delay, float lift, float seconds)
+        private void Fly(ItemView view, VisualElement cell, float delay, float lift, float seconds, SoundId? landing)
         {
             view.Destination = cell;
             var root = view.Root;
@@ -756,7 +771,10 @@ namespace Game.Features.Gameplay.Board
                 .SetId(this)
                 .OnComplete(() =>
                 {
-                    if (view.Destination == cell) view.Snap(cell);
+                    if (view.Destination != cell) return;
+
+                    view.Snap(cell);
+                    if (landing.HasValue) _audio.Play(landing.Value);
                 });
         }
 
