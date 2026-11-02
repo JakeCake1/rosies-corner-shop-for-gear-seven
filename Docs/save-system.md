@@ -26,7 +26,8 @@ Owners live in `Services/` when a service or several features read the data (ass
 - `ProfileService` (`IProfileService`) receives every registered chunk from VContainer as `IReadOnlyList<IProfileChunk>`.
   It loads them in the LoadProgress state, saves **only the chunk that changed** after its owner calls `MarkChanged`,
   emits `Changed` for views that combine several chunks (home screen), saves everything on app pause and resets
-  the chunks not kept on reset.
+  the chunks not kept on reset. Saves are never cancelled, not even when the service is disposed at app shutdown:
+  a save queued behind another chunk's write still writes that chunk's last change.
 - `SaveService` (`ISaveService`) handles one chunk at a time: JSON (Newtonsoft, invariant culture), a `version`
   field next to the chunk's fields, migrations, merged background writes. `FileSaveStorage` writes atomically with
   a `.bak` copy of the previous version.

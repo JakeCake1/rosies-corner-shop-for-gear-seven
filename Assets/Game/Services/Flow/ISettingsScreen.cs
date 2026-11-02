@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace Game.Services.Flow
@@ -13,7 +14,12 @@ namespace Game.Services.Flow
         /// restart and back-to-shop buttons.
         /// </summary>
         /// <param name="restartLevel">Restart action shown inside a level; null on the home screen.</param>
+        /// <param name="ct">
+        /// The opener's lifetime (the home screen's showing or the current level); cancelling it closes the dialog
+        /// and a rename prompt opened from it.
+        /// </param>
         /// <returns>Completes when the dialog closes.</returns>
-        UniTask OpenAsync(Action restartLevel);
+        /// <exception cref="OperationCanceledException"><paramref name="ct"/> was cancelled.</exception>
+        UniTask OpenAsync(Action restartLevel, CancellationToken ct);
     }
 }
