@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
+    <!-- One shelf block; ShelfView adds a floor per row and a cell per item slot. -->
+    <ui:VisualElement class="shelf" picking-mode="Ignore">
+        <ui:VisualElement name="content" class="shelf__content" picking-mode="Ignore">
+            <ui:VisualElement class="shelf__back kit-shelf-back" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__post shelf__post--left kit-shelf-post" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__post shelf__post--right kit-shelf-post" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__cap kit-shelf-floor" picking-mode="Ignore" />
+            <ui:VisualElement name="floors" class="shelf__layer" picking-mode="Ignore" />
+            <ui:VisualElement name="cells" class="shelf__layer" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="rows-badge" class="shelf__rows kit-chip" picking-mode="Ignore">
+            <ui:Label name="rows-text" text="2 rows" class="shelf__rows-text" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ties" class="shelf__layer" picking-mode="Ignore">
+            <ui:VisualElement class="shelf__twine" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__seal" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="key-tag" class="shelf__key" picking-mode="Ignore" />
+        <ui:VisualElement name="ice" class="shelf__layer kit-ice" picking-mode="Ignore">
+            <ui:VisualElement class="shelf__ice-badge kit-pill-white" picking-mode="Ignore">
+                <ui:Label name="ice-text" text="3" class="shelf__ice-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="boards" class="shelf__layer" picking-mode="Ignore">
+            <ui:VisualElement class="shelf__board shelf__board--0 kit-board" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__board shelf__board--1 kit-board" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__board shelf__board--2 kit-board" picking-mode="Ignore" />
+            <ui:VisualElement class="shelf__hammer" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

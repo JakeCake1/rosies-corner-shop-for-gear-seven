@@ -31,6 +31,9 @@ namespace Game.Services.UI
         // Cached: reading Token from the disposed source throws, and windows still close after Dispose at shutdown.
         private readonly CancellationToken _lifetimeToken;
 
+        /// <inheritdoc/>
+        public bool IsPopupOpen => _stacks[UILayer.Popups].Count > 0;
+
         /// <summary>
         /// Creates the service.
         /// </summary>
@@ -52,9 +55,6 @@ namespace Game.Services.UI
             _root.Blocker.RegisterCallback(_onBlockerClicked);
             UpdateBlocker();
         }
-
-        /// <inheritdoc/>
-        public bool IsPopupOpen => _stacks[UILayer.Popups].Count > 0;
 
         /// <inheritdoc/>
         public async UniTask<TWindow> OpenAsync<TWindow, TViewModel>(TViewModel viewModel, CancellationToken ct)
@@ -93,11 +93,17 @@ namespace Game.Services.UI
         /// <inheritdoc/>
         public async UniTask CloseAsync(IWindow window)
         {
-            if (window == null) return;
+            if (window == null)
+            {
+                return;
+            }
 
             var stack = _stacks[window.Layer];
             var entry = stack.FirstOrDefault(e => ReferenceEquals(e.Window, window));
-            if (entry == null) return;
+            if (entry == null)
+            {
+                return;
+            }
 
             if (entry.IsClosing)
             {
@@ -149,16 +155,25 @@ namespace Game.Services.UI
         public void Back()
         {
             var popups = _stacks[UILayer.Popups];
-            if (popups.Count == 0) return;
+            if (popups.Count == 0)
+            {
+                return;
+            }
 
             var top = popups[popups.Count - 1];
-            if (top.Window.IsClosedByBlocker) CloseAsync(top.Window).Forget();
+            if (top.Window.IsClosedByBlocker)
+            {
+                CloseAsync(top.Window).Forget();
+            }
         }
 
         /// <inheritdoc/>
         public void Tick()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) Back();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Back();
+            }
         }
 
         /// <inheritdoc/>
@@ -166,36 +181,23 @@ namespace Game.Services.UI
         {
             _lifetime.Cancel();
             _lifetime.Dispose();
-            if (_root != null) _root.Blocker.UnregisterCallback(_onBlockerClicked);
+            if (_root != null)
+            {
+                _root.Blocker.UnregisterCallback(_onBlockerClicked);
+            }
         }
 
         private void UpdateBlocker()
         {
             var popups = _stacks[UILayer.Popups];
             _root.Blocker.SetVisible(popups.Count > 0);
-            if (popups.Count == 0) return;
+            if (popups.Count == 0)
+            {
+                return;
+            }
 
             _root.Blocker.BringToFront();
             popups[popups.Count - 1].Window.Root.BringToFront();
-        }
-
-        private sealed class OpenWindow
-        {
-            public OpenWindow(IWindow window, ViewModel viewModel)
-            {
-                Window = window;
-                ViewModel = viewModel;
-            }
-
-            public IWindow Window { get; }
-
-            public ViewModel ViewModel { get; }
-
-            public IDisposable CloseSubscription { get; set; }
-
-            public CancellationTokenRegistration OpenerRegistration { get; set; }
-
-            public bool IsClosing { get; set; }
         }
     }
 }

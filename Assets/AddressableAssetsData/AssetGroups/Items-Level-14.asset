@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-14
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-14
+  m_GUID: d8fa6fb502698644993572c5b66cce94
+  m_SerializeEntries:
+  - m_GUID: 03f5488597fffce43b910c616fc6fa56
+    m_Address: item/067_blueberry-jam
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2bd81860075d7f64a95c6b562de8045a
+    m_Address: item/125_green-grapes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45dbcb7410a6e574780cb5d8cdea2939
+    m_Address: item/156_vanilla-candle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c17f9a1bea7c7e4ca6ac9d451f9d14f
+    m_Address: item/116_macarons
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea756ddd2746c7b418529ba2548b2e60
+    m_Address: item/014_glass-milk
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed23bd096a830df42bd30066fe95472c
+    m_Address: item/039_root-beer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: cce0dcec120d61f4fb1ef1be0072cbbc, type: 2}
+    - {fileID: 11400000, guid: d66ffe52d9c8be34cadf94eb29156e1f, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-14_BundledAssetGroupSchema
+    - Items-Level-14_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

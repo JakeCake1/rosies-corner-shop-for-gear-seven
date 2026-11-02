@@ -19,6 +19,9 @@ namespace Game.Services.Save
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private bool _isLoaded;
 
+        /// <inheritdoc/>
+        public IObservable<Unit> Changed => _changed;
+
         /// <summary>
         /// Creates the service and follows the chunks' changes; call <see cref="Load"/> before use.
         /// </summary>
@@ -28,7 +31,10 @@ namespace Game.Services.Save
         public ProfileService(ISaveService save, IReadOnlyList<IProfileChunk> chunks)
         {
             var duplicate = chunks.GroupBy(c => c.Key).FirstOrDefault(g => g.Count() > 1);
-            if (duplicate != null) throw new InvalidOperationException($"Profile chunk key '{duplicate.Key}' is used twice.");
+            if (duplicate != null)
+            {
+                throw new InvalidOperationException($"Profile chunk key '{duplicate.Key}' is used twice.");
+            }
 
             _save = save;
             _chunks = chunks;
@@ -39,19 +45,25 @@ namespace Game.Services.Save
         }
 
         /// <inheritdoc/>
-        public IObservable<Unit> Changed => _changed;
-
-        /// <inheritdoc/>
         public void Load()
         {
             var isAnyStored = false;
             foreach (var chunk in _chunks)
             {
-                if (_save.TryLoad(chunk)) isAnyStored = true;
-                else chunk.Restore(null);
+                if (_save.TryLoad(chunk))
+                {
+                    isAnyStored = true;
+                }
+                else
+                {
+                    chunk.Restore(null);
+                }
             }
 
-            if (!isAnyStored) _save.TryMigrateLegacy(_chunks);
+            if (!isAnyStored)
+            {
+                _save.TryMigrateLegacy(_chunks);
+            }
             _isLoaded = true;
             _changed.OnNext(Unit.Default);
         }
@@ -95,7 +107,10 @@ namespace Game.Services.Save
         {
             // Until Load ran the chunks hold a new player's defaults; saving them (e.g. the app losing focus at
             // startup) would overwrite the stored profile before it is read.
-            if (!_isLoaded) return;
+            if (!_isLoaded)
+            {
+                return;
+            }
 
             // Not cancelled on dispose: at app shutdown a save may wait behind another chunk's write, and cancelling
             // it would drop that chunk's last change. SaveService is built to finish writes after shutdown starts.

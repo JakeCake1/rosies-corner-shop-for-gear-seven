@@ -30,7 +30,10 @@ namespace Game.Features.Gameplay.Boosters
         /// <inheritdoc/>
         public void MarkGifted(string id)
         {
-            if (Data.Gifted.Add(id)) MarkChanged();
+            if (Data.Gifted.Add(id))
+            {
+                MarkChanged();
+            }
         }
 
         private static int Count(Dictionary<string, int> counts, string id) => counts.TryGetValue(id, out var n) ? n : 0;

@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-20
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-20
+  m_GUID: e4b2263ee63adbf4794cec95225677c3
+  m_SerializeEntries:
+  - m_GUID: 3937055690d06e14ca479232b1f2d487
+    m_Address: item/094_macaroni
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8d36aa59b621f034597262cc83c576d2
+    m_Address: item/102_mint-ice-cream
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a12501480a1b01f43947ddfeef3a06e5
+    m_Address: item/132_eggplant
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1a39497af82e384489fb25c7878c66b
+    m_Address: item/128_peach
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1c3058748ffc7f4c916a6cadaf831af
+    m_Address: item/040_ginger-ale
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 00ad0a3b6a51895469171787ff36e36f, type: 2}
+    - {fileID: 11400000, guid: b9f6f2f9bdc3fc946930812d8270d3f4, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-20_BundledAssetGroupSchema
+    - Items-Level-20_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

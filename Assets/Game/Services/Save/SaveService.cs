@@ -76,7 +76,10 @@ namespace Game.Services.Save
                 return true;
             }
 
-            if (backupError != null) Debug.LogError($"Save '{key}' backup is broken too: {backupError}");
+            if (backupError != null)
+            {
+                Debug.LogError($"Save '{key}' backup is broken too: {backupError}");
+            }
             return false;
         }
 
@@ -84,7 +87,10 @@ namespace Game.Services.Save
         public bool TryMigrateLegacy(IReadOnlyList<IProfileChunk> chunks)
         {
             var root = ReadLegacy();
-            if (root == null) return false;
+            if (root == null)
+            {
+                return false;
+            }
 
             // The chunks keep the field names of the old profile, so each one reads its own fields from the whole
             // object and ignores the rest.
@@ -93,7 +99,10 @@ namespace Game.Services.Save
                 chunk.Restore(Deserialize(chunk, (JObject)root.DeepClone(), LegacyVersion));
             }
 
-            if (TryWriteAll(chunks)) _storage.Delete(LegacyKey);
+            if (TryWriteAll(chunks))
+            {
+                _storage.Delete(LegacyKey);
+            }
             return true;
         }
 
@@ -114,7 +123,10 @@ namespace Game.Services.Save
                 // The previous writer releases the lock from the thread pool, so this may run there too.
                 lock (_pending)
                 {
-                    if (!_pending.Remove(key, out json)) return;
+                    if (!_pending.Remove(key, out json))
+                    {
+                        return;
+                    }
                 }
 
                 await UniTask.SwitchToThreadPool();
@@ -141,7 +153,10 @@ namespace Game.Services.Save
         public static object TryParse(IProfileChunk chunk, string json, out string error)
         {
             error = null;
-            if (string.IsNullOrWhiteSpace(json)) return null;
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
 
             try
             {
@@ -179,7 +194,10 @@ namespace Game.Services.Save
                     $"'{chunk.Key}' version {version} is newer than {chunk.Version} supported by this build.");
             }
 
-            if (version < chunk.Version) chunk.Migrate(data, version);
+            if (version < chunk.Version)
+            {
+                chunk.Migrate(data, version);
+            }
             return data.ToObject(chunk.DataType, Serializer);
         }
 
@@ -187,13 +205,19 @@ namespace Game.Services.Save
         {
             foreach (var json in new[] { _storage.ReadMain(LegacyKey), _storage.ReadBackup(LegacyKey) })
             {
-                if (string.IsNullOrWhiteSpace(json)) continue;
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    continue;
+                }
 
                 try
                 {
                     var root = JObject.Parse(json);
                     var version = root.Value<int?>(VersionField) ?? LegacyVersion;
-                    if (version > LegacyVersion) throw new NotSupportedException($"Profile version {version} is unknown.");
+                    if (version > LegacyVersion)
+                    {
+                        throw new NotSupportedException($"Profile version {version} is unknown.");
+                    }
 
                     root.Remove(VersionField);
                     return root;

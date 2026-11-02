@@ -74,7 +74,10 @@ namespace Game.Services.UI.Dialogs
 
             var labels = CreateElement(LabelsClass);
             labels.Add(CreateLabel(model.Label, LabelClass));
-            if (hasSub) labels.Add(CreateLabel(model.SubLabel, SubClass));
+            if (hasSub)
+            {
+                labels.Add(CreateLabel(model.SubLabel, SubClass));
+            }
             content.Add(labels);
         }
     }

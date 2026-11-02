@@ -16,24 +16,6 @@ namespace Game.Features.Gameplay.Hud
         private readonly ReactiveProperty<bool> _isGift = new ReactiveProperty<bool>();
         private readonly Action<string> _use;
 
-        /// <summary>
-        /// Creates a booster button model.
-        /// </summary>
-        /// <param name="id">Booster id from <c>BoosterIds</c>.</param>
-        /// <param name="title">Label under the icon.</param>
-        /// <param name="use">Called with <paramref name="id"/> when tapped.</param>
-        public BoosterViewModel(string id, string title, Action<string> use)
-        {
-            Id = id;
-            Title = title;
-            _use = use;
-            Disposables.Add(_count);
-            Disposables.Add(_isPlus);
-            Disposables.Add(_isDimmed);
-            Disposables.Add(_isPulsing);
-            Disposables.Add(_isGift);
-        }
-
         /// <summary>Booster id; also selects the icon in the view.</summary>
         public string Id { get; }
 
@@ -54,6 +36,24 @@ namespace Game.Features.Gameplay.Hud
 
         /// <summary>Glows after Rosie's gift until first used.</summary>
         public IReadOnlyReactiveProperty<bool> IsGift => _isGift;
+
+        /// <summary>
+        /// Creates a booster button model.
+        /// </summary>
+        /// <param name="id">Booster id from <c>BoosterIds</c>.</param>
+        /// <param name="title">Label under the icon.</param>
+        /// <param name="use">Called with <paramref name="id"/> when tapped.</param>
+        public BoosterViewModel(string id, string title, Action<string> use)
+        {
+            Id = id;
+            Title = title;
+            _use = use;
+            Disposables.Add(_count);
+            Disposables.Add(_isPlus);
+            Disposables.Add(_isDimmed);
+            Disposables.Add(_isPulsing);
+            Disposables.Add(_isGift);
+        }
 
         /// <summary>
         /// Updates the button from the presenter.

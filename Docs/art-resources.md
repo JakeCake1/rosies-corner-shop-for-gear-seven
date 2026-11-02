@@ -28,14 +28,25 @@ Shelf states (ice, boards, twine, second-row ghost) and wood/awning/wallpaper su
 
 | Source (elements.rar) | Project |
 |---|---|
-| `png@4x/items/**`, `items/items.json` | `Services/Content/Items/` and `items.json`, referenced by `Services/Content/ItemCatalog.asset` (addressable `config/item-catalog`) |
-| `png@4x/tools`, `basket`, `boosters`, `shelf` | `Features/Gameplay/Art/` |
-| `png@4x/ui` | `Services/UI/Art/Icons/` |
-| CSS surfaces (wood, awning, wallpaper, chips, buttons, ribbons, doilies) | 9-slice sprites in `Services/UI/Art/Kit/`, made by `Tools/Art/generate_ui_kit.py`; slicing is set in USS (`Kit.uss`, `-unity-slice-*`) |
-| `layout/styles.css`, `layout/LAYOUT.md` | USS next to each layout (`Services/UI/Layouts/*.uss`, `Features/*/Layouts/*.uss`); colors as variables in `Game.uss` |
-| Fonts (Fredoka, Yeseva One) | `Services/UI/Fonts/`, set with `-unity-font` in `Game.uss` (no TextMesh Pro) |
+| `png@4x/items/**`, `items/items.json` | `Content/Visual/Items/` and `Content/Data/Items/items.json`, referenced by `Content/Data/Items/ItemCatalog.asset` (addressable `config/item-catalog`) through `AssetReference`s; the sprites live in per-level groups `Items-Level-NN` / `Items-Rest` (see below) |
+| `png@4x/tools`, `basket`, `boosters`, `shelf` | `Content/Visual/Gameplay/` |
+| `png@4x/ui` | `Content/Visual/UI/Icons/` |
+| CSS surfaces (wood, awning, wallpaper, chips, buttons, ribbons, doilies) | 9-slice sprites in `Content/Visual/UI/Kit/`, made by `Tools/Art/generate_ui_kit.py`; slicing is set in USS (`Kit.uss`, `-unity-slice-*`) |
+| `layout/styles.css`, `layout/LAYOUT.md` | USS next to each layout (`Content/Screens/Shared/*.uss`, `Content/Screens/<Feature>/*.uss`); colors as variables in `Game.uss` |
+| Fonts (Fredoka, Yeseva One) | `Content/Visual/Fonts/`, set with `-unity-font` in `Game.uss` (no TextMesh Pro) |
 | `screens/*.png` | The reference for every layout: compare Play mode at 390×844 with the matching screenshot |
 
 The UI is UI Toolkit with one `PanelSettings` at the 390×844 reference resolution, so the CSS pixel values from
 `styles.css`, `LAYOUT.md` and the screenshots (which are @2x: divide by 2) go into USS unchanged. Scenes, layouts,
 styles and configs are authored assets; there is no editor code that generates them.
+
+Sprite atlases (Sprite Atlas V2, `Content/Visual/Atlases/`): `UI` packs the shared kit and icons
+(`Content/Visual/UI`), `Gameplay` packs the board art (`Content/Visual/Gameplay`). A sprite added to one of those
+folders joins its atlas automatically. Item sprites are not atlased: they load per level from their own Addressables
+groups, and an items atlas would pull every item into one bundle.
+
+Item bundles: `Tools/Addressables/Rebuild Level Item Groups` plays the default curve as a fresh profile and puts each
+item sprite into `Items-Level-NN`, NN being the first level that uses it; items no level uses go to `Items-Rest`. It
+also rewrites the catalog's sprite references. Run it after changing the default curve, the catalog or the generator,
+and commit the group and catalog assets. At runtime a level loads the sprites of the items it generated before it is
+drawn (`IContentService.LoadItemSpritesAsync`); home and the album load the whole catalog.

@@ -26,7 +26,10 @@ namespace Game.Features.Gameplay.Model
             {
                 foreach (var b in st.Columns[c].Blocks)
                 {
-                    if (b.Id != blockId) continue;
+                    if (b.Id != blockId)
+                    {
+                        continue;
+                    }
 
                     column = c;
                     return b;
@@ -50,11 +53,17 @@ namespace Game.Features.Gameplay.Model
             {
                 foreach (var b in st.Columns[c].Blocks)
                 {
-                    if (!includeClosed && !b.IsOpen) continue;
+                    if (!includeClosed && !b.IsOpen)
+                    {
+                        continue;
+                    }
 
                     for (var i = 0; i < b.Slots.Length; i++)
                     {
-                        if (b.Slots[i] != null) result.Add(new JarLocation(b, c, i, b.Slots[i]));
+                        if (b.Slots[i] != null)
+                        {
+                            result.Add(new JarLocation(b, c, i, b.Slots[i]));
+                        }
                     }
                 }
             }
@@ -100,7 +109,10 @@ namespace Game.Features.Gameplay.Model
             for (var k = 0; k < st.OrderSequence.Count; k++)
             {
                 var t = st.OrderSequence[k];
-                if (active.Contains(t) || Total(t) < Basket.Capacity) continue;
+                if (active.Contains(t) || Total(t) < Basket.Capacity)
+                {
+                    continue;
+                }
 
                 st.OrderSequence.RemoveAt(k);
                 return t;
@@ -108,7 +120,10 @@ namespace Game.Features.Gameplay.Model
 
             foreach (var t in totals.Keys.OrderBy(t => t))
             {
-                if (!active.Contains(t) && Total(t) >= Basket.Capacity) return t;
+                if (!active.Contains(t) && Total(t) >= Basket.Capacity)
+                {
+                    return t;
+                }
             }
 
             return null;
@@ -124,10 +139,16 @@ namespace Game.Features.Gameplay.Model
         {
             for (var i = 0; i < st.UnlockedBaskets; i++)
             {
-                if (st.Baskets[i] != null) continue;
+                if (st.Baskets[i] != null)
+                {
+                    continue;
+                }
 
                 var t = PickTarget(st);
-                if (!t.HasValue) continue;
+                if (!t.HasValue)
+                {
+                    continue;
+                }
 
                 var basket = new Basket { Id = st.NextId++, Type = t.Value };
                 st.Baskets[i] = basket;
@@ -144,7 +165,10 @@ namespace Game.Features.Gameplay.Model
                     }
                 }
 
-                if (basket.Jars.Count == Basket.Capacity) basket.IsDone = true;
+                if (basket.Jars.Count == Basket.Capacity)
+                {
+                    basket.IsDone = true;
+                }
                 events?.Add(LevelEvent.Of(LevelEventType.BasketArrived, basket.Id, i));
             }
         }
@@ -160,10 +184,16 @@ namespace Game.Features.Gameplay.Model
         public static TakeResult Take(LevelState st, int blockId, int slot)
         {
             var block = FindBlock(st, blockId, out var column);
-            if (block == null || !block.IsOpen) return TakeResult.Rejected(false);
+            if (block == null || !block.IsOpen)
+            {
+                return TakeResult.Rejected(false);
+            }
 
             var jar = block.Slots[slot];
-            if (jar == null) return TakeResult.Rejected(false);
+            if (jar == null)
+            {
+                return TakeResult.Rejected(false);
+            }
 
             var events = new List<LevelEvent>();
             if (jar.IsTool)
@@ -182,7 +212,10 @@ namespace Game.Features.Gameplay.Model
             }
 
             var basket = MatchBasket(st, jar.Type);
-            if (basket == null && st.Counter.Count >= st.Capacity) return TakeResult.Rejected(true);
+            if (basket == null && st.Counter.Count >= st.Capacity)
+            {
+                return TakeResult.Rejected(true);
+            }
 
             block.Slots[slot] = jar.Back;
             var item = new Jar { Id = jar.Id, Type = jar.Type };
@@ -190,12 +223,18 @@ namespace Game.Features.Gameplay.Model
             if (basket != null)
             {
                 basket.Jars.Add(item);
-                if (basket.Jars.Count == Basket.Capacity) basket.IsDone = true;
+                if (basket.Jars.Count == Basket.Capacity)
+                {
+                    basket.IsDone = true;
+                }
             }
             else
             {
                 st.Counter.Add(item);
-                if (st.Counter.Count > st.Peak) st.Peak = st.Counter.Count;
+                if (st.Counter.Count > st.Peak)
+                {
+                    st.Peak = st.Counter.Count;
+                }
             }
 
             UnwrapRow(st, block, slot, events);
@@ -214,7 +253,10 @@ namespace Game.Features.Gameplay.Model
         public static int? CompleteBasket(LevelState st, int slot, List<LevelEvent> events)
         {
             var basket = st.Baskets[slot];
-            if (basket == null || !basket.IsDone) return null;
+            if (basket == null || !basket.IsDone)
+            {
+                return null;
+            }
 
             st.Collected += Basket.Capacity;
             st.Shipped.Add(basket.Type);
@@ -223,10 +265,16 @@ namespace Game.Features.Gameplay.Model
             {
                 foreach (var b in col.Blocks)
                 {
-                    if (b.Frozen <= 0) continue;
+                    if (b.Frozen <= 0)
+                    {
+                        continue;
+                    }
 
                     b.Frozen--;
-                    if (b.Frozen == 0) events.Add(LevelEvent.Of(LevelEventType.ShelfThawed, b.Id));
+                    if (b.Frozen == 0)
+                    {
+                        events.Add(LevelEvent.Of(LevelEventType.ShelfThawed, b.Id));
+                    }
                 }
             }
 
@@ -248,11 +296,20 @@ namespace Game.Features.Gameplay.Model
         /// <returns>Whether the level is lost.</returns>
         public static bool IsLost(LevelState st)
         {
-            if (st.Baskets.Any(b => b != null && b.IsDone)) return false;
-            if (st.Collected >= st.Total) return false;
+            if (st.Baskets.Any(b => b != null && b.IsDone))
+            {
+                return false;
+            }
+            if (st.Collected >= st.Total)
+            {
+                return false;
+            }
 
             var visible = VisibleJars(st, false);
-            if (st.Counter.Count < st.Capacity) return visible.Count == 0;
+            if (st.Counter.Count < st.Capacity)
+            {
+                return visible.Count == 0;
+            }
 
             return !visible.Any(v => v.Jar.IsTool || MatchBasket(st, v.Jar.Type) != null);
         }
@@ -279,7 +336,10 @@ namespace Game.Features.Gameplay.Model
                 }
             }
 
-            if (slot < 0) return -1;
+            if (slot < 0)
+            {
+                return -1;
+            }
 
             var basket = st.Baskets[slot];
             for (var k = 0; k < st.Counter.Count && basket.Jars.Count < Basket.Capacity;)
@@ -297,12 +357,21 @@ namespace Game.Features.Gameplay.Model
 
             foreach (var v in VisibleJars(st, true))
             {
-                if (basket.Jars.Count >= Basket.Capacity) break;
-                if (v.Jar.IsTool || v.Jar.Type != basket.Type || v.Block.Slots[v.Slot] != v.Jar) continue;
+                if (basket.Jars.Count >= Basket.Capacity)
+                {
+                    break;
+                }
+                if (v.Jar.IsTool || v.Jar.Type != basket.Type || v.Block.Slots[v.Slot] != v.Jar)
+                {
+                    continue;
+                }
 
                 v.Block.Slots[v.Slot] = v.Jar.Back;
                 basket.Jars.Add(new Jar { Id = v.Jar.Id, Type = v.Jar.Type });
-                if (v.Block.IsEmpty()) RemoveBlock(st, v.Column, v.Block, events);
+                if (v.Block.IsEmpty())
+                {
+                    RemoveBlock(st, v.Column, v.Block, events);
+                }
             }
 
             for (var c = 0; c < LevelState.ColumnCount && basket.Jars.Count < Basket.Capacity; c++)
@@ -325,7 +394,10 @@ namespace Game.Features.Gameplay.Model
             }
 
             LevelGenerator.FillColumns(st, events);
-            if (basket.Jars.Count == Basket.Capacity) basket.IsDone = true;
+            if (basket.Jars.Count == Basket.Capacity)
+            {
+                basket.IsDone = true;
+            }
             st.Moves++;
             return slot;
         }
@@ -343,13 +415,19 @@ namespace Game.Features.Gameplay.Model
         {
             column = 0;
             var n = System.Math.Min(3, st.Counter.Count);
-            if (n == 0) return 0;
+            if (n == 0)
+            {
+                return 0;
+            }
 
             var jars = st.Counter.GetRange(0, n);
             st.Counter.RemoveRange(0, n);
             for (var i = 0; i < LevelState.ColumnCount; i++)
             {
-                if (st.Columns[i].Queue.Count < st.Columns[column].Queue.Count) column = i;
+                if (st.Columns[i].Queue.Count < st.Columns[column].Queue.Count)
+                {
+                    column = i;
+                }
             }
 
             st.Columns[column].Queue.InsertRange(0, jars);
@@ -373,16 +451,25 @@ namespace Game.Features.Gameplay.Model
             {
                 foreach (var b in col.Blocks)
                 {
-                    if (!b.IsOpen) continue;
+                    if (!b.IsOpen)
+                    {
+                        continue;
+                    }
 
                     for (var i = 0; i < b.Slots.Length; i++)
                     {
-                        if (b.Slots[i] != null && !b.Slots[i].IsTool) positions.Add((b, i));
+                        if (b.Slots[i] != null && !b.Slots[i].IsTool)
+                        {
+                            positions.Add((b, i));
+                        }
                     }
                 }
             }
 
-            if (positions.Count < 2) return false;
+            if (positions.Count < 2)
+            {
+                return false;
+            }
 
             var jars = positions.Select(p => p.Block.Slots[p.Slot]).ToList();
             var before = string.Join(",", jars.Select(j => j.Id));
@@ -414,7 +501,10 @@ namespace Game.Features.Gameplay.Model
             var wanted = new HashSet<int>(st.Baskets.Where(b => b != null && !b.IsDone).Select(b => b.Type));
             var matches = visible.Where(v => !v.Jar.IsTool && !v.Jar.IsWrapped && wanted.Contains(v.Jar.Type))
                 .OrderBy(v => v.Block.Slots.Count(s => s != null)).ToList();
-            if (matches.Count > 0) return matches[0].Jar;
+            if (matches.Count > 0)
+            {
+                return matches[0].Jar;
+            }
 
             return visible.FirstOrDefault(v => v.Jar.IsTool).Jar;
         }
@@ -444,16 +534,25 @@ namespace Game.Features.Gameplay.Model
                 {
                     foreach (var j in b.Slots)
                     {
-                        if (j == null || j.IsTool) continue;
+                        if (j == null || j.IsTool)
+                        {
+                            continue;
+                        }
 
                         Add(j.Type);
-                        if (j.Back != null) Add(j.Back.Type);
+                        if (j.Back != null)
+                        {
+                            Add(j.Back.Type);
+                        }
                     }
                 }
 
                 foreach (var j in col.Queue)
                 {
-                    if (!j.IsTool) Add(j.Type);
+                    if (!j.IsTool)
+                    {
+                        Add(j.Type);
+                    }
                 }
             }
 
@@ -466,7 +565,10 @@ namespace Game.Features.Gameplay.Model
             for (var k = row * st.JarsPerRow; k < (row + 1) * st.JarsPerRow; k++)
             {
                 var s = block.Slots[k];
-                if (s == null || !s.IsWrapped) continue;
+                if (s == null || !s.IsWrapped)
+                {
+                    continue;
+                }
 
                 var open = s.CloneShallow();
                 open.IsWrapped = false;
@@ -477,7 +579,10 @@ namespace Game.Features.Gameplay.Model
 
         private static void FoldIfEmpty(LevelState st, Block block, int column, List<LevelEvent> events)
         {
-            if (!block.IsEmpty()) return;
+            if (!block.IsEmpty())
+            {
+                return;
+            }
 
             RemoveBlock(st, column, block, events);
             LevelGenerator.FillColumns(st, events);
@@ -487,7 +592,10 @@ namespace Game.Features.Gameplay.Model
         {
             st.Columns[column].Blocks.Remove(block);
             events.Add(LevelEvent.Of(LevelEventType.ShelfFolded, block.Id, column));
-            if (block.KeyTargetId == 0) return;
+            if (block.KeyTargetId == 0)
+            {
+                return;
+            }
 
             var target = FindBlock(st, block.KeyTargetId, out _);
             if (target != null && target.IsLocked)

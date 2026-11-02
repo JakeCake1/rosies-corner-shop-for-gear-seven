@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-17
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-17
+  m_GUID: ea1bda0f85f29654487bd5932534ddf5
+  m_SerializeEntries:
+  - m_GUID: 0c8ee777899b8d648ac6c2849868d267
+    m_Address: item/011_lemon-yogurt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24175c2233a2f2146943933b7a31e5c7
+    m_Address: item/100_lime-popsicle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 349378c113b302f4cb0c128d5f6cfdcb
+    m_Address: item/061_grape-cider
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98222e67aa3419941b02501792b521d7
+    m_Address: item/016_bread
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fe053f2e03bb3b4e9443100dbbc58a2
+    m_Address: item/124_grapes
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef3e9e78d4126664abb6b59de5276e56
+    m_Address: item/072_red-vinegar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 19c51f726d62bff4da76a1e95ce67ee8, type: 2}
+    - {fileID: 11400000, guid: 45bfbe5d986d7d64fba7c7653ec1657a, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-17_BundledAssetGroupSchema
+    - Items-Level-17_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

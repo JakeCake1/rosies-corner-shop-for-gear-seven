@@ -6,12 +6,12 @@ that synth with WAVs rendered from the prototype's own code (`Rosies_Corner_Shop
 
 ## Assets
 
-- `Assets/Game/Services/Audio/Clips/`: the archive's `game_mix` set (44.1 kHz, 16-bit, mono). All clips share one
+- `Assets/Game/Content/Sounds/Clips/`: the archive's `game_mix` set (44.1 kHz, 16-bit, mono). All clips share one
   gain, so the prototype's relative loudness is baked in and every clip plays at volume 1. `tap_unused` is left
   out: the prototype never plays it.
 - Import settings: effects are ADPCM, *Decompress On Load* (no latency on tap); `music_loop` is Vorbis,
   *Compressed In Memory*, loaded in the background. The music loops seamlessly at 9.28 s.
-- `Assets/Game/Services/Audio/AudioLibrary.asset` (`AudioLibrary`, Addressables key `config/audio`, group
+- `Assets/Game/Content/Sounds/AudioLibrary.asset` (`AudioLibrary`, Addressables key `config/audio`, group
   *AlwaysLoaded*): one clip per `SoundId`, seven `basket_ship_combo0…6` clips and the music.
   `AudioLibrary.Validate` checks that every `SoundId` has exactly one clip, there are seven ship clips and the
   music is set; `ConfigTests` runs it.
@@ -45,7 +45,7 @@ Sounds of the move itself are played by `LevelSession`; sounds tied to an animat
 
 ## Adding a sound
 
-1. Put the WAV in `Services/Audio/Clips/` with the import settings above.
+1. Put the WAV in `Content/Sounds/Clips/` with the import settings above.
 2. Add a `SoundId` value with a `<summary>` saying when it plays.
 3. Add an entry for it to `AudioLibrary.asset` (the config test fails until you do).
 4. Call `IAudioService.Play(SoundId.X)` from the code that owns the moment, and add a row to the table above.

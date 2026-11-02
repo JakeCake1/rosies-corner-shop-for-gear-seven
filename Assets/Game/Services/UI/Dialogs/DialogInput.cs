@@ -9,6 +9,15 @@ namespace Game.Services.UI.Dialogs
     /// </summary>
     public sealed class DialogInput
     {
+        /// <summary>Grey hint text.</summary>
+        public string Placeholder { get; }
+
+        /// <summary>Character limit.</summary>
+        public int MaxLength { get; }
+
+        /// <summary>Suggestion chips.</summary>
+        public IReadOnlyList<string> Ideas { get; }
+
         /// <summary>
         /// Creates an input.
         /// </summary>
@@ -21,14 +30,5 @@ namespace Game.Services.UI.Dialogs
             MaxLength = maxLength;
             Ideas = ideas;
         }
-
-        /// <summary>Grey hint text.</summary>
-        public string Placeholder { get; }
-
-        /// <summary>Character limit.</summary>
-        public int MaxLength { get; }
-
-        /// <summary>Suggestion chips.</summary>
-        public IReadOnlyList<string> Ideas { get; }
     }
 }

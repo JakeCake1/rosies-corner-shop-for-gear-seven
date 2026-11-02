@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Levels;
 using Game.Services.Localization;
@@ -16,7 +17,6 @@ namespace Game.Features.Home
     /// </summary>
     public sealed class HomeViewModel : ViewModel
     {
-        private const int AlbumFromLevel = 9;
         private const int ShowcaseSize = 7;
 
         private readonly ReactiveProperty<string> _shopName = new ReactiveProperty<string>();
@@ -32,38 +32,7 @@ namespace Game.Features.Home
         private readonly ILevelCurveService _curves;
         private readonly IContentService _content;
         private readonly ILocalizationService _texts;
-
-        /// <summary>
-        /// Creates the view model and follows progress changes.
-        /// </summary>
-        /// <param name="progress">Coins, stars, album, flags, shop name.</param>
-        /// <param name="curves">Next level and its difficulty.</param>
-        /// <param name="content">Item sprites for the showcase.</param>
-        /// <param name="texts">Sign, button and play line texts.</param>
-        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content,
-            ILocalizationService texts)
-        {
-            _progress = progress;
-            _curves = curves;
-            _content = content;
-            _texts = texts;
-            Tagline = texts.Get(HomeTexts.Tagline);
-            ReviewersLink = texts.Get(HomeTexts.Reviewers);
-            AlbumCaption = texts.Get(HomeTexts.Album);
-            PlayTitle = texts.Get(HomeTexts.PlayTitle);
-            Coins = progress.Wallet.Coins;
-            Disposables.Add(_shopName);
-            Disposables.Add(_subtitle);
-            Disposables.Add(_playLine);
-            Disposables.Add(_isPlayTricky);
-            Disposables.Add(_isAlbumLocked);
-            Disposables.Add(_albumBadge);
-            Disposables.Add(_isAlbumPulsing);
-            Disposables.Add(_showcase);
-            Disposables.Add(_commands);
-            progress.Profile.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
-            Refresh();
-        }
+        private readonly GameBalanceConfig _balance;
 
         /// <summary>Shop name on the sign.</summary>
         public IReadOnlyReactiveProperty<string> ShopName => _shopName;
@@ -108,6 +77,40 @@ namespace Game.Features.Home
         public IObservable<HomeCommand> Commands => _commands;
 
         /// <summary>
+        /// Creates the view model and follows progress changes.
+        /// </summary>
+        /// <param name="progress">Coins, stars, album, flags, shop name.</param>
+        /// <param name="curves">Next level and its difficulty.</param>
+        /// <param name="content">Item sprites for the showcase.</param>
+        /// <param name="texts">Sign, button and play line texts.</param>
+        /// <param name="balance">Level that opens the album.</param>
+        public HomeViewModel(HomeProgress progress, ILevelCurveService curves, IContentService content,
+            ILocalizationService texts, GameBalanceConfig balance)
+        {
+            _progress = progress;
+            _balance = balance;
+            _curves = curves;
+            _content = content;
+            _texts = texts;
+            Tagline = texts.Get(HomeTexts.Tagline);
+            ReviewersLink = texts.Get(HomeTexts.Reviewers);
+            AlbumCaption = texts.Get(HomeTexts.Album);
+            PlayTitle = texts.Get(HomeTexts.PlayTitle);
+            Coins = progress.Wallet.Coins;
+            Disposables.Add(_shopName);
+            Disposables.Add(_subtitle);
+            Disposables.Add(_playLine);
+            Disposables.Add(_isPlayTricky);
+            Disposables.Add(_isAlbumLocked);
+            Disposables.Add(_albumBadge);
+            Disposables.Add(_isAlbumPulsing);
+            Disposables.Add(_showcase);
+            Disposables.Add(_commands);
+            progress.Profile.Changed.Subscribe(_ => Refresh()).AddTo(Disposables);
+            Refresh();
+        }
+
+        /// <summary>
         /// "Open the shop" tapped.
         /// </summary>
         public void Play() => _commands.OnNext(HomeCommand.Play);
@@ -138,14 +141,14 @@ namespace Game.Features.Home
             _subtitle.Value = _texts.Get(curve.SubtitleKey);
             _playLine.Value = _texts.Format(hard ? HomeTexts.PlayLineTricky : HomeTexts.PlayLine, next);
             _isPlayTricky.Value = hard;
-            var isOpen = curve.IsOriginal || _progress.Levels.IsCompleted(AlbumFromLevel);
+            var isOpen = curve.IsOriginal || _progress.Levels.IsCompleted(_balance.AlbumFromLevel);
             _isAlbumLocked.Value = !isOpen;
             _albumBadge.Value = isOpen && album.NewCount > 0 ? (album.NewCount > 9 ? "9+" : album.NewCount.ToString()) : string.Empty;
             _isAlbumPulsing.Value = isOpen && !_progress.Onboarding.HasFlag(Flags.AlbumOpened);
             var ids = album.Found.Count >= ShowcaseSize
                 ? album.Found.Skip(album.Found.Count - ShowcaseSize).ToList()
                 : _content.Catalog.DefaultShowcase.ToList();
-            _showcase.Value = ids.Select(id => _content.Catalog.Get(id).Sprite).ToList();
+            _showcase.Value = ids.Select(id => _content.GetItemSprite(id)).ToList();
         }
     }
 }

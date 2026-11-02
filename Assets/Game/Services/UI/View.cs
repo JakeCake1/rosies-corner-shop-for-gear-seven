@@ -35,7 +35,10 @@ namespace Game.Services.UI
         /// </summary>
         public void Unbind()
         {
-            if (ViewModel == null) return;
+            if (ViewModel == null)
+            {
+                return;
+            }
 
             _bindings.Dispose();
             _bindings = new CompositeDisposable();

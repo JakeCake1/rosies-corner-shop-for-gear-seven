@@ -11,6 +11,7 @@ using Game.Flow.States;
 using Game.Services.Album;
 using Game.Services.Assets;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Experiments;
 using Game.Services.Flow;
@@ -37,12 +38,15 @@ namespace Game.Bootstrap.Composition
         [SerializeField] private UIRoot _uiRootPrefab;
         [Tooltip("Level curves; the first is the default ('New · 20').")]
         [SerializeField] private List<LevelCurveConfig> _curves = new List<LevelCurveConfig>();
+        [Tooltip("Prices, gifts and the levels where boosters, ads and milestones appear.")]
+        [SerializeField] private GameBalanceConfig _balance;
 
         /// <inheritdoc/>
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterComponentInNewPrefab(_uiRootPrefab, Lifetime.Singleton).DontDestroyOnLoad();
             builder.RegisterInstance<IReadOnlyList<LevelCurveConfig>>(_curves);
+            builder.RegisterInstance(_balance);
 
             builder.Register<AssetProvider>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.Register<ISaveStorage>(_ => new FileSaveStorage(Application.persistentDataPath), Lifetime.Singleton);

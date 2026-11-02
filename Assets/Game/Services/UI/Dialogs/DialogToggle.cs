@@ -9,6 +9,15 @@ namespace Game.Services.UI.Dialogs
     /// </summary>
     public sealed class DialogToggle
     {
+        /// <summary>Row label.</summary>
+        public string Label { get; }
+
+        /// <summary>Initial state.</summary>
+        public bool IsOn { get; }
+
+        /// <summary>Called with the requested state; returns the applied state.</summary>
+        public Func<bool, bool> Changed { get; }
+
         /// <summary>
         /// Creates a switch.
         /// </summary>
@@ -22,14 +31,5 @@ namespace Game.Services.UI.Dialogs
             IsOn = isOn;
             Changed = changed;
         }
-
-        /// <summary>Row label.</summary>
-        public string Label { get; }
-
-        /// <summary>Initial state.</summary>
-        public bool IsOn { get; }
-
-        /// <summary>Called with the requested state; returns the applied state.</summary>
-        public Func<bool, bool> Changed { get; }
     }
 }

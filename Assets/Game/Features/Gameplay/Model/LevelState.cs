@@ -53,6 +53,11 @@ namespace Game.Features.Gameplay.Model
         public LevelMechanics Mechanics { get; set; } = new LevelMechanics();
 
         /// <summary>
+        /// Column of the hammer (or of the shelf holding it) at generation; -1 without a hammer.
+        /// </summary>
+        public int HammerColumn { get; set; } = -1;
+
+        /// <summary>
         /// 1-based level number in the active curve.
         /// </summary>
         public int LevelNumber { get; set; }
@@ -123,11 +128,6 @@ namespace Game.Features.Gameplay.Model
         public HammerPlace HammerPlace { get; set; }
 
         /// <summary>
-        /// Column of the hammer (or of the shelf holding it) at generation; -1 without a hammer.
-        /// </summary>
-        public int HammerColumn { get; set; } = -1;
-
-        /// <summary>
         /// Returns the next in-level random value; deterministic for a given seed and draw count.
         /// </summary>
         /// <returns>A value in [0, 1).</returns>
@@ -151,8 +151,14 @@ namespace Game.Features.Gameplay.Model
             var map = new Dictionary<Jar, Jar>();
             Jar Copy(Jar j)
             {
-                if (j == null) return null;
-                if (map.TryGetValue(j, out var c)) return c;
+                if (j == null)
+                {
+                    return null;
+                }
+                if (map.TryGetValue(j, out var c))
+                {
+                    return c;
+                }
                 c = new Jar
                 {
                     Id = j.Id, Type = j.Type, IsTool = j.IsTool, TargetBlockId = j.TargetBlockId,
@@ -192,7 +198,10 @@ namespace Game.Features.Gameplay.Model
             for (var i = 0; i < MaxBaskets; i++)
             {
                 var b = Baskets[i];
-                if (b == null) continue;
+                if (b == null)
+                {
+                    continue;
+                }
 
                 var copy = new Basket { Id = b.Id, Type = b.Type, IsDone = b.IsDone };
                 copy.Jars.AddRange(b.Jars.Select(Copy));

@@ -149,7 +149,10 @@ namespace Game.Services.UI.Elements
         /// <returns>Offset.</returns>
         public static Vector2 GetTranslate(VisualElement element)
         {
-            if (element.style.translate.keyword != StyleKeyword.Undefined) return element.resolvedStyle.translate;
+            if (element.style.translate.keyword != StyleKeyword.Undefined)
+            {
+                return element.resolvedStyle.translate;
+            }
 
             var t = element.style.translate.value;
             return new Vector2(t.x.value, t.y.value);

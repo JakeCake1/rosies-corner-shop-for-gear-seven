@@ -52,7 +52,10 @@ namespace Game.Services.UI
                 var angle = Random.Range(0f, Mathf.PI * 2f);
                 var speed = isConfetti ? Random.Range(140f, 320f) : Random.Range(40f, 120f);
                 var target = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed;
-                if (isConfetti) target.y += Random.Range(80f, 240f);
+                if (isConfetti)
+                {
+                    target.y += Random.Range(80f, 240f);
+                }
                 var duration = isConfetti ? Random.Range(0.9f, 1.4f) : Random.Range(0.4f, 0.7f);
                 var particle = p;
                 DOTween.Sequence()

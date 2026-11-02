@@ -28,15 +28,24 @@ namespace Game.Bootstrap.Composition
 
         private void OnApplicationPause(bool isPaused)
         {
-            if (_profile == null) return;
+            if (_profile == null)
+            {
+                return;
+            }
 
-            if (isPaused) _profile.SaveAll();
+            if (isPaused)
+            {
+                _profile.SaveAll();
+            }
             _audio.SetPaused(isPaused);
         }
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            if (_profile == null || hasFocus) return;
+            if (_profile == null || hasFocus)
+            {
+                return;
+            }
 
             _profile.SaveAll();
         }

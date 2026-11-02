@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Board;
 using Game.Features.Gameplay.Hud;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Localization;
 using Game.Services.UI;
@@ -28,6 +29,15 @@ namespace Game.Features.Gameplay
         private readonly VisualElement _element;
         private readonly VisualElement _boosterBar;
 
+        /// <summary>Shelves, counter and baskets.</summary>
+        public BoardView Board { get; }
+
+        /// <summary>Level badge, progress and coins.</summary>
+        public HudView Hud { get; }
+
+        /// <summary>"Level N" banner.</summary>
+        public LevelBannerView Banner { get; }
+
         /// <summary>
         /// Creates the screen and adds it to the scene layer.
         /// </summary>
@@ -37,8 +47,10 @@ namespace Game.Features.Gameplay
         /// <param name="content">Item catalog.</param>
         /// <param name="art">Gameplay pictures.</param>
         /// <param name="audio">Landing, shelf and key sounds of the board.</param>
+        /// <param name="texts">Board texts.</param>
+        /// <param name="balance">Level from which the extra basket slot is shown.</param>
         public GameplayScreen(UIRoot root, GameplayLayouts layouts, IOverlayService overlay, IContentService content,
-            GameplayArt art, IAudioService audio, ILocalizationService texts)
+            GameplayArt art, IAudioService audio, ILocalizationService texts, GameBalanceConfig balance)
         {
             _layouts = layouts;
             _element = layouts.Screen.Instantiate();
@@ -48,21 +60,12 @@ namespace Game.Features.Gameplay
 
             Hud = new HudView();
             Hud.Attach(_element.Q(HudName));
-            Board = new BoardView(layouts, overlay, content, art, audio, Hud.ProgressBar, texts);
+            Board = new BoardView(layouts, overlay, content, art, audio, Hud.ProgressBar, texts, balance);
             Board.Attach(_element.Q(BoardName));
             _element.Q<Label>(CounterLabelName).text = texts.Get(GameplayTexts.Counter);
             _boosterBar = _element.Q(BoostersName);
             Banner = new LevelBannerView(layouts.Banner, Board.Root);
         }
-
-        /// <summary>Shelves, counter and baskets.</summary>
-        public BoardView Board { get; }
-
-        /// <summary>Level badge, progress and coins.</summary>
-        public HudView Hud { get; }
-
-        /// <summary>"Level N" banner.</summary>
-        public LevelBannerView Banner { get; }
 
         /// <summary>
         /// Completes once the board has a valid size (after the first layout pass).

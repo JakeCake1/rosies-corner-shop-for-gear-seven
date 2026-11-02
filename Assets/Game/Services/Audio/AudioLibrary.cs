@@ -27,7 +27,7 @@ namespace Game.Services.Audio
         /// </summary>
         public const int ShipSteps = 7;
 
-        [SerializeField] private List<Entry> _effects = new List<Entry>();
+        [SerializeField] private List<AudioLibraryEntry> _effects = new List<AudioLibraryEntry>();
         [Tooltip("Basket ship arpeggio for combo steps 0..6; later combos reuse the last clip.")]
         [SerializeField] private List<AudioClip> _ship = new List<AudioClip>();
         [Tooltip("Background music; must loop seamlessly.")]
@@ -52,7 +52,10 @@ namespace Game.Services.Audio
                 _byId = new Dictionary<SoundId, AudioClip>();
                 foreach (var entry in _effects)
                 {
-                    if (entry.Clip != null) _byId[entry.Id] = entry.Clip;
+                    if (entry.Clip != null)
+                    {
+                        _byId[entry.Id] = entry.Clip;
+                    }
                 }
             }
 
@@ -75,38 +78,40 @@ namespace Game.Services.Audio
             var seen = new HashSet<SoundId>();
             foreach (var entry in _effects)
             {
-                if (!seen.Add(entry.Id)) errors.Add($"{name}: {entry.Id} is listed twice.");
-                if (entry.Clip == null) errors.Add($"{name}: {entry.Id} has no clip.");
+                if (!seen.Add(entry.Id))
+                {
+                    errors.Add($"{name}: {entry.Id} is listed twice.");
+                }
+                if (entry.Clip == null)
+                {
+                    errors.Add($"{name}: {entry.Id} has no clip.");
+                }
             }
 
             foreach (SoundId id in Enum.GetValues(typeof(SoundId)))
             {
-                if (!seen.Contains(id)) errors.Add($"{name}: no entry for {id}.");
+                if (!seen.Contains(id))
+                {
+                    errors.Add($"{name}: no entry for {id}.");
+                }
             }
 
-            if (_ship.Count != ShipSteps) errors.Add($"{name}: expected {ShipSteps} ship clips, got {_ship.Count}.");
+            if (_ship.Count != ShipSteps)
+            {
+                errors.Add($"{name}: expected {ShipSteps} ship clips, got {_ship.Count}.");
+            }
             for (var i = 0; i < _ship.Count; i++)
             {
-                if (_ship[i] == null) errors.Add($"{name}: ship clip {i} is missing.");
+                if (_ship[i] == null)
+                {
+                    errors.Add($"{name}: ship clip {i} is missing.");
+                }
             }
 
-            if (_music == null) errors.Add($"{name}: music clip is missing.");
-        }
-
-        /// <summary>
-        /// One sound effect and its clip.
-        /// </summary>
-        [Serializable]
-        public sealed class Entry
-        {
-            [SerializeField] private SoundId _id;
-            [SerializeField] private AudioClip _clip;
-
-            /// <summary>The sound this clip plays for.</summary>
-            public SoundId Id => _id;
-
-            /// <summary>The rendered clip; never null in a valid library.</summary>
-            public AudioClip Clip => _clip;
+            if (_music == null)
+            {
+                errors.Add($"{name}: music clip is missing.");
+            }
         }
     }
 }

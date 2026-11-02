@@ -22,7 +22,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Base: the standard Micros
 
 ## Files and Namespaces
 
-- **WHEN** creating a type → **DO** put one top-level type per file, and name the file after the type (`ShopViewModel.cs`). Small closely related types (a payload struct, an enum used only by that class) may be nested instead.
+- **WHEN** creating a type (class, struct, interface, enum, delegate) → **DO** put exactly one type per file and name the file after the type (`ShopViewModel.cs`). Don't nest types inside other types and don't declare a second type in the same file, even a small payload struct or an enum used by one class; give it its own file next to its user.
 - **WHEN** declaring a namespace → **DO** match the folder structure under the root code folder (`Game.Features.Shop`, `Game.Services.Save`). Use block-scoped namespaces (C# 9).
 - **WHEN** adding `using` directives → **DO** place them at the top of the file, outside the namespace, `System` namespaces first, then others alphabetically; remove unused ones.
 
@@ -31,10 +31,18 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Base: the standard Micros
 ## Formatting
 
 - **WHEN** formatting code → **DO** use 4 spaces, no tabs; Allman braces (opening brace on its own line); one statement per line; max line length ~120 characters.
-- **WHEN** writing `if`, `for`, `foreach`, `while` → **DO** always use braces, except a single-line guard clause (`if (target == null) return;`).
+- **WHEN** writing `if`, `else`, `for`, `foreach`, `while`, `do` → **DO** always use braces, even for a one-line body or a guard clause (`if (target == null) { return; }` written on three lines in Allman style).
 - **WHEN** a method or property body is a single expression → **DO** an expression body (`=>`) is allowed; otherwise use a block body.
 - **WHEN** declaring a local variable → **DO** use `var` when the type is obvious from the right side (`var list = new List<int>()`); use the explicit type otherwise.
 - **WHEN** creating objects with an obvious target type → **DO** target-typed `new()` is allowed for fields (`private readonly List<Enemy> _enemies = new();`).
+
+---
+
+## Methods and Class Size
+
+- **WHEN** three or more lines in a method share one responsibility (build a list, configure an element, compute a score, play one effect) → **DO** extract them into a private method whose name states that responsibility, so the caller reads as a list of steps.
+- **WHEN** the same or a similar block of three or more lines appears in several places → **DO** extract one method (with parameters for the differences) and call it from each place.
+- **WHEN** a UI class (view, window, screen, presenter, view model, UI service) grows past ~200 lines → **DO** decompose it into smaller classes with one responsibility each (child views per element group, a controller per flow, a builder for a layout), so each file stays under 200 lines where possible. Non-UI classes follow the same aim but may exceed it when splitting would hurt readability (e.g. the 1:1 prototype port in `Features/Gameplay/Model`).
 
 ---
 
@@ -47,6 +55,7 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Base: the standard Micros
 - **WHEN** a field must appear in the Inspector → **DO** use `[SerializeField] private`, never a `public` field.
 - **WHEN** state must be exposed → **DO** use a property (`public int Health { get; private set; }`); no public mutable fields.
 - **WHEN** a numeric or string literal has meaning (damage, delays, keys) → **DO** move it to a `const`, `static readonly` field or a `ScriptableObject` config; no magic numbers.
+- **WHEN** a value is a tuning parameter that design may change (rewards, prices, counts, limits, gameplay timings) → **DO** load it from a config (`ScriptableObject` or JSON in `Content/Data`) instead of hardcoding it in code, even as a `const`. Keep `const` for values that are part of the code's contract: element names, USS classes, address keys, animation constants and the values that must match the prototype 1:1.
 - **WHEN** referring to members of the current instance → **DO NOT** use `this.` unless it's needed to resolve ambiguity.
 
 ---
@@ -64,7 +73,8 @@ Members of a type are ordered by **kind**, then by **access modifier**, then by 
 5. Properties
 6. Constructors (and `[Inject] Construct` method for `MonoBehaviour`)
 7. Methods
-8. Nested types (enums, structs, classes)
+
+All data members (constants, fields, events, properties) are above the constructors; all methods are below them. There are no nested types (see "Files and Namespaces").
 
 ### 2. By access modifier (inside each kind)
 
@@ -264,7 +274,10 @@ namespace Game.Features.Enemies
         /// <remarks>Ignored while the enemy is in the pool.</remarks>
         public void TakeDamage(float amount)
         {
-            if (!_isActive) return;
+            if (!_isActive)
+            {
+                return;
+            }
 
             _health.Value = Mathf.Max(0f, _health.Value - amount);
             if (!IsAlive)

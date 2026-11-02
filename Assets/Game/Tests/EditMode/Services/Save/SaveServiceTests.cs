@@ -114,7 +114,7 @@ namespace Game.Tests.EditMode.Services.Save
         [Test]
         public void TryParse_WhenFieldsAreMissing_UsesDefaults()
         {
-            var data = (TestChunk.Payload)SaveService.TryParse(_chunk, "{\"count\":12}", out _);
+            var data = (TestChunkPayload)SaveService.TryParse(_chunk, "{\"count\":12}", out _);
 
             Assert.That(data.Count, Is.EqualTo(12));
             Assert.That(data.Name, Is.EqualTo("none"));

@@ -24,11 +24,17 @@ namespace Game.Services.Assets
         /// <inheritdoc/>
         public async UniTask<T> LoadAsync<T>(object key, CancellationToken ct) where T : class
         {
-            if (key is AssetReference reference) key = reference.RuntimeKey;
+            if (key is AssetReference reference)
+            {
+                key = reference.RuntimeKey;
+            }
 
             if (_handles.TryGetValue(key, out var cached))
             {
-                if (!cached.IsDone) await cached.ToUniTask(cancellationToken: ct);
+                if (!cached.IsDone)
+                {
+                    await cached.ToUniTask(cancellationToken: ct);
+                }
                 return cached.Result as T;
             }
 
@@ -41,7 +47,10 @@ namespace Game.Services.Assets
             catch
             {
                 _handles.Remove(key);
-                if (handle.IsValid()) Addressables.Release(handle);
+                if (handle.IsValid())
+                {
+                    Addressables.Release(handle);
+                }
                 throw;
             }
         }
@@ -49,11 +58,20 @@ namespace Game.Services.Assets
         /// <inheritdoc/>
         public void Release(object key)
         {
-            if (key is AssetReference reference) key = reference.RuntimeKey;
-            if (!_handles.TryGetValue(key, out var handle)) return;
+            if (key is AssetReference reference)
+            {
+                key = reference.RuntimeKey;
+            }
+            if (!_handles.TryGetValue(key, out var handle))
+            {
+                return;
+            }
 
             _handles.Remove(key);
-            if (handle.IsValid()) Addressables.Release(handle);
+            if (handle.IsValid())
+            {
+                Addressables.Release(handle);
+            }
         }
 
         /// <inheritdoc/>
@@ -61,7 +79,10 @@ namespace Game.Services.Assets
         {
             foreach (var handle in _handles.Values)
             {
-                if (handle.IsValid()) Addressables.Release(handle);
+                if (handle.IsValid())
+                {
+                    Addressables.Release(handle);
+                }
             }
 
             _handles.Clear();

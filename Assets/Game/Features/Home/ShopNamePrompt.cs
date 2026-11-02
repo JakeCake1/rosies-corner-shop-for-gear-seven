@@ -65,8 +65,14 @@ namespace Game.Features.Home
             dialog.Buttons.Add(new DialogButton(_texts.Get(HomeTexts.NameConfirm), ButtonStyle.Green, () =>
             {
                 var name = (dialog.InputText.Value ?? string.Empty).Trim();
-                if (name.Length > MaxNameLength) name = name.Substring(0, MaxNameLength);
-                if (name.Length == 0) return;
+                if (name.Length > MaxNameLength)
+                {
+                    name = name.Substring(0, MaxNameLength);
+                }
+                if (name.Length == 0)
+                {
+                    return;
+                }
 
                 _shop.Rename(name);
                 _audio.Play(SoundId.Win);

@@ -7,6 +7,7 @@ using Game.Features.Gameplay.Boosters;
 using Game.Features.Gameplay.Model;
 using Game.Services.Album;
 using Game.Services.Audio;
+using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Haptics;
@@ -46,6 +47,7 @@ namespace Game.Features.Gameplay.Session
         private readonly ILevelProgressService _levels;
         private readonly IAudioService _audio;
         private readonly IHapticsService _haptics;
+        private readonly GameBalanceConfig _balance;
         private readonly Subject<BoardChange> _changed = new Subject<BoardChange>();
         private readonly Subject<int> _refused = new Subject<int>();
         private readonly Subject<ShipNotice> _shipping = new Subject<ShipNotice>();
@@ -57,36 +59,13 @@ namespace Game.Features.Gameplay.Session
         private readonly HashSet<int> _scheduled = new HashSet<int>();
         private CancellationTokenSource _epoch = new CancellationTokenSource();
         private LevelState _snapshot;
+        private LevelState _prepared;
+        private LevelDefinition _preparedDefinition;
         private int _pendingShips;
         private int _combo = -1;
         private int _praiseIndex;
         private int _comboIndex;
         private bool _isWarned;
-
-        /// <summary>
-        /// Creates the session; <see cref="Start"/> loads a level.
-        /// </summary>
-        /// <param name="curves">Active level curve.</param>
-        /// <param name="content">Item catalog.</param>
-        /// <param name="wallet">Level rewards.</param>
-        /// <param name="boosters">Owned boosters.</param>
-        /// <param name="album">Found items.</param>
-        /// <param name="levels">Stars and lost levels.</param>
-        /// <param name="audio">Sound effects.</param>
-        /// <param name="haptics">Vibration.</param>
-        public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
-            IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
-            IHapticsService haptics)
-        {
-            _curves = curves;
-            _content = content;
-            _wallet = wallet;
-            _boosters = boosters;
-            _album = album;
-            _levels = levels;
-            _audio = audio;
-            _haptics = haptics;
-        }
 
         /// <summary>The level in play; replaced on undo, so don't cache it across changes.</summary>
         public LevelState State { get; private set; }
@@ -136,21 +115,68 @@ namespace Game.Features.Gameplay.Session
         public bool IsOriginalCurve => _curves.Active.IsOriginal;
 
         /// <summary>
-        /// Starts (or restarts) a level.
+        /// Creates the session; <see cref="Start"/> loads a level.
+        /// </summary>
+        /// <param name="curves">Active level curve.</param>
+        /// <param name="content">Item catalog.</param>
+        /// <param name="wallet">Level rewards.</param>
+        /// <param name="boosters">Owned boosters.</param>
+        /// <param name="album">Found items.</param>
+        /// <param name="levels">Stars and lost levels.</param>
+        /// <param name="audio">Sound effects.</param>
+        /// <param name="haptics">Vibration.</param>
+        /// <param name="balance">Free undos, extended capacity, booster unlock levels and coin rewards.</param>
+        public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
+            IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
+            IHapticsService haptics, GameBalanceConfig balance)
+        {
+            _curves = curves;
+            _content = content;
+            _wallet = wallet;
+            _boosters = boosters;
+            _album = album;
+            _levels = levels;
+            _audio = audio;
+            _haptics = haptics;
+            _balance = balance;
+        }
+
+        /// <summary>
+        /// Generates a level without showing it; the level in play is not touched. Call <see cref="Start"/> next,
+        /// after the sprites of <see cref="LevelItemTypes.Of"/> the returned state are loaded.
         /// </summary>
         /// <param name="level">1-based level number in the active curve.</param>
-        /// <param name="startBoosters">Paid start boosters; may be null.</param>
-        public void Start(int level, StartBoosters startBoosters)
+        /// <returns>The generated level.</returns>
+        public LevelState Prepare(int level)
         {
-            ResetEpoch();
-            Definition = _curves.Get(level);
+            _preparedDefinition = _curves.Get(level);
             var generator = new LevelGenerator(_content.Catalog.Items, _content.Catalog.Families);
-            State = generator.Generate(level, Definition, new HashSet<int>(_album.Found));
+            _prepared = generator.Generate(level, _preparedDefinition, new HashSet<int>(_album.Found));
+            return _prepared;
+        }
+
+        /// <summary>
+        /// Starts (or restarts) the level generated by <see cref="Prepare"/>.
+        /// </summary>
+        /// <param name="startBoosters">Paid start boosters; may be null.</param>
+        /// <exception cref="InvalidOperationException">No level was prepared.</exception>
+        public void Start(StartBoosters startBoosters)
+        {
+            if (_prepared == null)
+            {
+                throw new InvalidOperationException($"Call {nameof(Prepare)} before {nameof(Start)}.");
+            }
+
+            ResetEpoch();
+            Definition = _preparedDefinition;
+            State = _prepared;
+            _prepared = null;
+            _preparedDefinition = null;
             _snapshot = null;
             _combo = -1;
             _isWarned = false;
             IsOver = false;
-            _undoLeft.Value = GameplayBalance.FreeUndosPerLevel;
+            _undoLeft.Value = _balance.FreeUndosPerLevel;
             _bonusPick.Value = startBoosters != null && startBoosters.HasQuickPick ? 1 : 0;
             _canUndo.Value = false;
             if (startBoosters != null && startBoosters.HasExtraBasket)
@@ -171,10 +197,16 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when the tap was ignored or refused.</returns>
         public bool Tap(int jarId)
         {
-            if (State == null || IsOver) return false;
+            if (State == null || IsOver)
+            {
+                return false;
+            }
 
             var location = LevelRules.VisibleJars(State, false).FirstOrDefault(v => v.Jar.Id == jarId);
-            if (location.Jar == null) return false;
+            if (location.Jar == null)
+            {
+                return false;
+            }
 
             var tapped = location.Jar;
             var snapshot = State.Clone();
@@ -192,10 +224,19 @@ namespace Game.Features.Gameplay.Session
             }
 
             SetSnapshot(snapshot);
-            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapRound);
-            else _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
+            if (tapped.IsTool || tapped.IsWrapped)
+            {
+                _audio.Play(SoundId.TapRound);
+            }
+            else
+            {
+                _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
+            }
             _haptics.Pulse(HapticKind.Tap);
-            if (result.Basket == null && !result.IsTool) _combo = -1;
+            if (result.Basket == null && !result.IsTool)
+            {
+                _combo = -1;
+            }
 
             _changed.OnNext(new BoardChange(BoardChangeKind.Tap, result.Events));
             if (result.Basket == null && !result.IsTool)
@@ -209,8 +250,14 @@ namespace Game.Features.Gameplay.Session
                 _notice.OnNext("counter");
             }
 
-            if (result.Events.Any(e => e.Type == LevelEventType.ShelfFolded)) _notice.OnNext("stock");
-            if (State.Counter.Count < State.Capacity - 1) _isWarned = false;
+            if (result.Events.Any(e => e.Type == LevelEventType.ShelfFolded))
+            {
+                _notice.OnNext("stock");
+            }
+            if (State.Counter.Count < State.Capacity - 1)
+            {
+                _isWarned = false;
+            }
             ScanDone();
             CheckEnd();
             return true;
@@ -222,8 +269,14 @@ namespace Game.Features.Gameplay.Session
         /// <returns><see cref="UndoResult.Done"/>, or why it could not be done.</returns>
         public UndoResult Undo()
         {
-            if (_snapshot == null) return UndoResult.NothingToUndo;
-            if (_undoLeft.Value <= 0) return UndoResult.NoUndosLeft;
+            if (_snapshot == null)
+            {
+                return UndoResult.NothingToUndo;
+            }
+            if (_undoLeft.Value <= 0)
+            {
+                return UndoResult.NoUndosLeft;
+            }
 
             _undoLeft.Value--;
             ResetEpoch();
@@ -248,17 +301,32 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when no basket is waiting or no Quick Pick is owned.</returns>
         public bool UseQuickPick()
         {
-            if (State == null || IsOver) return false;
-            if (_bonusPick.Value <= 0 && _boosters.Get(BoosterIds.Pick) <= 0) return false;
+            if (State == null || IsOver)
+            {
+                return false;
+            }
+            if (_bonusPick.Value <= 0 && _boosters.Get(BoosterIds.Pick) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
             var fromStock = new Dictionary<int, int>();
-            if (LevelRules.QuickPick(State, events, fromStock) < 0) return false;
+            if (LevelRules.QuickPick(State, events, fromStock) < 0)
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
-            if (_bonusPick.Value > 0) _bonusPick.Value--;
-            else _boosters.Add(BoosterIds.Pick, -1);
+            if (_bonusPick.Value > 0)
+            {
+                _bonusPick.Value--;
+            }
+            else
+            {
+                _boosters.Add(BoosterIds.Pick, -1);
+            }
             _audio.Play(SoundId.Magic);
             _changed.OnNext(new BoardChange(BoardChangeKind.QuickPick, events, fromStock));
             ScanDone();
@@ -271,12 +339,18 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when the counter is empty or no Tidy Up is owned.</returns>
         public bool UseTidy()
         {
-            if (State == null || _boosters.Get(BoosterIds.Tidy) <= 0) return false;
+            if (State == null || _boosters.Get(BoosterIds.Tidy) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
             var back = new List<int>();
-            if (LevelRules.Tidy(State, events, out var column, back) == 0) return false;
+            if (LevelRules.Tidy(State, events, out var column, back) == 0)
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
             _boosters.Add(BoosterIds.Tidy, -1);
@@ -293,11 +367,17 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when nothing can move or no Shuffle is owned.</returns>
         public bool UseShuffle()
         {
-            if (State == null || IsOver || _boosters.Get(BoosterIds.Shuffle) <= 0) return false;
+            if (State == null || IsOver || _boosters.Get(BoosterIds.Shuffle) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var seed = (uint)(DateTime.UtcNow.Ticks % 100000);
-            if (!LevelRules.Shuffle(State, new Mulberry32(seed))) return false;
+            if (!LevelRules.Shuffle(State, new Mulberry32(seed)))
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
             _boosters.Add(BoosterIds.Shuffle, -1);
@@ -329,7 +409,7 @@ namespace Game.Features.Gameplay.Session
         /// </summary>
         public void ExtendCounter()
         {
-            State.Capacity = GameplayBalance.ExtendedCapacity;
+            State.Capacity = _balance.ExtendedCapacity;
             IsOver = false;
             _changed.OnNext(new BoardChange(BoardChangeKind.Layout));
             CheckEnd();
@@ -348,13 +428,16 @@ namespace Game.Features.Gameplay.Session
         /// <returns>True when its button is shown.</returns>
         public bool IsUnlocked(string boosterId)
         {
-            if (IsOriginalCurve) return true;
+            if (IsOriginalCurve)
+            {
+                return true;
+            }
 
             switch (boosterId)
             {
-                case BoosterIds.Undo: return LevelNumber >= GameplayBalance.UndoUnlockLevel;
-                case BoosterIds.Tidy: return LevelNumber >= GameplayBalance.TidyUnlockLevel;
-                case BoosterIds.Pick: return LevelNumber >= GameplayBalance.PickUnlockLevel;
+                case BoosterIds.Undo: return LevelNumber >= _balance.UndoUnlockLevel;
+                case BoosterIds.Tidy: return LevelNumber >= _balance.TidyUnlockLevel;
+                case BoosterIds.Pick: return LevelNumber >= _balance.PickUnlockLevel;
                 default: return false;
             }
         }
@@ -394,7 +477,10 @@ namespace Game.Features.Gameplay.Session
             for (var slot = 0; slot < LevelState.MaxBaskets; slot++)
             {
                 var b = State.Baskets[slot];
-                if (b == null || !b.IsDone || !_scheduled.Add(b.Id)) continue;
+                if (b == null || !b.IsDone || !_scheduled.Add(b.Id))
+                {
+                    continue;
+                }
 
                 ShipAsync(slot, b.Id, _epoch.Token).Forget();
             }
@@ -434,7 +520,10 @@ namespace Game.Features.Gameplay.Session
                 }
 
                 _changed.OnNext(new BoardChange(BoardChangeKind.Ship, events));
-                if (events.Any(e => e.Type == LevelEventType.ShelfThawed)) _audio.Play(SoundId.Magic);
+                if (events.Any(e => e.Type == LevelEventType.ShelfThawed))
+                {
+                    _audio.Play(SoundId.Magic);
+                }
                 _pendingShips--;
                 ScanDone();
                 if (LevelRules.IsWon(State))
@@ -458,7 +547,10 @@ namespace Game.Features.Gameplay.Session
 
         private void CheckEnd()
         {
-            if (State == null || IsOver || _pendingShips > 0) return;
+            if (State == null || IsOver || _pendingShips > 0)
+            {
+                return;
+            }
 
             if (LevelRules.IsWon(State))
             {
@@ -484,7 +576,10 @@ namespace Game.Features.Gameplay.Session
                 return;
             }
 
-            if (!IsOver) return;
+            if (!IsOver)
+            {
+                return;
+            }
 
             _levels.MarkFailed(LevelNumber);
             _audio.Play(SoundId.Fail);
@@ -494,11 +589,14 @@ namespace Game.Features.Gameplay.Session
 
         private void Win()
         {
-            if (IsOver) return;
+            if (IsOver)
+            {
+                return;
+            }
 
             IsOver = true;
             var stars = GameplayBalance.StarsFor(State.Peak, LevelNumber);
-            var reward = stars * GameplayBalance.CoinsPerStar * (IsTricky ? 2 : 1);
+            var reward = stars * _balance.CoinsPerStar * (IsTricky ? 2 : 1);
             _levels.Complete(LevelNumber, stars);
             _wallet.Add(reward);
             _audio.Play(SoundId.Win);

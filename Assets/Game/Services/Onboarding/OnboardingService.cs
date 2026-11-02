@@ -16,7 +16,10 @@ namespace Game.Services.Onboarding
         /// <inheritdoc/>
         public void SetFlag(string flag)
         {
-            if (Data.Flags.Add(flag)) MarkChanged();
+            if (Data.Flags.Add(flag))
+            {
+                MarkChanged();
+            }
         }
 
         /// <inheritdoc/>
@@ -25,7 +28,10 @@ namespace Game.Services.Onboarding
         /// <inheritdoc/>
         public void MarkTipSeen(string tip)
         {
-            if (Data.SeenTips.Add(tip)) MarkChanged();
+            if (Data.SeenTips.Add(tip))
+            {
+                MarkChanged();
+            }
         }
     }
 }

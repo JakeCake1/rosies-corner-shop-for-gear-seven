@@ -14,7 +14,14 @@ namespace Game.Services.Save
     /// after each change.</remarks>
     public abstract class ProfileChunk<TData> : IProfileChunk, IDisposable where TData : class, new()
     {
+        /// <summary>
+        /// The chunk data; a new player's defaults until the profile is loaded.
+        /// </summary>
+        protected TData Data { get; private set; } = new TData();
         private readonly Subject<Unit> _changed = new Subject<Unit>();
+
+        /// <inheritdoc/>
+        object IProfileChunk.Data => Data;
 
         /// <inheritdoc/>
         public abstract string Key { get; }
@@ -30,14 +37,6 @@ namespace Game.Services.Save
 
         /// <inheritdoc/>
         public IObservable<Unit> Changed => _changed;
-
-        /// <inheritdoc/>
-        object IProfileChunk.Data => Data;
-
-        /// <summary>
-        /// The chunk data; a new player's defaults until the profile is loaded.
-        /// </summary>
-        protected TData Data { get; private set; } = new TData();
 
         /// <inheritdoc/>
         public void Restore(object data)
