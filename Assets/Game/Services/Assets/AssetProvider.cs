@@ -24,6 +24,7 @@ namespace Game.Services.Assets
         /// <inheritdoc/>
         public async UniTask<T> LoadAsync<T>(object key, CancellationToken ct) where T : class
         {
+            ct.ThrowIfCancellationRequested();
             if (key is AssetReference reference)
             {
                 key = reference.RuntimeKey;
@@ -43,6 +44,11 @@ namespace Game.Services.Assets
             try
             {
                 return await handle.ToUniTask(cancellationToken: ct);
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                // Only this caller stopped waiting. The provider still owns the shared operation.
+                throw;
             }
             catch
             {

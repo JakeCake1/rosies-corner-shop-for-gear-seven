@@ -66,6 +66,7 @@ namespace Game.Features.Gameplay.Session
         private int _praiseIndex;
         private int _comboIndex;
         private bool _isWarned;
+        private bool _hasGrantedWinReward;
 
         /// <summary>The level in play; replaced on undo, so don't cache it across changes.</summary>
         public LevelState State { get; private set; }
@@ -168,6 +169,7 @@ namespace Game.Features.Gameplay.Session
             }
 
             ResetEpoch();
+            _hasGrantedWinReward = false;
             Definition = _preparedDefinition;
             State = _prepared;
             _prepared = null;
@@ -280,7 +282,11 @@ namespace Game.Features.Gameplay.Session
 
             _undoLeft.Value--;
             ResetEpoch();
+            // Purchases belong to the level attempt, not to the move being undone.
+            _snapshot.Capacity = Math.Max(_snapshot.Capacity, State.Capacity);
+            _snapshot.UnlockedBaskets = Math.Max(_snapshot.UnlockedBaskets, State.UnlockedBaskets);
             State = _snapshot;
+            LevelRules.RefillBaskets(State, null);
             SetSnapshot(null);
             IsOver = false;
             _changed.OnNext(new BoardChange(BoardChangeKind.Rebuild));
@@ -597,8 +603,12 @@ namespace Game.Features.Gameplay.Session
             IsOver = true;
             var stars = GameplayBalance.StarsFor(State.Peak, LevelNumber);
             var reward = stars * _balance.CoinsPerStar * (IsTricky ? 2 : 1);
-            _levels.Complete(LevelNumber, stars);
-            _wallet.Add(reward);
+            if (!_hasGrantedWinReward)
+            {
+                _hasGrantedWinReward = true;
+                _levels.Complete(LevelNumber, stars);
+                _wallet.Add(reward);
+            }
             _audio.Play(SoundId.Win);
             _haptics.Pulse(HapticKind.Win);
             _finished.OnNext(LevelOutcome.Won(stars, reward));
