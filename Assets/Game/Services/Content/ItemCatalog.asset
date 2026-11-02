@@ -1155,12 +1155,4 @@ MonoBehaviour:
   - sweet
   - fresh
   - home
-  _familyNames:
-  - Dairy
-  - Bakery
-  - Drinks
-  - Pantry
-  - Sweets
-  - Fresh produce
-  - Home goods
   _defaultShowcase: 00000000040000000a00000010000000160000001a00000020000000

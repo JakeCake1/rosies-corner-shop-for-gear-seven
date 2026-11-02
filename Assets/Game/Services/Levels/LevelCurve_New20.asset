@@ -31,7 +31,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 
+    _tipKey: 
   - _sizes: 01000000
     _seed: 253292
     _jarsPerRow: 2
@@ -50,7 +50,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 
+    _tipKey: 
   - _sizes: 01000000
     _seed: 463312
     _jarsPerRow: 3
@@ -69,7 +69,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 
+    _tipKey: 
   - _sizes: 0100000001000000010000000200000002000000
     _seed: 97275
     _jarsPerRow: 3
@@ -88,7 +88,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 1
     _family: 
-    _tip: "Rewards \xD72. Bigger shelves today: plan before you tap."
+    _tipKey: tip.rewards_big_shelves
   - _sizes: 01000000
     _seed: 140216
     _jarsPerRow: 3
@@ -107,7 +107,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Empty the shelf with the brass key to untie the tied one.
+    _tipKey: tip.brass_key
   - _sizes: 0100000002000000
     _seed: 548279
     _jarsPerRow: 3
@@ -126,7 +126,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 
+    _tipKey: 
   - _sizes: 0100000002000000
     _seed: 250616
     _jarsPerRow: 3
@@ -145,7 +145,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: A calm day at the shop.
+    _tipKey: tip.calm_day
   - _sizes: 0100000002000000
     _seed: 112291
     _jarsPerRow: 3
@@ -164,7 +164,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: 'Frozen shelf: it thaws as you pack baskets.'
+    _tipKey: tip.frozen
   - _sizes: 0100000002000000
     _seed: 221678
     _jarsPerRow: 3
@@ -183,7 +183,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Keep room on the counter for the next basket.
+    _tipKey: tip.keep_room
   - _sizes: 0100000001000000020000000200000003000000
     _seed: 183986
     _jarsPerRow: 3
@@ -202,7 +202,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 1
     _family: 
-    _tip: "Rewards \xD72."
+    _tipKey: tip.rewards
   - _sizes: 0100000002000000
     _seed: 572049
     _jarsPerRow: 3
@@ -221,7 +221,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: A nailed shelf! Tap the hammer to pull the boards off.
+    _tipKey: tip.nailed
   - _sizes: 01000000
     _seed: 69897
     _jarsPerRow: 3
@@ -240,7 +240,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Find the hammer and the key.
+    _tipKey: tip.hammer_and_key
   - _sizes: 01000000
     _seed: 496665
     _jarsPerRow: 3
@@ -259,7 +259,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Paper bags hide what's inside. Take one to find out.
+    _tipKey: tip.paper_bags
   - _sizes: 0100000002000000
     _seed: 575088
     _jarsPerRow: 3
@@ -278,7 +278,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Bags and ice on the same shelves.
+    _tipKey: tip.bags_and_ice
   - _sizes: 0100000002000000
     _seed: 196792
     _jarsPerRow: 3
@@ -297,7 +297,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 1
     _family: 
-    _tip: "Rewards \xD72. Plan before you tap."
+    _tipKey: tip.rewards_plan
   - _sizes: 0100000002000000
     _seed: 298438
     _jarsPerRow: 3
@@ -316,7 +316,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: bakery
-    _tip: 'New department: the Bakery.'
+    _tipKey: tip.bakery
   - _sizes: 0100000002000000
     _seed: 283969
     _jarsPerRow: 3
@@ -335,7 +335,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Some shelves have a second row hiding behind the first.
+    _tipKey: tip.second_row
   - _sizes: 010000000200000003000000
     _seed: 168867
     _jarsPerRow: 3
@@ -354,7 +354,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: 
-    _tip: Second rows and frozen shelves.
+    _tipKey: tip.second_rows_frozen
   - _sizes: 010000000100000002000000
     _seed: 580153
     _jarsPerRow: 3
@@ -373,7 +373,7 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 0
     _family: sweet
-    _tip: 'New department: Sweets.'
+    _tipKey: tip.sweets
   - _sizes: 0100000001000000020000000200000003000000
     _seed: 294749
     _jarsPerRow: 3
@@ -392,8 +392,8 @@ MonoBehaviour:
     _baskets: 0
     _isHard: 1
     _family: 
-    _tip: "Rewards \xD72."
+    _tipKey: tip.rewards
   _id: new
-  _label: "New \xB7 20"
-  _subtitle: "Prototype \xB7 20 levels \xB7 placeholder art"
+  _labelKey: curve.new.label
+  _subtitleKey: curve.new.subtitle
   _isOriginal: 0
