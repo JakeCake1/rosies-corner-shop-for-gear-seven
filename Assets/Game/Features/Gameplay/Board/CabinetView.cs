@@ -172,7 +172,7 @@ namespace Game.Features.Gameplay.Board
             var rowsText = block.Height > 1 ? _texts.Format(GameplayTexts.ShelfRows, block.Height) : null;
             _animator.Prepare(view, block.Height, layout);
             view.Setup(block.Id, block.Height, layout.JarsPerRow, layout.ColumnWidth, layout.RowHeight,
-                layout.ItemSize, rowsText);
+                layout.ItemSize, rowsText, _texts.Get(GameplayTexts.BackMark));
             _shelves[block.Id] = view;
             return view;
         }

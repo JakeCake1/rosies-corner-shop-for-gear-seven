@@ -16,8 +16,16 @@ namespace Game.Services.UI
         private const string HandClass = "coach-hand";
         private const float Gap = 10f;
         private const float EdgeMargin = 12f;
+        private const string SafeName = "safe";
+        // HUD row (level badge, progress, coins, settings) at the top of the safe area.
+        private const float HudBottom = 60f;
         private static readonly Vector2 HandSize = new Vector2(54f, 62f);
         private static readonly Vector2 HandOffset = new Vector2(8f, 18f);
+        // Prototype @keyframes tapHand: 1.1 s cycle to translate(-4px, -10px) rotate(-12deg) scale(.94) and back.
+        private static readonly Vector2 TapShift = new Vector2(-4f, -10f);
+        private const float TapRotation = -12f;
+        private const float TapScale = 0.94f;
+        private const float TapHalfSeconds = 0.55f;
 
         private VisualElement _bubble;
         private Label _text;
@@ -92,7 +100,14 @@ namespace Game.Services.UI
             _hand.BringToFront();
             PlaceHand();
             VisualElementTweens.SetScale(_hand, Vector2.one);
-            _handTween = _hand.DOScale(0.88f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+            _hand.style.translate = new Translate(0f, 0f);
+            _hand.style.rotate = new Rotate(0f);
+            _handTween = DOTween.Sequence()
+                .Join(_hand.DOTranslate(TapShift, TapHalfSeconds))
+                .Join(_hand.DORotate(TapRotation, TapHalfSeconds))
+                .Join(_hand.DOScale(TapScale, TapHalfSeconds))
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo);
             StartFollowing();
         }
 
@@ -158,7 +173,15 @@ namespace Game.Services.UI
                 size = new Vector2(270f, 60f);
             }
             var x = Mathf.Clamp(bounds.center.x - size.x / 2f, EdgeMargin, space.x - size.x - EdgeMargin);
+            var top = SafeTop() + HudBottom;
             var y = _isAbove ? bounds.yMin - Gap - size.y : bounds.yMax + Gap;
+            if (_isAbove && y < top)
+            {
+                // No room above without covering the HUD: point from below instead.
+                y = bounds.yMax + Gap;
+            }
+
+            y = Mathf.Clamp(y, top, Mathf.Max(top, space.y - size.y - EdgeMargin));
             VisualElementTweens.SetPosition(_bubble, new Vector2(x, y));
         }
 
@@ -171,6 +194,13 @@ namespace Game.Services.UI
 
             var center = Bounds(_handTarget).center + HandOffset;
             _hand.PlaceCentered(center, HandSize);
+        }
+
+        private float SafeTop()
+        {
+            var safe = Root.parent?.Q(SafeName);
+            var top = safe?.resolvedStyle.top ?? 0f;
+            return float.IsNaN(top) ? 0f : top;
         }
 
         private Rect Bounds(VisualElement element)
