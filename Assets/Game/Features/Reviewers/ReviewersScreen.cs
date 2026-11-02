@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Save;
 using Game.Services.UI.Dialogs;
 
@@ -20,6 +21,7 @@ namespace Game.Features.Reviewers
         private readonly IExperimentsService _experiments;
         private readonly ILevelCurveService _curves;
         private readonly IGameFlow _flow;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the screen.
@@ -30,9 +32,11 @@ namespace Game.Features.Reviewers
         /// <param name="experiments">Rewarded offer variant.</param>
         /// <param name="curves">Level curves.</param>
         /// <param name="flow">Starts the chosen level or returns home.</param>
+        /// <param name="texts">Panel texts and curve labels.</param>
         public ReviewersScreen(IDialogService dialogs, IProfileService profile, ILevelProgressService levels,
-            IExperimentsService experiments, ILevelCurveService curves, IGameFlow flow)
+            IExperimentsService experiments, ILevelCurveService curves, IGameFlow flow, ILocalizationService texts)
         {
+            _texts = texts;
             _dialogs = dialogs;
             _profile = profile;
             _levels = levels;
@@ -46,10 +50,10 @@ namespace Game.Features.Reviewers
         public async UniTask OpenAsync(CancellationToken ct)
         {
             var reopen = false;
-            var dialog = new DialogViewModel("For reviewers", RibbonStyle.Green)
+            var dialog = new DialogViewModel(_texts.Get(ReviewersTexts.Title), RibbonStyle.Green)
             {
-                Text = "Jump to any level, or switch the variants that would be A/B tested.",
-                Note = "Hard levels are red. Ads and purchases are placeholders. Vibration works on Android only.",
+                Text = _texts.Get(ReviewersTexts.Text),
+                Note = _texts.Get(ReviewersTexts.Note),
                 IsClosedByBlocker = true,
             };
             for (var i = 1; i <= _curves.Count; i++)
@@ -70,24 +74,25 @@ namespace Game.Features.Reviewers
             var labels = new string[_curves.Curves.Count];
             for (var i = 0; i < labels.Length; i++)
             {
-                labels[i] = _curves.Curves[i].Label;
+                labels[i] = _texts.Get(_curves.Curves[i].LabelKey);
             }
 
-            dialog.Segments.Add(new DialogSegments("Level curve", labels, curveIndex, index =>
+            dialog.Segments.Add(new DialogSegments(_texts.Get(ReviewersTexts.Curve), labels, curveIndex, index =>
             {
                 _curves.SwitchCurve(_curves.Curves[index].Id);
                 reopen = true;
                 dialog.Close();
             }));
-            dialog.Segments.Add(new DialogSegments("Rewarded offer on a loss", new[] { "+1 customer", "+1 counter spot" },
+            var offers = new[] { _texts.Get(ReviewersTexts.OfferCustomer), _texts.Get(ReviewersTexts.OfferSpot) };
+            dialog.Segments.Add(new DialogSegments(_texts.Get(ReviewersTexts.Offer), offers,
                 _experiments.LossOffer == "slot" ? 1 : 0,
                 index => _experiments.SetLossOffer(index == 1 ? "slot" : "basket")));
-            dialog.Buttons.Add(new DialogButton("Reset progress", ButtonStyle.WoodSmall, () =>
+            dialog.Buttons.Add(new DialogButton(_texts.Get(ReviewersTexts.Reset), ButtonStyle.WoodSmall, () =>
             {
                 _profile.ResetProgress();
                 _flow.GoHomeAsync().Forget();
             }));
-            dialog.Buttons.Add(new DialogButton("Close", ButtonStyle.Berry, null));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(ReviewersTexts.Close), ButtonStyle.Berry, null));
             await _dialogs.ShowAsync(dialog, ct);
             if (!reopen) return;
 

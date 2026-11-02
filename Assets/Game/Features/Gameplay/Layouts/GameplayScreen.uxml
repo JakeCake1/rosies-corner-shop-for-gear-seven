@@ -8,7 +8,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="counter" class="counter kit-board-oak" picking-mode="Ignore">
             <ui:VisualElement name="counter-slots" class="counter__slots" picking-mode="Ignore" />
-            <ui:Label text="COUNTER" class="counter__label" />
+            <ui:Label name="counter-label" text="COUNTER" class="counter__label" />
         </ui:VisualElement>
         <ui:VisualElement name="cabinet" class="cabinet kit-cabinet" picking-mode="Ignore">
             <ui:VisualElement class="cabinet__awning" picking-mode="Ignore" />

@@ -7,7 +7,7 @@ namespace Game.Features.Home
     {
         /// <summary>
         /// The player's own name; empty until the player names the shop (the sign then shows
-        /// <see cref="HomeViewModel.DefaultShopName"/>).
+        /// the <c>home.default_shop_name</c> text, "Rosie's Corner Shop").
         /// </summary>
         string Name { get; }
 
