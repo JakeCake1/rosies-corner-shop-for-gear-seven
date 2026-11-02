@@ -14,6 +14,7 @@
 *.booproj
 *.unityproj
 .env
+.env.example
 /ServerData/
 /Assets/AddressableAssetsData/*/*.bin*
 /Tools/Langfuse/langfuse_batch.json

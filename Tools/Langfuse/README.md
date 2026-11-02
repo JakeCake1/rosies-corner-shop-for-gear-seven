@@ -43,7 +43,7 @@ Ranges longer than 30 minutes without data are listed in `REPORT.md` as coverage
 
 ## Send to Langfuse
 
-1. Copy `.env.example` to `.env` at the project root and fill in `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`
+1. Create a `.env` file at the project root with `NAME=value` lines for `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`
    (Langfuse → Project settings → API keys) and `LANGFUSE_HOST`. `.env` is git-ignored.
 2. Run `powershell -ExecutionPolicy Bypass -File Tools\Langfuse\Send-ToLangfuse.ps1`.
 

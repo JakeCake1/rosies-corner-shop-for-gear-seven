@@ -5,7 +5,7 @@
 .DESCRIPTION
     Langfuse ingests traces through its OTLP/HTTP endpoint /api/public/otel/v1/traces (ingestion v4); the legacy
     /api/public/ingestion endpoint no longer accepts traces. Reads LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY and
-    LANGFUSE_HOST from the .env file at the project root (see .env.example). Span ids are deterministic, so
+    LANGFUSE_HOST from the .env file at the project root. Span ids are deterministic, so
     sending again updates the same trace.
 
 .EXAMPLE
@@ -18,7 +18,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-if (-not (Test-Path $EnvFile)) { throw "No .env at $EnvFile. Copy .env.example to .env and fill in the Langfuse keys." }
+if (-not (Test-Path $EnvFile)) { throw "No .env at $EnvFile. Create it with NAME=value lines for the Langfuse keys." }
 $cfg = @{}
 foreach ($line in Get-Content $EnvFile) {
     if ($line -match '^\s*([A-Z_]+)\s*=\s*(.*?)\s*$') { $cfg[$Matches[1]] = $Matches[2].Trim('"', "'") }

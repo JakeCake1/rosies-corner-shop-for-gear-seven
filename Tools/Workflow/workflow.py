@@ -898,7 +898,7 @@ def hook_pre_commit():
     problems = []
     for name in staged:
         base = os.path.basename(name)
-        if base == ".env" or (base.startswith(".env.") and base != ".env.example"):
+        if base == ".env" or base.startswith(".env."):
             problems.append(f"{name}: env files must not be committed")
         if name.startswith(".agent-workflow/"):
             problems.append(f"{name}: local workflow state must not be committed")

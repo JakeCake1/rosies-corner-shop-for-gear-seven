@@ -49,7 +49,7 @@ this workflow.
 1. **Python 3.8+** on PATH (`python`, `python3` or `py`) and **Git for Windows** (Claude Code runs hooks with its
    `sh`).
 2. **Secrets**, never committed. Either set user environment variables (Windows: *Edit environment variables for your
-   account*) or add them to the git-ignored `.env` at the project root (see `.env.example`):
+   account*) or add them to a git-ignored `.env` file at the project root using `NAME=value` lines:
    - `LINEAR_API_KEY`: Linear → Settings → Security & access → Personal API keys.
    - `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`: Langfuse → Project settings → API keys.
    Restart Claude Desktop after changing environment variables.
