@@ -5,16 +5,19 @@ using Game.Services.Assets;
 using Game.Services.Audio;
 using Game.Services.Content;
 using Game.Services.Localization;
+using UnityEngine;
 
 namespace Game.Flow.States
 {
     /// <summary>
-    /// First state: initializes DOTween and Addressables, Localization and loads the item catalog and the audio clips.
+    /// First state: sets the target frame rate, initializes DOTween and Addressables, Localization and loads the item catalog and the audio clips.
     /// </summary>
     public sealed class BootstrapState : IGameState
     {
         private const int TweenCapacity = 400;
         private const int SequenceCapacity = 250;
+        // Android caps an unset frame rate (-1) at 30 FPS and ignores vSyncCount, so the rate is set explicitly.
+        private const int TargetFrameRate = 60;
 
         private readonly IAssetProvider _assets;
         private readonly IContentService _content;
@@ -43,6 +46,7 @@ namespace Game.Flow.States
         /// <inheritdoc/>
         public async UniTask Enter(CancellationToken ct)
         {
+            Application.targetFrameRate = TargetFrameRate;
             DOTween.Init(false, true).SetCapacity(TweenCapacity, SequenceCapacity);
             await _assets.InitializeAsync(ct);
             await UniTask.WhenAll(_content.LoadAsync(ct), _audio.LoadAsync(ct));

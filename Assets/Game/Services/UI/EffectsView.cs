@@ -10,6 +10,10 @@ namespace Game.Services.UI
     /// Particle bursts (sparks, dust, confetti) and floating praise words. Particles are pooled elements that are
     /// attached to the overlay only while they fly.
     /// </summary>
+    /// <remarks>
+    /// Particles and words are placed once and then move with <c>translate</c>, so a big burst (confetti on a win)
+    /// doesn't relayout the overlay every frame.
+    /// </remarks>
     public sealed class EffectsView : ElementView
     {
         private const string ParticleClass = "particle";
@@ -46,20 +50,21 @@ namespace Game.Services.UI
                 var side = isConfetti ? Random.Range(7f, 12f) : Random.Range(4f, 8f);
                 var size = isConfetti ? new Vector2(side, side * 0.6f) : new Vector2(side, side);
                 p.PlaceCentered(origin, size);
+                VisualElementTweens.SetTranslate(p, Vector2.zero);
                 p.SetTint(palette[Random.Range(0, palette.Length)]);
                 p.style.opacity = 1f;
                 VisualElementTweens.SetRotation(p, Random.Range(0f, 360f));
                 var angle = Random.Range(0f, Mathf.PI * 2f);
                 var speed = isConfetti ? Random.Range(140f, 320f) : Random.Range(40f, 120f);
-                var target = origin + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed;
+                var offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed;
                 if (isConfetti)
                 {
-                    target.y += Random.Range(80f, 240f);
+                    offset.y += Random.Range(80f, 240f);
                 }
                 var duration = isConfetti ? Random.Range(0.9f, 1.4f) : Random.Range(0.4f, 0.7f);
                 var particle = p;
                 DOTween.Sequence()
-                    .Append(p.DOPosition(target - size / 2f, duration).SetEase(Ease.OutCubic))
+                    .Append(p.DOTranslate(offset, duration).SetEase(Ease.OutCubic))
                     .Join(p.DORotate(VisualElementTweens.GetRotation(p) + Random.Range(-360f, 360f), duration))
                     .Join(p.DOFade(0f, duration).SetEase(Ease.InQuad))
                     .OnComplete(() => _particles.Release(particle));
@@ -76,15 +81,16 @@ namespace Game.Services.UI
         {
             var origin = Root.WorldToLocal(panelPosition);
             var label = CreateLabel(text, PraiseClass);
+            label.usageHints = UsageHints.DynamicTransform;
             label.EnableInClassList(ComboClass, isCombo);
             Root.Add(label);
             var size = new Vector2(260f, 40f);
             label.PlaceCentered(origin, size);
             VisualElementTweens.SetScale(label, Vector2.one * 0.6f);
-            var start = VisualElementTweens.GetPosition(label);
+            VisualElementTweens.SetTranslate(label, Vector2.zero);
             DOTween.Sequence()
                 .Append(label.DOScale(1f, 0.25f).SetEase(Ease.OutBack))
-                .Join(label.DOPosition(start + Vector2.down * 60f, 1.1f).SetEase(Ease.OutCubic))
+                .Join(label.DOTranslate(Vector2.down * 60f, 1.1f).SetEase(Ease.OutCubic))
                 .Insert(0.7f, label.DOFade(0f, 0.4f))
                 .OnComplete(label.RemoveFromHierarchy);
         }
@@ -97,6 +103,7 @@ namespace Game.Services.UI
                 {
                     var p = CreateElement(ParticleClass);
                     p.pickingMode = PickingMode.Ignore;
+                    p.usageHints = UsageHints.DynamicTransform;
                     return p;
                 },
                 p => Root.Add(p),

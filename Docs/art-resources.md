@@ -53,6 +53,12 @@ Sprite atlases (Sprite Atlas V2, `Content/Visual/Atlases/`): `UI` packs the shar
 folders joins its atlas automatically. Item sprites are not atlased: they load per level from their own Addressables
 groups, and an items atlas would pull every item into one bundle.
 
+Compression and batching (EVG-15): both atlases use ASTC 6×6 on Android; their source textures stay uncompressed,
+since the atlas packs from the sources and compressing them would compress twice. Item textures stay uncompressed
+too, so the panel's dynamic atlas (`GamePanelSettings`, max sub-texture 256 px, enough for the 160×256 items) can
+pack them and items on one screen batch together; the dynamic atlas skips compressed textures. A USS
+`url("…png")` to a single-sprite texture already resolves to its Sprite, so USS images are drawn from the atlases.
+
 Item bundles: `Tools/Addressables/Rebuild Level Item Groups` plays the default curve as a fresh profile and puts each
 item sprite into `Items-Level-NN`, NN being the first level that uses it; items no level uses go to `Items-Rest`. It
 also rewrites the catalog's sprite references. Run it after changing the default curve, the catalog or the generator,
