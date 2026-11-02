@@ -23,6 +23,15 @@ namespace Game.Services.UI
         public void Toast(string message, bool isWarning = false) => _root.Toast.Show(message, isWarning);
 
         /// <inheritdoc/>
+        public void ToastAbove(string message, VisualElement anchor)
+        {
+            if (anchor != null)
+            {
+                _root.Toast.ShowAbove(message, anchor);
+            }
+        }
+
+        /// <inheritdoc/>
         public void Coach(string message, VisualElement anchor, bool isAbove, float seconds)
         {
             if (anchor != null)

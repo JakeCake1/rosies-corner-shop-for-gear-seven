@@ -145,7 +145,7 @@ namespace Game.Features.Home
                     _album.OpenAsync(shown).Forget();
                     break;
                 case HomeCommand.AlbumLocked:
-                    _overlay.Toast(_texts.Format(HomeTexts.AlbumLocked, _balance.AlbumFromLevel));
+                    _overlay.ToastAbove(_texts.Format(HomeTexts.AlbumLocked, _balance.AlbumFromLevel), _window?.AlbumButton);
                     break;
                 case HomeCommand.Settings:
                     _settings.OpenAsync(null, shown).Forget();
