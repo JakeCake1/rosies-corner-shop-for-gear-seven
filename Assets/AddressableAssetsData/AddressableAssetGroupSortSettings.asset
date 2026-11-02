@@ -13,6 +13,30 @@ MonoBehaviour:
   m_Name: AddressableAssetGroupSortSettings
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.GroupSchemas.AddressableAssetGroupSortSettings
   sortOrder:
+  - 4b4436b11dd5cfe4d93eaf9a8612113d
+  - a49c8d5982458a24d85bdf53b5a59da4
+  - d92133acf53b17b4192d17116c994062
+  - 8e4970a1b9f14e94f82266344db3d62d
+  - cb3a236df2f600c4aa99aeb31f75a4ae
+  - 4261a03148e687442946a2fe2166bda5
+  - 26856555e9920054a911f2aeef450232
+  - b1577b1fbf7d7004099ca3b8d5327130
+  - 2efb747c04a95724f922f91a4ce34449
+  - aedd003477e70bd48b50b1405792ccb3
+  - 193f0f872a03bc44fa3b11ed6c52810f
+  - 59090d023e387da42b878a52df2acc7f
+  - ac0f4d70e7df9ad4f925ab63f73c77da
+  - d8fa6fb502698644993572c5b66cce94
+  - dd37ad100404c424db41e5d61fbf971d
+  - b5d37025a9c1d134d9d0d2de4accbeaa
+  - ea1bda0f85f29654487bd5932534ddf5
+  - 4d0c07f7d4eddf545a5986e193165fe8
+  - 6def7de87ee0a84458b26f4f9e05afed
+  - e4b2263ee63adbf4794cec95225677c3
+  - 7954fc3469a71884697101dfeb9a14ca
+  - 3e4cb164431a48140a1ca70b5c525a7a
+  - 1ac690a9ed0bd464882b12522ade7bad
+  - 500345073364e82449f2392ad87675f8
   - 6cc84076308b2dc478e9246bbf1e0aa8
   - ee5aa8fd24f36b54eb0e4ae25d295d2a
   - 88c2779b3cd71bf4db33e9011f0cc04f
