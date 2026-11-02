@@ -102,6 +102,8 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Apply a rule only when it
 - **WHEN** using remote content → **DO** check `CheckForCatalogUpdates` / `UpdateCatalogs`, get size with `GetDownloadSizeAsync`, then `DownloadDependenciesAsync` with progress UI before loading; release the download handle afterward.
 - **WHEN** loading scenes → **DO** `Addressables.LoadSceneAsync(key, LoadSceneMode.Single/Additive)` and unload additive scenes with `Addressables.UnloadSceneAsync(handle)`.
 - **WHEN** organizing groups → **DO** group by load lifetime (always-loaded, per-level, per-feature, remote), not by asset type. Run the Analyze tool to find duplicated dependencies across bundles.
+- **WHEN** a level introduces content that earlier levels don't use (new item sprites) → **DO** put that new content into its own per-level group (`Items-Level-NN`), so a player downloads and loads only what the levels they reached need. Content that no level uses goes into one shared group (`Items-Rest`). Configs reference such content by `AssetReference`, never by direct object references, or the content is pulled into the config's bundle.
+- **WHEN** levels or the default level curve change → **DO** recompute the per-level groups with the Addressables menu tool (`Tools/Addressables/Rebuild Level Item Groups`) and commit the updated group assets.
 - **WHEN** an asset is in an Addressables group → **DO NOT** also reference it directly from a scene or non-addressable asset; it gets duplicated into the build.
 - **WHEN** debugging leaks → **DO** use the Addressables Profiler module / Event Viewer to check that reference counts return to zero.
 
