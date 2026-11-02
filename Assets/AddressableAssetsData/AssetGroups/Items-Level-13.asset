@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-13
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-13
+  m_GUID: ac0f4d70e7df9ad4f925ab63f73c77da
+  m_SerializeEntries:
+  - m_GUID: 466d812655e5f5c4b8eef6af0224428b
+    m_Address: item/043_grape-soda
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55b0ab3de43e9d34ba4f548a5b4ec7b1
+    m_Address: item/122_green-apple
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 59a0c9465346d834cae9688792859ae5
+    m_Address: item/008_strawberry-yogurt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c820fd8511fe87478abe72a13b89574
+    m_Address: item/109_blue-lollipop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 809b2272dda3e4340945397aa647c859
+    m_Address: item/083_orange-chips
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc69fbc02da0a064cb3913947752b819
+    m_Address: item/025_chocolate-donut
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6f5cba64ef123b44baa5b219f3e0e4a4, type: 2}
+    - {fileID: 11400000, guid: 0ea5c27e7b033a84e84463e415b9eaa1, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-13_BundledAssetGroupSchema
+    - Items-Level-13_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

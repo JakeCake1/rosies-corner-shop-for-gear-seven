@@ -1,5 +1,5 @@
-using System.Threading;
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Balance;
 using Game.Services.Content;
@@ -86,6 +86,8 @@ namespace Game.Features.Home
             var shown = _shown.Token;
             _overlay.SetBackground(false, true);
             _subscriptions.Clear();
+            // The showcase may show any item, so home loads every item sprite (cached after the first time).
+            await _content.LoadAllItemSpritesAsync(shown);
             var vm = new HomeViewModel(_progress, _curves, _content, _texts, _balance);
             vm.Commands.Subscribe(command => OnCommand(command, shown)).AddTo(_subscriptions);
             _window = await _ui.OpenAsync<HomeWindow, HomeViewModel>(vm, shown);

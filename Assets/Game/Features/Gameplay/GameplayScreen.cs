@@ -1,5 +1,5 @@
-using System.Threading;
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Board;
 using Game.Features.Gameplay.Hud;
@@ -7,10 +7,10 @@ using Game.Services.Audio;
 using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Localization;
-using Game.Services.UI.Elements;
 using Game.Services.UI;
-using UnityEngine.UIElements;
+using Game.Services.UI.Elements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay
 {

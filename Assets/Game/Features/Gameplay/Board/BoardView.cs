@@ -6,11 +6,11 @@ using Game.Services.Audio;
 using Game.Services.Balance;
 using Game.Services.Content;
 using Game.Services.Localization;
-using Game.Services.UI.Elements;
 using Game.Services.UI;
+using Game.Services.UI.Elements;
 using UniRx;
-using UnityEngine.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay.Board
 {
@@ -79,7 +79,7 @@ namespace Game.Features.Gameplay.Board
             _overlay = overlay;
             _audio = audio;
             _texts = texts;
-            _sprites = new BoardSprites(content.Catalog, art);
+            _sprites = new BoardSprites(content, art);
             _progressTarget = progressTarget;
         }
 

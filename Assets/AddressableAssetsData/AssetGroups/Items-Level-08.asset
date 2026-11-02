@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-08
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-08
+  m_GUID: b1577b1fbf7d7004099ca3b8d5327130
+  m_SerializeEntries:
+  - m_GUID: 0d5138a80e845d74ab00f0f631487a1e
+    m_Address: item/110_chocolate-bar
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 52a6e615c99a9b74f8ae6624940c0222
+    m_Address: item/079_purple-chips
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c47fc98c49197c469e1516bdd1fafc0
+    m_Address: item/026_vanilla-donut
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fcd49942c9f74f42b3791ae6a47204a
+    m_Address: item/051_apple-juice
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96c6e5b0f28d0b5419d122daa8caf72a
+    m_Address: item/010_peach-yogurt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b2e045f85cdec2642b4c7afc50e4fd13
+    m_Address: item/157_rose-candle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e05bcbd8d2e7c1249bb9ccfb6fa4c03c
+    m_Address: item/146_beet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6e1fc21531610d541b0e6a2963791c71, type: 2}
+    - {fileID: 11400000, guid: 384b49b74b6a59a4a8216e28fc456216, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-08_BundledAssetGroupSchema
+    - Items-Level-08_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

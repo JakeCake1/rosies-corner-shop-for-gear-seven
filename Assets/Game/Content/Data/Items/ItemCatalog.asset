@@ -13,1134 +13,2106 @@ MonoBehaviour:
   m_Name: ItemCatalog
   m_EditorClassIdentifier: Game.Services::Game.Services.Content.ItemCatalog
   _items:
-  - _sprite: {fileID: 21300000, guid: fe63423a39fc11d42995f9576613e403, type: 3}
+  - _sprite:
+      m_AssetGUID: fe63423a39fc11d42995f9576613e403
+      m_SubObjectName: 000_milk
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 0
     _name: Milk
     _family: dairy
     _shape: carton
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 93239c164d9ca2d459a083ef8ed4faa4, type: 3}
+  - _sprite:
+      m_AssetGUID: 93239c164d9ca2d459a083ef8ed4faa4
+      m_SubObjectName: 001_chocolate-milk
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 1
     _name: Chocolate Milk
     _family: dairy
     _shape: carton
     _silhouette: box
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: b1d730fd6b0edbd42b28b07ae20f1628, type: 3}
+  - _sprite:
+      m_AssetGUID: b1d730fd6b0edbd42b28b07ae20f1628
+      m_SubObjectName: 002_strawberry-milk
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 2
     _name: Strawberry Milk
     _family: dairy
     _shape: carton
     _silhouette: box
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: a688e1c7268fa8247b3f2438c701f626, type: 3}
+  - _sprite:
+      m_AssetGUID: a688e1c7268fa8247b3f2438c701f626
+      m_SubObjectName: 003_orange-juice
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 3
     _name: Orange Juice
     _family: dairy
     _shape: carton
     _silhouette: box
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: b836994981741ee48a9849d43d8c9950, type: 3}
+  - _sprite:
+      m_AssetGUID: b836994981741ee48a9849d43d8c9950
+      m_SubObjectName: 004_eggs
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 4
     _name: Eggs
     _family: dairy
     _shape: eggs
     _silhouette: round
     _colorBucket: white
-  - _sprite: {fileID: 21300000, guid: 0a7ef583a00c55046b706bd7b798e0dc, type: 3}
+  - _sprite:
+      m_AssetGUID: 0a7ef583a00c55046b706bd7b798e0dc
+      m_SubObjectName: 005_brown-eggs
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 5
     _name: Brown Eggs
     _family: dairy
     _shape: eggs
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 3ebb54f8284e6f143ac967cd8f869be9, type: 3}
+  - _sprite:
+      m_AssetGUID: 3ebb54f8284e6f143ac967cd8f869be9
+      m_SubObjectName: 006_cheese
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 6
     _name: Cheese
     _family: dairy
     _shape: cheese
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: fd3cb363581207c4480f11e38c6fd077, type: 3}
+  - _sprite:
+      m_AssetGUID: fd3cb363581207c4480f11e38c6fd077
+      m_SubObjectName: 007_orange-cheddar
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 7
     _name: Orange Cheddar
     _family: dairy
     _shape: cheese
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 59a0c9465346d834cae9688792859ae5, type: 3}
+  - _sprite:
+      m_AssetGUID: 59a0c9465346d834cae9688792859ae5
+      m_SubObjectName: 008_strawberry-yogurt
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 8
     _name: Strawberry Yogurt
     _family: dairy
     _shape: yogurt
     _silhouette: can
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: f4f1cd3c0bba35a4cad447fd674c7d7c, type: 3}
+  - _sprite:
+      m_AssetGUID: f4f1cd3c0bba35a4cad447fd674c7d7c
+      m_SubObjectName: 009_blueberry-yogurt
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 9
     _name: Blueberry Yogurt
     _family: dairy
     _shape: yogurt
     _silhouette: can
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 96c6e5b0f28d0b5419d122daa8caf72a, type: 3}
+  - _sprite:
+      m_AssetGUID: 96c6e5b0f28d0b5419d122daa8caf72a
+      m_SubObjectName: 010_peach-yogurt
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 10
     _name: Peach Yogurt
     _family: dairy
     _shape: yogurt
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 0c8ee777899b8d648ac6c2849868d267, type: 3}
+  - _sprite:
+      m_AssetGUID: 0c8ee777899b8d648ac6c2849868d267
+      m_SubObjectName: 011_lemon-yogurt
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 11
     _name: Lemon Yogurt
     _family: dairy
     _shape: yogurt
     _silhouette: can
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: f216e660f6f4b2243a2bf8b8326a59d7, type: 3}
+  - _sprite:
+      m_AssetGUID: f216e660f6f4b2243a2bf8b8326a59d7
+      m_SubObjectName: 012_butter
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 12
     _name: Butter
     _family: dairy
     _shape: butter
     _silhouette: can
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 21847e133270aad4d8e0be4ad8cb031f, type: 3}
+  - _sprite:
+      m_AssetGUID: 21847e133270aad4d8e0be4ad8cb031f
+      m_SubObjectName: 013_salted-butter
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 13
     _name: Salted Butter
     _family: dairy
     _shape: butter
     _silhouette: can
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: ea756ddd2746c7b418529ba2548b2e60, type: 3}
+  - _sprite:
+      m_AssetGUID: ea756ddd2746c7b418529ba2548b2e60
+      m_SubObjectName: 014_glass-milk
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 14
     _name: Glass Milk
     _family: dairy
     _shape: glassmilk
     _silhouette: bottle
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: dfa64f706c837dd43a1d7f0f9f657197, type: 3}
+  - _sprite:
+      m_AssetGUID: dfa64f706c837dd43a1d7f0f9f657197
+      m_SubObjectName: 015_farm-cream
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 15
     _name: Farm Cream
     _family: dairy
     _shape: glassmilk
     _silhouette: bottle
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 98222e67aa3419941b02501792b521d7, type: 3}
+  - _sprite:
+      m_AssetGUID: 98222e67aa3419941b02501792b521d7
+      m_SubObjectName: 016_bread
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 16
     _name: Bread
     _family: bakery
     _shape: loaf
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 445a6c560b16dfc45b2cbad01bacc861, type: 3}
+  - _sprite:
+      m_AssetGUID: 445a6c560b16dfc45b2cbad01bacc861
+      m_SubObjectName: 017_rye-bread
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 17
     _name: Rye Bread
     _family: bakery
     _shape: loaf
     _silhouette: round
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 07746966a07adb54a9f9a6525b115664, type: 3}
+  - _sprite:
+      m_AssetGUID: 07746966a07adb54a9f9a6525b115664
+      m_SubObjectName: 018_baguette
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 18
     _name: Baguette
     _family: bakery
     _shape: baguette
     _silhouette: stick
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 8aa961c5cf6fe134dbd2ee5af42c8745, type: 3}
+  - _sprite:
+      m_AssetGUID: 8aa961c5cf6fe134dbd2ee5af42c8745
+      m_SubObjectName: 019_croissant
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 19
     _name: Croissant
     _family: bakery
     _shape: croissant
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: a0299dde48fb0344c9e1302910717e6a, type: 3}
+  - _sprite:
+      m_AssetGUID: a0299dde48fb0344c9e1302910717e6a
+      m_SubObjectName: 020_pink-cupcake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 20
     _name: Pink Cupcake
     _family: bakery
     _shape: cupcake
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 3f4bedfdae78be742ac9b74bd3f66be9, type: 3}
+  - _sprite:
+      m_AssetGUID: 3f4bedfdae78be742ac9b74bd3f66be9
+      m_SubObjectName: 021_chocolate-cupcake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 21
     _name: Chocolate Cupcake
     _family: bakery
     _shape: cupcake
     _silhouette: round
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 1dd796ab2f6b5044698621f7614468ca, type: 3}
+  - _sprite:
+      m_AssetGUID: 1dd796ab2f6b5044698621f7614468ca
+      m_SubObjectName: 022_mint-cupcake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 22
     _name: Mint Cupcake
     _family: bakery
     _shape: cupcake
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 54dabb288b8ace7479ccb5a72865f8e2, type: 3}
+  - _sprite:
+      m_AssetGUID: 54dabb288b8ace7479ccb5a72865f8e2
+      m_SubObjectName: 023_lemon-cupcake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 23
     _name: Lemon Cupcake
     _family: bakery
     _shape: cupcake
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 6d29892450fc8f148b6971d33b3b5965, type: 3}
+  - _sprite:
+      m_AssetGUID: 6d29892450fc8f148b6971d33b3b5965
+      m_SubObjectName: 024_pink-donut
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 24
     _name: Pink Donut
     _family: bakery
     _shape: donut
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: bc69fbc02da0a064cb3913947752b819, type: 3}
+  - _sprite:
+      m_AssetGUID: bc69fbc02da0a064cb3913947752b819
+      m_SubObjectName: 025_chocolate-donut
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 25
     _name: Chocolate Donut
     _family: bakery
     _shape: donut
     _silhouette: round
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 8c47fc98c49197c469e1516bdd1fafc0, type: 3}
+  - _sprite:
+      m_AssetGUID: 8c47fc98c49197c469e1516bdd1fafc0
+      m_SubObjectName: 026_vanilla-donut
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 26
     _name: Vanilla Donut
     _family: bakery
     _shape: donut
     _silhouette: round
     _colorBucket: white
-  - _sprite: {fileID: 21300000, guid: f8347b7405a3ee64d858eeb5ba4b63bf, type: 3}
+  - _sprite:
+      m_AssetGUID: f8347b7405a3ee64d858eeb5ba4b63bf
+      m_SubObjectName: 027_blue-donut
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 27
     _name: Blue Donut
     _family: bakery
     _shape: donut
     _silhouette: round
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 303da8095330f58469e8c0a3718c60d4, type: 3}
+  - _sprite:
+      m_AssetGUID: 303da8095330f58469e8c0a3718c60d4
+      m_SubObjectName: 028_pretzel
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 28
     _name: Pretzel
     _family: bakery
     _shape: pretzel
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: f5c9287428feb2a448314dba9fa555d5, type: 3}
+  - _sprite:
+      m_AssetGUID: f5c9287428feb2a448314dba9fa555d5
+      m_SubObjectName: 029_cherry-pie
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 29
     _name: Cherry Pie
     _family: bakery
     _shape: pie
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: caf01608c3328f944ad8fbf80500ede4, type: 3}
+  - _sprite:
+      m_AssetGUID: caf01608c3328f944ad8fbf80500ede4
+      m_SubObjectName: 030_blueberry-pie
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 30
     _name: Blueberry Pie
     _family: bakery
     _shape: pie
     _silhouette: round
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 6f99bd11311f9264ca3cc02d2e49ae09, type: 3}
+  - _sprite:
+      m_AssetGUID: 6f99bd11311f9264ca3cc02d2e49ae09
+      m_SubObjectName: 031_apple-pie
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 31
     _name: Apple Pie
     _family: bakery
     _shape: pie
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 70fab79a37248c248b05757e2eef65bd, type: 3}
+  - _sprite:
+      m_AssetGUID: 70fab79a37248c248b05757e2eef65bd
+      m_SubObjectName: 032_chocolate-chip-cookie
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 32
     _name: Chocolate Chip Cookie
     _family: bakery
     _shape: cookie
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: f46ea9f0f562c464d9d199d890778dca, type: 3}
+  - _sprite:
+      m_AssetGUID: f46ea9f0f562c464d9d199d890778dca
+      m_SubObjectName: 033_pink-iced-cookie
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 33
     _name: Pink Iced Cookie
     _family: bakery
     _shape: cookie
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 3b2abe6762cdaf84388c0115be438c32, type: 3}
+  - _sprite:
+      m_AssetGUID: 3b2abe6762cdaf84388c0115be438c32
+      m_SubObjectName: 034_blueberry-muffin
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 34
     _name: Blueberry Muffin
     _family: bakery
     _shape: muffin
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 838e3aa9e9e36b443a105d3e972424ef, type: 3}
+  - _sprite:
+      m_AssetGUID: 838e3aa9e9e36b443a105d3e972424ef
+      m_SubObjectName: 035_chocolate-muffin
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 35
     _name: Chocolate Muffin
     _family: bakery
     _shape: muffin
     _silhouette: round
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: d71281cf5f326974cab8869ffed909a7, type: 3}
+  - _sprite:
+      m_AssetGUID: d71281cf5f326974cab8869ffed909a7
+      m_SubObjectName: 036_strawberry-cake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 36
     _name: Strawberry Cake
     _family: bakery
     _shape: cake
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: b7b80335fab8e804d8230875dc0370e9, type: 3}
+  - _sprite:
+      m_AssetGUID: b7b80335fab8e804d8230875dc0370e9
+      m_SubObjectName: 037_chocolate-cake
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 37
     _name: Chocolate Cake
     _family: bakery
     _shape: cake
     _silhouette: round
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 254c63429df2a434d9f120918d093204, type: 3}
+  - _sprite:
+      m_AssetGUID: 254c63429df2a434d9f120918d093204
+      m_SubObjectName: 038_cola
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 38
     _name: Cola
     _family: drink
     _shape: glassbottle
     _silhouette: bottle
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: ed23bd096a830df42bd30066fe95472c, type: 3}
+  - _sprite:
+      m_AssetGUID: ed23bd096a830df42bd30066fe95472c
+      m_SubObjectName: 039_root-beer
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 39
     _name: Root Beer
     _family: drink
     _shape: glassbottle
     _silhouette: bottle
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: e1c3058748ffc7f4c916a6cadaf831af, type: 3}
+  - _sprite:
+      m_AssetGUID: e1c3058748ffc7f4c916a6cadaf831af
+      m_SubObjectName: 040_ginger-ale
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 40
     _name: Ginger Ale
     _family: drink
     _shape: glassbottle
     _silhouette: bottle
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 3cf13f42b4fc66044878de8272e874bc, type: 3}
+  - _sprite:
+      m_AssetGUID: 3cf13f42b4fc66044878de8272e874bc
+      m_SubObjectName: 041_orange-soda
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 41
     _name: Orange Soda
     _family: drink
     _shape: can
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 7900ae2f9b108c840a38e42cb607da60, type: 3}
+  - _sprite:
+      m_AssetGUID: 7900ae2f9b108c840a38e42cb607da60
+      m_SubObjectName: 042_lime-soda
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 42
     _name: Lime Soda
     _family: drink
     _shape: can
     _silhouette: can
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 466d812655e5f5c4b8eef6af0224428b, type: 3}
+  - _sprite:
+      m_AssetGUID: 466d812655e5f5c4b8eef6af0224428b
+      m_SubObjectName: 043_grape-soda
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 43
     _name: Grape Soda
     _family: drink
     _shape: can
     _silhouette: can
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: a272d4a9211a15945a66e3856fe39e91, type: 3}
+  - _sprite:
+      m_AssetGUID: a272d4a9211a15945a66e3856fe39e91
+      m_SubObjectName: 044_cherry-soda
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 44
     _name: Cherry Soda
     _family: drink
     _shape: can
     _silhouette: can
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 1277c78e9038f114c83338c4c4ff94c6, type: 3}
+  - _sprite:
+      m_AssetGUID: 1277c78e9038f114c83338c4c4ff94c6
+      m_SubObjectName: 045_berry-soda
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 45
     _name: Berry Soda
     _family: drink
     _shape: can
     _silhouette: can
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 787390a2109094d48addff4da0eccd6d, type: 3}
+  - _sprite:
+      m_AssetGUID: 787390a2109094d48addff4da0eccd6d
+      m_SubObjectName: 046_water
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 46
     _name: Water
     _family: drink
     _shape: water
     _silhouette: bottle
     _colorBucket: teal
-  - _sprite: {fileID: 21300000, guid: e4db4f2c835b82145988fe3eec7644df, type: 3}
+  - _sprite:
+      m_AssetGUID: e4db4f2c835b82145988fe3eec7644df
+      m_SubObjectName: 047_sparkling-water
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 47
     _name: Sparkling Water
     _family: drink
     _shape: water
     _silhouette: bottle
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: b5409d95715f588418f925346fdb1bbb, type: 3}
+  - _sprite:
+      m_AssetGUID: b5409d95715f588418f925346fdb1bbb
+      m_SubObjectName: 048_lemonade
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 48
     _name: Lemonade
     _family: drink
     _shape: roundbottle
     _silhouette: bottle
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 609505ffad929914889ccd29ecc60beb, type: 3}
+  - _sprite:
+      m_AssetGUID: 609505ffad929914889ccd29ecc60beb
+      m_SubObjectName: 049_pink-lemonade
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 49
     _name: Pink Lemonade
     _family: drink
     _shape: roundbottle
     _silhouette: bottle
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 9d226fd9d223ec64ea59f03308a4a352, type: 3}
+  - _sprite:
+      m_AssetGUID: 9d226fd9d223ec64ea59f03308a4a352
+      m_SubObjectName: 050_iced-tea
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 50
     _name: Iced Tea
     _family: drink
     _shape: roundbottle
     _silhouette: bottle
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 8fcd49942c9f74f42b3791ae6a47204a, type: 3}
+  - _sprite:
+      m_AssetGUID: 8fcd49942c9f74f42b3791ae6a47204a
+      m_SubObjectName: 051_apple-juice
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 51
     _name: Apple Juice
     _family: drink
     _shape: juicebox
     _silhouette: box
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 56d6a97059769dc4ab1370ed8c7b92e6, type: 3}
+  - _sprite:
+      m_AssetGUID: 56d6a97059769dc4ab1370ed8c7b92e6
+      m_SubObjectName: 052_orange-drink
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 52
     _name: Orange Drink
     _family: drink
     _shape: juicebox
     _silhouette: box
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 7b12a84e360d4934294205c5af6b01bd, type: 3}
+  - _sprite:
+      m_AssetGUID: 7b12a84e360d4934294205c5af6b01bd
+      m_SubObjectName: 053_grape-juice
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 53
     _name: Grape Juice
     _family: drink
     _shape: juicebox
     _silhouette: box
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: f65968f17fcdce94ba0d61ae2c044fc2, type: 3}
+  - _sprite:
+      m_AssetGUID: f65968f17fcdce94ba0d61ae2c044fc2
+      m_SubObjectName: 054_berry-juice
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 54
     _name: Berry Juice
     _family: drink
     _shape: juicebox
     _silhouette: box
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: b12e5c89654a21643b785f6689d97780, type: 3}
+  - _sprite:
+      m_AssetGUID: b12e5c89654a21643b785f6689d97780
+      m_SubObjectName: 055_coffee
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 55
     _name: Coffee
     _family: drink
     _shape: coffee
     _silhouette: bottle
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 9569b01e133b82544a49bb5ce45162f6, type: 3}
+  - _sprite:
+      m_AssetGUID: 9569b01e133b82544a49bb5ce45162f6
+      m_SubObjectName: 056_hot-cocoa
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 56
     _name: Hot Cocoa
     _family: drink
     _shape: coffee
     _silhouette: bottle
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 27b4eabe9dbee6047b979bcc3afb49f0, type: 3}
+  - _sprite:
+      m_AssetGUID: 27b4eabe9dbee6047b979bcc3afb49f0
+      m_SubObjectName: 057_black-tea
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 57
     _name: Black Tea
     _family: drink
     _shape: teabox
     _silhouette: box
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: afd8879a2a58fb94ab23965f0728b3a7, type: 3}
+  - _sprite:
+      m_AssetGUID: afd8879a2a58fb94ab23965f0728b3a7
+      m_SubObjectName: 058_green-tea
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 58
     _name: Green Tea
     _family: drink
     _shape: teabox
     _silhouette: box
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 8099d8d68f47b4f48a37604b15674a50, type: 3}
+  - _sprite:
+      m_AssetGUID: 8099d8d68f47b4f48a37604b15674a50
+      m_SubObjectName: 059_chamomile-tea
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 59
     _name: Chamomile Tea
     _family: drink
     _shape: teabox
     _silhouette: box
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: b7f6105f2dd210847b85d89ae8c443e6, type: 3}
+  - _sprite:
+      m_AssetGUID: b7f6105f2dd210847b85d89ae8c443e6
+      m_SubObjectName: 060_sparkling-cider
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 60
     _name: Sparkling Cider
     _family: drink
     _shape: cider
     _silhouette: bottle
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 349378c113b302f4cb0c128d5f6cfdcb, type: 3}
+  - _sprite:
+      m_AssetGUID: 349378c113b302f4cb0c128d5f6cfdcb
+      m_SubObjectName: 061_grape-cider
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 61
     _name: Grape Cider
     _family: drink
     _shape: cider
     _silhouette: bottle
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 81d58b0c47bdc6b4e99913a0e2f0a03e, type: 3}
+  - _sprite:
+      m_AssetGUID: 81d58b0c47bdc6b4e99913a0e2f0a03e
+      m_SubObjectName: 062_tomato-soup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 62
     _name: Tomato Soup
     _family: pantry
     _shape: soup
     _silhouette: can
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: e4fd3eee26daf7b4a9f6edc3d87c0606, type: 3}
+  - _sprite:
+      m_AssetGUID: e4fd3eee26daf7b4a9f6edc3d87c0606
+      m_SubObjectName: 063_pea-soup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 63
     _name: Pea Soup
     _family: pantry
     _shape: soup
     _silhouette: can
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 37e5e4b17d822bd4db3185cd3c7ee192, type: 3}
+  - _sprite:
+      m_AssetGUID: 37e5e4b17d822bd4db3185cd3c7ee192
+      m_SubObjectName: 064_mushroom-soup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 64
     _name: Mushroom Soup
     _family: pantry
     _shape: soup
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 20a28cfef351c3a44a031bd446e1ee86, type: 3}
+  - _sprite:
+      m_AssetGUID: 20a28cfef351c3a44a031bd446e1ee86
+      m_SubObjectName: 065_corn-soup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 65
     _name: Corn Soup
     _family: pantry
     _shape: soup
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: fa4d0b7a55595334fa87747591d3f6e8, type: 3}
+  - _sprite:
+      m_AssetGUID: fa4d0b7a55595334fa87747591d3f6e8
+      m_SubObjectName: 066_honey
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 66
     _name: Honey
     _family: pantry
     _shape: honey
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 03f5488597fffce43b910c616fc6fa56, type: 3}
+  - _sprite:
+      m_AssetGUID: 03f5488597fffce43b910c616fc6fa56
+      m_SubObjectName: 067_blueberry-jam
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 67
     _name: Blueberry Jam
     _family: pantry
     _shape: jam
     _silhouette: can
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: d75cd33315311e04c9c919d2266cb5fc, type: 3}
+  - _sprite:
+      m_AssetGUID: d75cd33315311e04c9c919d2266cb5fc
+      m_SubObjectName: 068_strawberry-jam
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 68
     _name: Strawberry Jam
     _family: pantry
     _shape: jam
     _silhouette: can
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 98349ed54acd1df4c89d752bf58c43af, type: 3}
+  - _sprite:
+      m_AssetGUID: 98349ed54acd1df4c89d752bf58c43af
+      m_SubObjectName: 069_apricot-jam
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 69
     _name: Apricot Jam
     _family: pantry
     _shape: jam
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: bf154e917f631664385d0ae126afd862, type: 3}
+  - _sprite:
+      m_AssetGUID: bf154e917f631664385d0ae126afd862
+      m_SubObjectName: 070_plum-jam
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 70
     _name: Plum Jam
     _family: pantry
     _shape: jam
     _silhouette: can
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: e5c6a171c027086498bd15e59464bc7e, type: 3}
+  - _sprite:
+      m_AssetGUID: e5c6a171c027086498bd15e59464bc7e
+      m_SubObjectName: 071_olive-oil
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 71
     _name: Olive Oil
     _family: pantry
     _shape: oil
     _silhouette: bottle
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: ef3e9e78d4126664abb6b59de5276e56, type: 3}
+  - _sprite:
+      m_AssetGUID: ef3e9e78d4126664abb6b59de5276e56
+      m_SubObjectName: 072_red-vinegar
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 72
     _name: Red Vinegar
     _family: pantry
     _shape: oil
     _silhouette: bottle
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: df9f6b332cb2e8e41976bfd65a3b03b8, type: 3}
+  - _sprite:
+      m_AssetGUID: df9f6b332cb2e8e41976bfd65a3b03b8
+      m_SubObjectName: 073_pickles
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 73
     _name: Pickles
     _family: pantry
     _shape: pickles
     _silhouette: can
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 7bb8d2005d5b3d543b1739291f596d77, type: 3}
+  - _sprite:
+      m_AssetGUID: 7bb8d2005d5b3d543b1739291f596d77
+      m_SubObjectName: 074_pickled-beets
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 74
     _name: Pickled Beets
     _family: pantry
     _shape: pickles
     _silhouette: can
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 353853991f368d341afb68a4a8ee1250, type: 3}
+  - _sprite:
+      m_AssetGUID: 353853991f368d341afb68a4a8ee1250
+      m_SubObjectName: 075_roasted-peppers
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 75
     _name: Roasted Peppers
     _family: pantry
     _shape: pickles
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 845eb35239b07494c83ce9f6e1c4f610, type: 3}
+  - _sprite:
+      m_AssetGUID: 845eb35239b07494c83ce9f6e1c4f610
+      m_SubObjectName: 076_blue-cereal
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 76
     _name: Blue Cereal
     _family: pantry
     _shape: cereal
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: d558b6364fe151043aea052fc7153720, type: 3}
+  - _sprite:
+      m_AssetGUID: d558b6364fe151043aea052fc7153720
+      m_SubObjectName: 077_red-cereal
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 77
     _name: Red Cereal
     _family: pantry
     _shape: cereal
     _silhouette: box
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 83c508ea3ed9aa148bcd9ad87d932c47, type: 3}
+  - _sprite:
+      m_AssetGUID: 83c508ea3ed9aa148bcd9ad87d932c47
+      m_SubObjectName: 078_green-cereal
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 78
     _name: Green Cereal
     _family: pantry
     _shape: cereal
     _silhouette: box
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 52a6e615c99a9b74f8ae6624940c0222, type: 3}
+  - _sprite:
+      m_AssetGUID: 52a6e615c99a9b74f8ae6624940c0222
+      m_SubObjectName: 079_purple-chips
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 79
     _name: Purple Chips
     _family: pantry
     _shape: chips
     _silhouette: box
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: 8ef5db83bb22afd49aa5df5e41e47abd, type: 3}
+  - _sprite:
+      m_AssetGUID: 8ef5db83bb22afd49aa5df5e41e47abd
+      m_SubObjectName: 080_red-chips
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 80
     _name: Red Chips
     _family: pantry
     _shape: chips
     _silhouette: box
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 19c919a95e6eefa45a7ad0bfb02bba3f, type: 3}
+  - _sprite:
+      m_AssetGUID: 19c919a95e6eefa45a7ad0bfb02bba3f
+      m_SubObjectName: 081_green-chips
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 81
     _name: Green Chips
     _family: pantry
     _shape: chips
     _silhouette: box
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 2e8a4027534548240a5d7034aa000c22, type: 3}
+  - _sprite:
+      m_AssetGUID: 2e8a4027534548240a5d7034aa000c22
+      m_SubObjectName: 082_blue-chips
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 82
     _name: Blue Chips
     _family: pantry
     _shape: chips
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 809b2272dda3e4340945397aa647c859, type: 3}
+  - _sprite:
+      m_AssetGUID: 809b2272dda3e4340945397aa647c859
+      m_SubObjectName: 083_orange-chips
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 83
     _name: Orange Chips
     _family: pantry
     _shape: chips
     _silhouette: box
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 9a5e9bd190e1daf40a10e537dc4dc46b, type: 3}
+  - _sprite:
+      m_AssetGUID: 9a5e9bd190e1daf40a10e537dc4dc46b
+      m_SubObjectName: 084_coffee-beans
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 84
     _name: Coffee Beans
     _family: pantry
     _shape: beans
     _silhouette: box
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: ef750bf65265eb4448e4d5d2e0da9ebc, type: 3}
+  - _sprite:
+      m_AssetGUID: ef750bf65265eb4448e4d5d2e0da9ebc
+      m_SubObjectName: 085_espresso-beans
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 85
     _name: Espresso Beans
     _family: pantry
     _shape: beans
     _silhouette: box
     _colorBucket: black
-  - _sprite: {fileID: 21300000, guid: 163136168ed73e042bc2d53e2dd04521, type: 3}
+  - _sprite:
+      m_AssetGUID: 163136168ed73e042bc2d53e2dd04521
+      m_SubObjectName: 086_flour
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 86
     _name: Flour
     _family: pantry
     _shape: flour
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 184f755ad67c25844bec44a520a42001, type: 3}
+  - _sprite:
+      m_AssetGUID: 184f755ad67c25844bec44a520a42001
+      m_SubObjectName: 087_sugar
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 87
     _name: Sugar
     _family: pantry
     _shape: flour
     _silhouette: box
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: e986d0e82c7146e4e953a211465ca5e6, type: 3}
+  - _sprite:
+      m_AssetGUID: e986d0e82c7146e4e953a211465ca5e6
+      m_SubObjectName: 088_salt
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 88
     _name: Salt
     _family: pantry
     _shape: shaker
     _silhouette: bottle
     _colorBucket: white
-  - _sprite: {fileID: 21300000, guid: e8888e327672b1d4dbcd1274c37b8363, type: 3}
+  - _sprite:
+      m_AssetGUID: e8888e327672b1d4dbcd1274c37b8363
+      m_SubObjectName: 089_pepper
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 89
     _name: Pepper
     _family: pantry
     _shape: shaker
     _silhouette: bottle
     _colorBucket: black
-  - _sprite: {fileID: 21300000, guid: 6667e032899054a439108d77ef725295, type: 3}
+  - _sprite:
+      m_AssetGUID: 6667e032899054a439108d77ef725295
+      m_SubObjectName: 090_ketchup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 90
     _name: Ketchup
     _family: pantry
     _shape: squeeze
     _silhouette: bottle
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 01b4e56775064064987ba87a4450449a, type: 3}
+  - _sprite:
+      m_AssetGUID: 01b4e56775064064987ba87a4450449a
+      m_SubObjectName: 091_mustard
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 91
     _name: Mustard
     _family: pantry
     _shape: squeeze
     _silhouette: bottle
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: d3d1701f01a060642825bad9b793c228, type: 3}
+  - _sprite:
+      m_AssetGUID: d3d1701f01a060642825bad9b793c228
+      m_SubObjectName: 092_peanut-butter
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 92
     _name: Peanut Butter
     _family: pantry
     _shape: pbjar
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 1ba36f3b209256c4f98f4da4cbf6c925, type: 3}
+  - _sprite:
+      m_AssetGUID: 1ba36f3b209256c4f98f4da4cbf6c925
+      m_SubObjectName: 093_spaghetti
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 93
     _name: Spaghetti
     _family: pantry
     _shape: pasta
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 3937055690d06e14ca479232b1f2d487, type: 3}
+  - _sprite:
+      m_AssetGUID: 3937055690d06e14ca479232b1f2d487
+      m_SubObjectName: 094_macaroni
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 94
     _name: Macaroni
     _family: pantry
     _shape: pasta
     _silhouette: box
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 10b64dbeaa96fd94aa600c579de6c983, type: 3}
+  - _sprite:
+      m_AssetGUID: 10b64dbeaa96fd94aa600c579de6c983
+      m_SubObjectName: 095_maple-syrup
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 95
     _name: Maple Syrup
     _family: pantry
     _shape: syrup
     _silhouette: bottle
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 3fe4d63d51a03f6499e7b23dbffb5f0e, type: 3}
+  - _sprite:
+      m_AssetGUID: 3fe4d63d51a03f6499e7b23dbffb5f0e
+      m_SubObjectName: 096_tuna
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 96
     _name: Tuna
     _family: pantry
     _shape: tuna
     _silhouette: can
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 9eee1ad63dc66714fa94915e4de05246, type: 3}
+  - _sprite:
+      m_AssetGUID: 9eee1ad63dc66714fa94915e4de05246
+      m_SubObjectName: 097_sardines
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 97
     _name: Sardines
     _family: pantry
     _shape: tuna
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 0426b72e43399e14399a2669873b0300, type: 3}
+  - _sprite:
+      m_AssetGUID: 0426b72e43399e14399a2669873b0300
+      m_SubObjectName: 098_cherry-popsicle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 98
     _name: Cherry Popsicle
     _family: sweet
     _shape: popsicle
     _silhouette: stick
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 4d7503ff6d936774a8693d15264c5254, type: 3}
+  - _sprite:
+      m_AssetGUID: 4d7503ff6d936774a8693d15264c5254
+      m_SubObjectName: 099_orange-popsicle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 99
     _name: Orange Popsicle
     _family: sweet
     _shape: popsicle
     _silhouette: stick
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 24175c2233a2f2146943933b7a31e5c7, type: 3}
+  - _sprite:
+      m_AssetGUID: 24175c2233a2f2146943933b7a31e5c7
+      m_SubObjectName: 100_lime-popsicle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 100
     _name: Lime Popsicle
     _family: sweet
     _shape: popsicle
     _silhouette: stick
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 1256750914f125b45a84fcadbdee3447, type: 3}
+  - _sprite:
+      m_AssetGUID: 1256750914f125b45a84fcadbdee3447
+      m_SubObjectName: 101_grape-popsicle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 101
     _name: Grape Popsicle
     _family: sweet
     _shape: popsicle
     _silhouette: stick
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: 8d36aa59b621f034597262cc83c576d2, type: 3}
+  - _sprite:
+      m_AssetGUID: 8d36aa59b621f034597262cc83c576d2
+      m_SubObjectName: 102_mint-ice-cream
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 102
     _name: Mint Ice Cream
     _family: sweet
     _shape: cone
     _silhouette: stick
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 455e2f453c871494f86eb919c89c7fed, type: 3}
+  - _sprite:
+      m_AssetGUID: 455e2f453c871494f86eb919c89c7fed
+      m_SubObjectName: 103_strawberry-ice-cream
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 103
     _name: Strawberry Ice Cream
     _family: sweet
     _shape: cone
     _silhouette: stick
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 06ed4fdd87cc01642b7d0a13a4c13e81, type: 3}
+  - _sprite:
+      m_AssetGUID: 06ed4fdd87cc01642b7d0a13a4c13e81
+      m_SubObjectName: 104_chocolate-ice-cream
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 104
     _name: Chocolate Ice Cream
     _family: sweet
     _shape: cone
     _silhouette: stick
     _colorBucket: brown
-  - _sprite: {fileID: 21300000, guid: 1cd45f44061ea2548a552d041a898150, type: 3}
+  - _sprite:
+      m_AssetGUID: 1cd45f44061ea2548a552d041a898150
+      m_SubObjectName: 105_vanilla-ice-cream
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 105
     _name: Vanilla Ice Cream
     _family: sweet
     _shape: cone
     _silhouette: stick
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: c52131f1e25f6c04fbda49f6e8841bde, type: 3}
+  - _sprite:
+      m_AssetGUID: c52131f1e25f6c04fbda49f6e8841bde
+      m_SubObjectName: 106_pink-lollipop
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 106
     _name: Pink Lollipop
     _family: sweet
     _shape: lolli
     _silhouette: stick
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 1d822f0e4e436c446a5d0c6887829ec1, type: 3}
+  - _sprite:
+      m_AssetGUID: 1d822f0e4e436c446a5d0c6887829ec1
+      m_SubObjectName: 107_green-lollipop
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 107
     _name: Green Lollipop
     _family: sweet
     _shape: lolli
     _silhouette: stick
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: c9743dced1fe3614e8c52227796a2cca, type: 3}
+  - _sprite:
+      m_AssetGUID: c9743dced1fe3614e8c52227796a2cca
+      m_SubObjectName: 108_orange-lollipop
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 108
     _name: Orange Lollipop
     _family: sweet
     _shape: lolli
     _silhouette: stick
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 6c820fd8511fe87478abe72a13b89574, type: 3}
+  - _sprite:
+      m_AssetGUID: 6c820fd8511fe87478abe72a13b89574
+      m_SubObjectName: 109_blue-lollipop
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 109
     _name: Blue Lollipop
     _family: sweet
     _shape: lolli
     _silhouette: stick
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 0d5138a80e845d74ab00f0f631487a1e, type: 3}
+  - _sprite:
+      m_AssetGUID: 0d5138a80e845d74ab00f0f631487a1e
+      m_SubObjectName: 110_chocolate-bar
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 110
     _name: Chocolate Bar
     _family: sweet
     _shape: choc
     _silhouette: box
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: b68dec82e9511b34e9ee4f1cf4d51a8a, type: 3}
+  - _sprite:
+      m_AssetGUID: b68dec82e9511b34e9ee4f1cf4d51a8a
+      m_SubObjectName: 111_dark-chocolate
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 111
     _name: Dark Chocolate
     _family: sweet
     _shape: choc
     _silhouette: box
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 039a03aacdc6af643a2f573d9be3a10f, type: 3}
+  - _sprite:
+      m_AssetGUID: 039a03aacdc6af643a2f573d9be3a10f
+      m_SubObjectName: 112_mint-chocolate
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 112
     _name: Mint Chocolate
     _family: sweet
     _shape: choc
     _silhouette: box
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 1c6adc9c6459d6746919fd0cd77ece6b, type: 3}
+  - _sprite:
+      m_AssetGUID: 1c6adc9c6459d6746919fd0cd77ece6b
+      m_SubObjectName: 113_candy-cane
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 113
     _name: Candy Cane
     _family: sweet
     _shape: candycane
     _silhouette: stick
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 7bb9e04be8a41864fa127440524a6cdc, type: 3}
+  - _sprite:
+      m_AssetGUID: 7bb9e04be8a41864fa127440524a6cdc
+      m_SubObjectName: 114_green-candy-cane
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 114
     _name: Green Candy Cane
     _family: sweet
     _shape: candycane
     _silhouette: stick
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 30f94b469ff6f824ab26e3138d38d383, type: 3}
+  - _sprite:
+      m_AssetGUID: 30f94b469ff6f824ab26e3138d38d383
+      m_SubObjectName: 115_gummy-bears
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 115
     _name: Gummy Bears
     _family: sweet
     _shape: gummies
     _silhouette: can
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 6c17f9a1bea7c7e4ca6ac9d451f9d14f, type: 3}
+  - _sprite:
+      m_AssetGUID: 6c17f9a1bea7c7e4ca6ac9d451f9d14f
+      m_SubObjectName: 116_macarons
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 116
     _name: Macarons
     _family: sweet
     _shape: macaron
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 02fa4bfcefc13a84b86cc605b35525a7, type: 3}
+  - _sprite:
+      m_AssetGUID: 02fa4bfcefc13a84b86cc605b35525a7
+      m_SubObjectName: 117_lemon-macarons
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 117
     _name: Lemon Macarons
     _family: sweet
     _shape: macaron
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 89961dc6d8a8438459596fb46b579f58, type: 3}
+  - _sprite:
+      m_AssetGUID: 89961dc6d8a8438459596fb46b579f58
+      m_SubObjectName: 118_chocolate-box
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 118
     _name: Chocolate Box
     _family: sweet
     _shape: heartbox
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 5ba4610a498e7ac4696f622a11f97b89, type: 3}
+  - _sprite:
+      m_AssetGUID: 5ba4610a498e7ac4696f622a11f97b89
+      m_SubObjectName: 119_cotton-candy
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 119
     _name: Cotton Candy
     _family: sweet
     _shape: cotton
     _silhouette: stick
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: f91f03082a376e5498d20a34fbebeaae, type: 3}
+  - _sprite:
+      m_AssetGUID: f91f03082a376e5498d20a34fbebeaae
+      m_SubObjectName: 120_blue-cotton-candy
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 120
     _name: Blue Cotton Candy
     _family: sweet
     _shape: cotton
     _silhouette: stick
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: fe7b61a81cbfb1c46a60a9b276bddc50, type: 3}
+  - _sprite:
+      m_AssetGUID: fe7b61a81cbfb1c46a60a9b276bddc50
+      m_SubObjectName: 121_red-apple
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 121
     _name: Red Apple
     _family: fresh
     _shape: fresh
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 55b0ab3de43e9d34ba4f548a5b4ec7b1, type: 3}
+  - _sprite:
+      m_AssetGUID: 55b0ab3de43e9d34ba4f548a5b4ec7b1
+      m_SubObjectName: 122_green-apple
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 122
     _name: Green Apple
     _family: fresh
     _shape: fresh
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 82df6f2c2dad3e644ba75d5b75fbc045, type: 3}
+  - _sprite:
+      m_AssetGUID: 82df6f2c2dad3e644ba75d5b75fbc045
+      m_SubObjectName: 123_pear
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 123
     _name: Pear
     _family: fresh
     _shape: fresh2
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 9fe053f2e03bb3b4e9443100dbbc58a2, type: 3}
+  - _sprite:
+      m_AssetGUID: 9fe053f2e03bb3b4e9443100dbbc58a2
+      m_SubObjectName: 124_grapes
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 124
     _name: Grapes
     _family: fresh
     _shape: fresh3
     _silhouette: round
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: 2bd81860075d7f64a95c6b562de8045a, type: 3}
+  - _sprite:
+      m_AssetGUID: 2bd81860075d7f64a95c6b562de8045a
+      m_SubObjectName: 125_green-grapes
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 125
     _name: Green Grapes
     _family: fresh
     _shape: fresh3
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 7db375373840ebc4bb2521b0f8020491, type: 3}
+  - _sprite:
+      m_AssetGUID: 7db375373840ebc4bb2521b0f8020491
+      m_SubObjectName: 126_carrot
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 126
     _name: Carrot
     _family: fresh
     _shape: fresh4
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: f2b8e2186017f8142be7e1f96f809bf4, type: 3}
+  - _sprite:
+      m_AssetGUID: f2b8e2186017f8142be7e1f96f809bf4
+      m_SubObjectName: 127_corn
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 127
     _name: Corn
     _family: fresh
     _shape: fresh5
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: b1a39497af82e384489fb25c7878c66b, type: 3}
+  - _sprite:
+      m_AssetGUID: b1a39497af82e384489fb25c7878c66b
+      m_SubObjectName: 128_peach
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 128
     _name: Peach
     _family: fresh
     _shape: fresh6
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 5347f9fa7206fad4486285828c591a28, type: 3}
+  - _sprite:
+      m_AssetGUID: 5347f9fa7206fad4486285828c591a28
+      m_SubObjectName: 129_watermelon
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 129
     _name: Watermelon
     _family: fresh
     _shape: melon
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 9e61e3dd02fa1cb48bdd56ff797ceed6, type: 3}
+  - _sprite:
+      m_AssetGUID: 9e61e3dd02fa1cb48bdd56ff797ceed6
+      m_SubObjectName: 130_tomato
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 130
     _name: Tomato
     _family: fresh
     _shape: fresh7
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 318a6503c9afc2842a1503fe9cf147ef, type: 3}
+  - _sprite:
+      m_AssetGUID: 318a6503c9afc2842a1503fe9cf147ef
+      m_SubObjectName: 131_cucumber
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 131
     _name: Cucumber
     _family: fresh
     _shape: fresh8
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: a12501480a1b01f43947ddfeef3a06e5, type: 3}
+  - _sprite:
+      m_AssetGUID: a12501480a1b01f43947ddfeef3a06e5
+      m_SubObjectName: 132_eggplant
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 132
     _name: Eggplant
     _family: fresh
     _shape: fresh9
     _silhouette: round
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: 94f7e538ab7362f4b8baf47330f2a8a6, type: 3}
+  - _sprite:
+      m_AssetGUID: 94f7e538ab7362f4b8baf47330f2a8a6
+      m_SubObjectName: 133_pumpkin
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 133
     _name: Pumpkin
     _family: fresh
     _shape: fresh10
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 2d70e04a0638eeb44b1b8a5e43da9ac8, type: 3}
+  - _sprite:
+      m_AssetGUID: 2d70e04a0638eeb44b1b8a5e43da9ac8
+      m_SubObjectName: 134_mushroom
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 134
     _name: Mushroom
     _family: fresh
     _shape: fresh11
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 2a8f72d66ba13d540892fb91943425b5, type: 3}
+  - _sprite:
+      m_AssetGUID: 2a8f72d66ba13d540892fb91943425b5
+      m_SubObjectName: 135_radish
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 135
     _name: Radish
     _family: fresh
     _shape: fresh12
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: e40fc35faa8e007469a0241eab273a08, type: 3}
+  - _sprite:
+      m_AssetGUID: e40fc35faa8e007469a0241eab273a08
+      m_SubObjectName: 136_garlic
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 136
     _name: Garlic
     _family: fresh
     _shape: fresh13
     _silhouette: round
     _colorBucket: white
-  - _sprite: {fileID: 21300000, guid: 0a3f92a76fa13074481ec298bf0a552b, type: 3}
+  - _sprite:
+      m_AssetGUID: 0a3f92a76fa13074481ec298bf0a552b
+      m_SubObjectName: 137_cabbage
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 137
     _name: Cabbage
     _family: fresh
     _shape: fresh14
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: a8b8441a15a45c644ad547293dcd3f04, type: 3}
+  - _sprite:
+      m_AssetGUID: a8b8441a15a45c644ad547293dcd3f04
+      m_SubObjectName: 138_orange
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 138
     _name: Orange
     _family: fresh
     _shape: fresh15
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: f759075c2d5de774ea1b0e4077885f0c, type: 3}
+  - _sprite:
+      m_AssetGUID: f759075c2d5de774ea1b0e4077885f0c
+      m_SubObjectName: 139_lemon
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 139
     _name: Lemon
     _family: fresh
     _shape: lemonfr
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 74013e971d9022243bef901891c3d729, type: 3}
+  - _sprite:
+      m_AssetGUID: 74013e971d9022243bef901891c3d729
+      m_SubObjectName: 140_plum
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 140
     _name: Plum
     _family: fresh
     _shape: fresh16
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 77008efbf4b7ca94ab3979c3fe2bbea0, type: 3}
+  - _sprite:
+      m_AssetGUID: 77008efbf4b7ca94ab3979c3fe2bbea0
+      m_SubObjectName: 141_cherries
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 141
     _name: Cherries
     _family: fresh
     _shape: fresh17
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: c4d632b9bdea8644d9c05678f9a2c53d, type: 3}
+  - _sprite:
+      m_AssetGUID: c4d632b9bdea8644d9c05678f9a2c53d
+      m_SubObjectName: 142_strawberry
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 142
     _name: Strawberry
     _family: fresh
     _shape: fresh18
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: c88f6066293487e46b79c809ce9dfea7, type: 3}
+  - _sprite:
+      m_AssetGUID: c88f6066293487e46b79c809ce9dfea7
+      m_SubObjectName: 143_blueberries
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 143
     _name: Blueberries
     _family: fresh
     _shape: fresh19
     _silhouette: round
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: 15f1eff12983682438ff2b93e9b8a344, type: 3}
+  - _sprite:
+      m_AssetGUID: 15f1eff12983682438ff2b93e9b8a344
+      m_SubObjectName: 144_red-pepper
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 144
     _name: Red Pepper
     _family: fresh
     _shape: fresh20
     _silhouette: round
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 3837f896086336b46a9f36907b589995, type: 3}
+  - _sprite:
+      m_AssetGUID: 3837f896086336b46a9f36907b589995
+      m_SubObjectName: 145_yellow-pepper
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 145
     _name: Yellow Pepper
     _family: fresh
     _shape: fresh20
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: e05bcbd8d2e7c1249bb9ccfb6fa4c03c, type: 3}
+  - _sprite:
+      m_AssetGUID: e05bcbd8d2e7c1249bb9ccfb6fa4c03c
+      m_SubObjectName: 146_beet
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 146
     _name: Beet
     _family: fresh
     _shape: fresh21
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 539341bffd6d5e346906e4fd906c3b34, type: 3}
+  - _sprite:
+      m_AssetGUID: 539341bffd6d5e346906e4fd906c3b34
+      m_SubObjectName: 147_fig
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 147
     _name: Fig
     _family: fresh
     _shape: fresh16
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: eb5a9c9c9298a784dac7e12dbbd99bba, type: 3}
+  - _sprite:
+      m_AssetGUID: eb5a9c9c9298a784dac7e12dbbd99bba
+      m_SubObjectName: 148_pineapple
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 148
     _name: Pineapple
     _family: fresh
     _shape: pineapple
     _silhouette: round
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: 4e983b40be0fbd64e9d1e310f77b1637, type: 3}
+  - _sprite:
+      m_AssetGUID: 4e983b40be0fbd64e9d1e310f77b1637
+      m_SubObjectName: 149_avocado
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 149
     _name: Avocado
     _family: fresh
     _shape: avocado
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: ed8f01efa175f8b449a19e7223e9b9fa, type: 3}
+  - _sprite:
+      m_AssetGUID: ed8f01efa175f8b449a19e7223e9b9fa
+      m_SubObjectName: 150_broccoli
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 150
     _name: Broccoli
     _family: fresh
     _shape: broccoli
     _silhouette: round
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 3d4f378bd15e2ef48a60284207388693, type: 3}
+  - _sprite:
+      m_AssetGUID: 3d4f378bd15e2ef48a60284207388693
+      m_SubObjectName: 151_lavender-soap
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 151
     _name: Lavender Soap
     _family: home
     _shape: soap
     _silhouette: bottle
     _colorBucket: purple
-  - _sprite: {fileID: 21300000, guid: 9a41a044349712e4abf6abe3202b057b, type: 3}
+  - _sprite:
+      m_AssetGUID: 9a41a044349712e4abf6abe3202b057b
+      m_SubObjectName: 152_green-soap
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 152
     _name: Green Soap
     _family: home
     _shape: soap
     _silhouette: bottle
     _colorBucket: green
-  - _sprite: {fileID: 21300000, guid: 0c71dddde485e0c4bb14c86cf71a92a8, type: 3}
+  - _sprite:
+      m_AssetGUID: 0c71dddde485e0c4bb14c86cf71a92a8
+      m_SubObjectName: 153_toilet-paper
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 153
     _name: Toilet Paper
     _family: home
     _shape: tp
     _silhouette: round
     _colorBucket: teal
-  - _sprite: {fileID: 21300000, guid: 9820e70f1803e0c40824a44831d5be29, type: 3}
+  - _sprite:
+      m_AssetGUID: 9820e70f1803e0c40824a44831d5be29
+      m_SubObjectName: 154_sponge
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 154
     _name: Sponge
     _family: home
     _shape: sponge
     _silhouette: round
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: 838745d9f426c3044a842899d6c62c38, type: 3}
+  - _sprite:
+      m_AssetGUID: 838745d9f426c3044a842899d6c62c38
+      m_SubObjectName: 155_pink-sponge
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 155
     _name: Pink Sponge
     _family: home
     _shape: sponge
     _silhouette: round
     _colorBucket: pink
-  - _sprite: {fileID: 21300000, guid: 45dbcb7410a6e574780cb5d8cdea2939, type: 3}
+  - _sprite:
+      m_AssetGUID: 45dbcb7410a6e574780cb5d8cdea2939
+      m_SubObjectName: 156_vanilla-candle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 156
     _name: Vanilla Candle
     _family: home
     _shape: candle
     _silhouette: can
     _colorBucket: orange
-  - _sprite: {fileID: 21300000, guid: b2e045f85cdec2642b4c7afc50e4fd13, type: 3}
+  - _sprite:
+      m_AssetGUID: b2e045f85cdec2642b4c7afc50e4fd13
+      m_SubObjectName: 157_rose-candle
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 157
     _name: Rose Candle
     _family: home
     _shape: candle
     _silhouette: can
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: b6fcd03d1c07e804fb76b9fac43ec81b, type: 3}
+  - _sprite:
+      m_AssetGUID: b6fcd03d1c07e804fb76b9fac43ec81b
+      m_SubObjectName: 158_red-tulip
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 158
     _name: Red Tulip
     _family: home
     _shape: pot
     _silhouette: stick
     _colorBucket: red
-  - _sprite: {fileID: 21300000, guid: 5c6b368f919e24c4c9168b4e54d15b81, type: 3}
+  - _sprite:
+      m_AssetGUID: 5c6b368f919e24c4c9168b4e54d15b81
+      m_SubObjectName: 159_yellow-tulip
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 159
     _name: Yellow Tulip
     _family: home
     _shape: pot
     _silhouette: stick
     _colorBucket: yellow
-  - _sprite: {fileID: 21300000, guid: f8408c4ea748e094fb4fe836e0fd9311, type: 3}
+  - _sprite:
+      m_AssetGUID: f8408c4ea748e094fb4fe836e0fd9311
+      m_SubObjectName: 160_detergent
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 160
     _name: Detergent
     _family: home
     _shape: detergent
     _silhouette: bottle
     _colorBucket: blue
-  - _sprite: {fileID: 21300000, guid: ee81f7f7fb4e3334f9029376c4d71e1a, type: 3}
+  - _sprite:
+      m_AssetGUID: ee81f7f7fb4e3334f9029376c4d71e1a
+      m_SubObjectName: 161_orange-detergent
+      m_SubObjectType: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
+      m_SubObjectGUID: 
+      m_EditorAssetChanged: 1
     _id: 161
     _name: Orange Detergent
     _family: home

@@ -55,7 +55,7 @@ namespace Game.Features.Album
                     AlbumService.FamilyBonus);
                 var unknown = texts.Get(AlbumTexts.UnknownItem);
                 var entries = items
-                    .Select(i => new AlbumEntry(i.Sprite, found.Contains(i.Id) ? texts.GetItemName(i.Id) : unknown,
+                    .Select(i => new AlbumEntry(content.GetItemSprite(i.Id), found.Contains(i.Id) ? texts.GetItemName(i.Id) : unknown,
                         found.Contains(i.Id)))
                     .ToList();
                 Sections.Add(new AlbumSection(texts.GetFamilyName(family), count, isDone, entries));

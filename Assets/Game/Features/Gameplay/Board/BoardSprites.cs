@@ -9,17 +9,17 @@ namespace Game.Features.Gameplay.Board
     /// </summary>
     public sealed class BoardSprites
     {
-        private readonly ItemCatalog _catalog;
+        private readonly IContentService _content;
         private readonly GameplayArt _art;
 
         /// <summary>
         /// Creates the lookup.
         /// </summary>
-        /// <param name="catalog">Item catalog; its sprites must be loaded.</param>
+        /// <param name="content">Item sprites; the level's sprites are loaded before it starts.</param>
         /// <param name="art">Hammer and paper-bag pictures.</param>
-        public BoardSprites(ItemCatalog catalog, GameplayArt art)
+        public BoardSprites(IContentService content, GameplayArt art)
         {
-            _catalog = catalog;
+            _content = content;
             _art = art;
         }
 
@@ -28,7 +28,7 @@ namespace Game.Features.Gameplay.Board
         /// </summary>
         /// <param name="type">Catalog id, or <see cref="Jar.HammerType"/>.</param>
         /// <returns>The sprite.</returns>
-        public Sprite OfType(int type) => type == Jar.HammerType ? _art.Hammer : _catalog.Get(type).Sprite;
+        public Sprite OfType(int type) => type == Jar.HammerType ? _art.Hammer : _content.GetItemSprite(type);
 
         /// <summary>
         /// Returns what the player sees of a jar: the hammer, a paper bag while wrapped, otherwise the item.
