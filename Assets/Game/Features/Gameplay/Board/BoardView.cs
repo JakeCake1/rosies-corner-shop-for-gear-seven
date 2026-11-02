@@ -24,10 +24,6 @@ namespace Game.Features.Gameplay.Board
         private const string CounterName = "counter";
         private const string CabinetName = "cabinet";
         private const string FlightName = "flight";
-        private const int UnboardDust = 18;
-        private const int ThawSparks = 22;
-
-        private static readonly Color[] IceColors = { Color.white, new Color(0.75f, 0.89f, 1f), new Color(0.5f, 0.75f, 0.94f) };
 
         private readonly BoardLayout _layout = new BoardLayout();
         private readonly GameplayLayouts _layouts;
@@ -41,6 +37,7 @@ namespace Game.Features.Gameplay.Board
         private ItemLayerView _items;
         private BasketLedgeView _baskets;
         private BoardCells _cells;
+        private BoardEventEffects _effects;
         private LevelState _state;
 
         /// <summary>Emits the jar id of a tapped item.</summary>
@@ -109,7 +106,7 @@ namespace Game.Features.Gameplay.Board
                 Layout(state);
             }
 
-            PlayEvents(state, change);
+            _effects.Play(state, change);
             _baskets.Render(state, _layout, now, isInstant);
             _counter.Render(state);
             _cabinet.Render(state, change, _layout, now, isInstant);
@@ -175,6 +172,7 @@ namespace Game.Features.Gameplay.Board
             _baskets = new BasketLedgeView(_layouts.Basket, _sprites, _items, _overlay, _texts, _progressTarget);
             _baskets.Attach(Q(BasketAreaName));
             _cells = new BoardCells(_cabinet, _counter, _baskets, _layout);
+            _effects = new BoardEventEffects(_cabinet, _items, _sprites, _overlay, _audio);
             Root.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
@@ -211,84 +209,6 @@ namespace Game.Features.Gameplay.Board
             _counter.Layout(state.Capacity, _layout.CounterSlot, _layout.Inner);
             Place(_cabinet.Root, _layout.Cabinet);
             _cabinet.Layout(_layout);
-        }
-
-        private void PlayEvents(LevelState state, BoardChange change)
-        {
-            foreach (var e in change.Events)
-            {
-                switch (e.Type)
-                {
-                    case LevelEventType.JarUnwrapped:
-                        Unwrap(state, e.Id);
-                        break;
-                    case LevelEventType.ShelfUnlocked:
-                        FlyKey(e.Other, e.Id);
-                        break;
-                    case LevelEventType.ShelfUnboarded:
-                        KnockBoardsOff(e.Id);
-                        break;
-                    case LevelEventType.ShelfThawed:
-                        if (_cabinet.TryGet(e.Id, out var thawed))
-                        {
-                            _overlay.Burst(thawed.Root.worldBound.center, EffectKind.Spark, ThawSparks, IceColors);
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        private static Jar FindJar(LevelState state, int jarId)
-        {
-            foreach (var column in state.Columns)
-            {
-                foreach (var block in column.Blocks)
-                {
-                    foreach (var jar in block.Slots)
-                    {
-                        if (jar != null && jar.Id == jarId)
-                        {
-                            return jar;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private void Unwrap(LevelState state, int jarId)
-        {
-            var jar = FindJar(state, jarId);
-            if (jar != null && _items.TryGet(jarId, out var item))
-            {
-                item.Unwrap(_sprites.OfType(jar.Type));
-            }
-        }
-
-        private void FlyKey(int fromBlock, int toBlock)
-        {
-            if (!_cabinet.TryGet(toBlock, out var target))
-            {
-                return;
-            }
-
-            var start = _cabinet.TryGet(fromBlock, out var source) ? source.KeyCenter() : target.Root.worldBound.center;
-            _items.Flights.FlyKey(start, target.Root);
-        }
-
-        private void KnockBoardsOff(int blockId)
-        {
-            if (!_cabinet.TryGet(blockId, out var nailed))
-            {
-                return;
-            }
-
-            _overlay.Burst(nailed.Root.worldBound.center, EffectKind.Dust, UnboardDust);
-            nailed.KnockBoardsOff();
-            _audio.Play(SoundId.Snip);
-            _audio.Play(SoundId.Fold);
         }
     }
 }

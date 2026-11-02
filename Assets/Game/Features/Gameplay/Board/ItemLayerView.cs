@@ -4,7 +4,6 @@ using System.Linq;
 using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
-using Game.Services.Pooling;
 using Game.Services.UI;
 using Game.Services.UI.Elements;
 using UniRx;
@@ -19,8 +18,6 @@ namespace Game.Features.Gameplay.Board
     /// </summary>
     public sealed class ItemLayerView : ElementView, IDisposable
     {
-        private const int PoolCapacity = 80;
-        private const int PoolMaxSize = 200;
         private const float FlightSeconds = 0.43f;
         private const float CounterHopSeconds = 0.22f;
         private const float StockFlightDelay = 0.06f;
@@ -28,16 +25,14 @@ namespace Game.Features.Gameplay.Board
         private const float CounterLift = 46f;
         private const float ShelfLift = 72f;
         private const float ShuffleLift = 34f;
-        private const float DropAwayDistance = 40f;
 
         private readonly Dictionary<int, ItemView> _items = new Dictionary<int, ItemView>();
-        private readonly HashSet<ItemView> _leaving = new HashSet<ItemView>();
+        private readonly ItemPool _pool = new ItemPool();
         private readonly Subject<int> _tapped = new Subject<int>();
         private readonly BoardSprites _sprites;
         private readonly IAudioService _audio;
         private readonly IOverlayService _overlay;
         private readonly object _tweenId;
-        private ElementPool<ItemView> _pool;
 
         /// <summary>Emits the jar id of a tapped item.</summary>
         public IObservable<int> Tapped => _tapped;
@@ -121,7 +116,7 @@ namespace Game.Features.Gameplay.Board
             foreach (var item in inside)
             {
                 _items.Remove(item.JarId);
-                _leaving.Add(item);
+                _pool.Retire(item);
             }
 
             return inside;
@@ -135,7 +130,7 @@ namespace Game.Features.Gameplay.Board
         {
             foreach (var item in items)
             {
-                ReleaseLeaving(item);
+                _pool.ReleaseRetired(item);
             }
         }
 
@@ -144,27 +139,21 @@ namespace Game.Features.Gameplay.Board
         /// </summary>
         public void Clear()
         {
-            foreach (var view in _items.Values.Concat(_leaving))
-            {
-                _pool.Release(view);
-            }
-
+            _pool.ReleaseAll(_items.Values);
             _items.Clear();
-            _leaving.Clear();
             Root.Clear();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            _pool?.Dispose();
+            _pool.Dispose();
             _tapped.Dispose();
         }
 
         /// <inheritdoc/>
         protected override void OnAttached()
         {
-            _pool = new ElementPool<ItemView>(ItemView.Create, PoolCapacity, PoolMaxSize);
             Flights = new ItemFlights(Root, _audio, _overlay, _tweenId);
         }
 
@@ -213,41 +202,14 @@ namespace Game.Features.Gameplay.Board
                 return;
             }
 
-            _leaving.Add(view);
-            Flights.FlyAway(view, LeaveTarget(view, jarId, change, cells), () => ReleaseLeaving(view));
+            _pool.Retire(view);
+            var target = cells.LeaveTarget(view.Root.worldBound.center, jarId, change);
+            Flights.FlyAway(view, target, () => _pool.ReleaseRetired(view));
         }
-
-        private static Vector2 LeaveTarget(ItemView view, int jarId, BoardChange change, BoardCells cells)
-        {
-            if (change.ToStock.TryGetValue(jarId, out var column))
-            {
-                return cells.StockCenter(column);
-            }
-
-            if (!IsHammerUse(change, jarId))
-            {
-                return view.Root.worldBound.center + Vector2.down * DropAwayDistance;
-            }
-
-            // The used hammer flies into the shelf it knocked the boards off.
-            var unboarded = change.Events.First(e => e.Type == LevelEventType.ShelfUnboarded);
-            return cells.TryGetShelfCenter(unboarded.Id, out var shelf) ? shelf : view.Root.worldBound.center;
-        }
-
-        private static bool IsHammerUse(BoardChange change, int jarId) =>
-            change.Events.Any(e => e.Type == LevelEventType.ShelfUnboarded && e.Other == jarId);
 
         private void OnItemTapped(ItemView view)
         {
             _tapped.OnNext(view.JarId);
-        }
-
-        private void ReleaseLeaving(ItemView view)
-        {
-            if (_leaving.Remove(view))
-            {
-                _pool.Release(view);
-            }
         }
     }
 }

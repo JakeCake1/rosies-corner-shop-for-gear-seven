@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Features.Gameplay.Model;
+using Game.Features.Gameplay.Session;
 using Game.Services.Audio;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,6 +14,8 @@ namespace Game.Features.Gameplay.Board
     /// </summary>
     public sealed class BoardCells
     {
+        private const float DropAwayDistance = 40f;
+
         private readonly CabinetView _cabinet;
         private readonly CounterView _counter;
         private readonly BasketLedgeView _baskets;
@@ -78,6 +82,31 @@ namespace Game.Features.Gameplay.Board
             var found = _cabinet.TryGet(blockId, out var shelf);
             center = found ? shelf.Root.worldBound.center : Vector2.zero;
             return found;
+        }
+
+        /// <summary>
+        /// Returns where a removed item flies: back to its stock tab, into the shelf the hammer was used on, or a
+        /// short drop when it simply leaves.
+        /// </summary>
+        /// <param name="itemCenter">The item's current center in panel coordinates.</param>
+        /// <param name="jarId">The removed item.</param>
+        /// <param name="change">The change that removed it.</param>
+        /// <returns>Panel coordinates.</returns>
+        public Vector2 LeaveTarget(Vector2 itemCenter, int jarId, BoardChange change)
+        {
+            if (change.ToStock.TryGetValue(jarId, out var column))
+            {
+                return StockCenter(column);
+            }
+
+            if (!change.Events.Any(e => e.Type == LevelEventType.ShelfUnboarded && e.Other == jarId))
+            {
+                return itemCenter + Vector2.down * DropAwayDistance;
+            }
+
+            // The used hammer flies into the shelf it knocked the boards off.
+            var unboarded = change.Events.First(e => e.Type == LevelEventType.ShelfUnboarded);
+            return TryGetShelfCenter(unboarded.Id, out var shelf) ? shelf : itemCenter;
         }
 
         private void AddShelfItems(LevelState state, Dictionary<int, BoardCell> wanted)

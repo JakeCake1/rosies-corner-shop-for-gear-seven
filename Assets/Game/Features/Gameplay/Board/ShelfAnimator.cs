@@ -1,5 +1,7 @@
+using System;
 using DG.Tweening;
 using Game.Services.Audio;
+using Game.Services.UI;
 using Game.Services.UI.Elements;
 using UnityEngine;
 
@@ -25,18 +27,23 @@ namespace Game.Features.Gameplay.Board
         private const float SlideDelay = 0.3f;
         private const float SlideSettle = 0.75f;
         private const float SlideOvershoot = 1.1f;
+        private const float FoldSeconds = 0.3f;
+        private const int FoldDust = 16;
 
         private readonly IAudioService _audio;
+        private readonly IOverlayService _overlay;
         private readonly object _tweenId;
 
         /// <summary>
         /// Creates the animator.
         /// </summary>
-        /// <param name="audio">Plays the roll of shelves that drop in after the level start.</param>
+        /// <param name="audio">Plays the roll of shelves that drop in after the level start and the fold.</param>
+        /// <param name="overlay">Dust when a shelf folds away.</param>
         /// <param name="tweenId">Id of every shelf tween; killed by the board on rebuild.</param>
-        public ShelfAnimator(IAudioService audio, object tweenId)
+        public ShelfAnimator(IAudioService audio, IOverlayService overlay, object tweenId)
         {
             _audio = audio;
+            _overlay = overlay;
             _tweenId = tweenId;
         }
 
@@ -110,6 +117,20 @@ namespace Game.Features.Gameplay.Board
             view.Root.DOBottom(bottom, SlideSeconds).SetDelay(SlideDelay).SetEase(Ease.OutBack, SlideOvershoot)
                 .SetId(_tweenId);
             view.SettledAt = now + SlideSettle;
+        }
+
+        /// <summary>
+        /// Folds an emptied shelf away with dust and the fold sound.
+        /// </summary>
+        /// <param name="view">The leaving shelf.</param>
+        /// <param name="done">Called when the fold ended; the caller returns the shelf to its pool.</param>
+        public void FoldAway(ShelfView view, Action done)
+        {
+            _overlay.Burst(view.Root.worldBound.center, EffectKind.Dust, FoldDust);
+            _audio.Play(SoundId.Fold);
+            view.Root.Kill();
+            view.Root.DOScale(new Vector2(1f, 0f), FoldSeconds).SetEase(Ease.InBack).SetId(_tweenId)
+                .OnComplete(() => done());
         }
     }
 }

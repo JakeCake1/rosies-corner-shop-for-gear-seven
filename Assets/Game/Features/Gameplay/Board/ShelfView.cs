@@ -13,35 +13,26 @@ namespace Game.Features.Gameplay.Board
     /// </summary>
     public sealed class ShelfView : PooledElementView
     {
-        private const string ContentName = "content";
         private const string FloorsName = "floors";
         private const string CellsName = "cells";
         private const string RowsBadgeName = "rows-badge";
         private const string RowsTextName = "rows-text";
-        private const string TiesName = "ties";
-        private const string KeyTagName = "key-tag";
-        private const string IceName = "ice";
-        private const string IceTextName = "ice-text";
-        private const string BoardsName = "boards";
-        private const string BoardClass = "shelf__board";
+        private const string CellClass = "shelf__cell";
+        private const string GhostClass = "shelf__ghost";
+        private const string FloorClass = "shelf__floor";
+        private const string FloorKitClass = "kit-shelf-floor";
         private const float FloorHeight = 8f;
         private const float PostWidth = 5f;
-        private const float CellLift = 5f;
+        private const float CellDrop = 3f;
 
         private readonly List<VisualElement> _cells = new List<VisualElement>();
         private readonly List<VisualElement> _ghosts = new List<VisualElement>();
         private readonly List<VisualElement> _floors = new List<VisualElement>();
-        private readonly List<VisualElement> _boards = new List<VisualElement>();
-        private VisualElement _content;
         private VisualElement _floorLayer;
         private VisualElement _cellLayer;
         private VisualElement _rowsBadge;
         private Label _rowsText;
-        private VisualElement _ties;
-        private VisualElement _keyTag;
-        private VisualElement _ice;
-        private Label _iceText;
-        private VisualElement _boardLayer;
+        private ShelfMarks _marks;
         private int _rows;
         private int _perRow;
 
@@ -75,6 +66,7 @@ namespace Game.Features.Gameplay.Board
             {
                 _rowsText.text = rowsText;
             }
+
             Resize(width, rowHeight, itemSize);
         }
 
@@ -100,7 +92,7 @@ namespace Game.Features.Gameplay.Board
                 cell.style.width = itemSize.x;
                 cell.style.height = itemSize.y;
                 cell.style.left = PostWidth + inner * (col + 0.5f) / _perRow - itemSize.x / 2f;
-                cell.style.bottom = row * rowHeight + FloorHeight - 3f;
+                cell.style.bottom = row * rowHeight + FloorHeight - CellDrop;
             }
         }
 
@@ -135,125 +127,88 @@ namespace Game.Features.Gameplay.Board
         /// <param name="isBoarded">Nailed shut.</param>
         public void SetState(bool isLocked, bool hasKey, int frozen, bool isBoarded)
         {
-            _ties.SetVisible(isLocked);
-            _keyTag.SetVisible(hasKey);
-            _ice.SetVisible(frozen > 0);
-            if (frozen > 0)
-            {
-                _iceText.text = frozen.ToString();
-            }
-            _boardLayer.SetVisible(isBoarded);
-            _content.style.opacity = isLocked ? 0.7f : 1f;
-            _cellLayer.SetVisible(!isBoarded);
+            _marks.Set(isLocked, hasKey, frozen, isBoarded);
         }
 
         /// <summary>
         /// Knocks the nailed boards off.
         /// </summary>
         /// <returns>The animation.</returns>
-        public Tween KnockBoardsOff()
-        {
-            var seq = DOTween.Sequence().SetId(this);
-            for (var i = 0; i < _boards.Count; i++)
-            {
-                var b = _boards[i];
-                var dir = i % 2 == 0 ? -1f : 1f;
-                seq.Join(b.DOTranslate(new Vector2(dir * 60f, 40f), 0.45f).SetEase(Ease.InQuad));
-                seq.Join(b.DORotate(VisualElementTweens.GetRotation(b) + dir * 40f, 0.45f));
-                seq.Join(b.DOFade(0f, 0.45f));
-            }
-
-            return seq;
-        }
+        public Tween KnockBoardsOff() => _marks.KnockBoardsOff(this);
 
         /// <summary>
         /// Centre of the key tag in panel space.
         /// </summary>
         /// <returns>Panel point.</returns>
-        public Vector2 KeyCenter() => _keyTag.worldBound.center;
+        public Vector2 KeyCenter() => _marks.KeyCenter();
 
         /// <inheritdoc/>
         public override void OnDespawned()
         {
             base.OnDespawned();
             BlockId = 0;
-            SetState(false, false, 0, false);
-            foreach (var g in _ghosts)
+            _marks.Reset();
+            foreach (var ghost in _ghosts)
             {
-                g.SetVisible(false);
-            }
-
-            foreach (var b in _boards)
-            {
-                b.Kill();
-                b.style.translate = StyleKeyword.Null;
-                b.style.rotate = StyleKeyword.Null;
-                b.style.opacity = StyleKeyword.Null;
+                ghost.SetVisible(false);
             }
         }
 
         /// <inheritdoc/>
         protected override void OnAttached()
         {
-            _content = Q(ContentName);
             _floorLayer = Q(FloorsName);
             _cellLayer = Q(CellsName);
             _rowsBadge = Q(RowsBadgeName);
             _rowsText = Q<Label>(RowsTextName);
-            _ties = Q(TiesName);
-            _keyTag = Q(KeyTagName);
-            _ice = Q(IceName);
-            _iceText = Q<Label>(IceTextName);
-            _boardLayer = Q(BoardsName);
-            _boardLayer.Query(className: BoardClass).ForEach(_boards.Add);
-            SetState(false, false, 0, false);
+            _marks = new ShelfMarks(Root);
+            _marks.Reset();
             _rowsBadge.SetVisible(false);
+        }
+
+        private static void ShowFirst(List<VisualElement> parts, VisualElement layer, int count)
+        {
+            for (var i = 0; i < parts.Count; i++)
+            {
+                if (i < count)
+                {
+                    layer.Add(parts[i]);
+                }
+                else
+                {
+                    parts[i].RemoveFromHierarchy();
+                }
+            }
         }
 
         private void EnsureParts(int cells, int rows)
         {
             while (_cells.Count < cells)
             {
-                var cell = CreateElement("shelf__cell");
-                cell.pickingMode = PickingMode.Ignore;
-                var ghost = CreateElement("shelf__ghost");
-                ghost.pickingMode = PickingMode.Ignore;
-                ghost.SetVisible(false);
-                cell.Add(ghost);
-                _cells.Add(cell);
-                _ghosts.Add(ghost);
-            }
-
-            for (var i = 0; i < _cells.Count; i++)
-            {
-                if (i < cells)
-                {
-                    _cellLayer.Add(_cells[i]);
-                }
-                else
-                {
-                    _cells[i].RemoveFromHierarchy();
-                }
+                AddCell();
             }
 
             while (_floors.Count < rows)
             {
-                var floor = CreateElement("shelf__floor", "kit-shelf-floor");
+                var floor = CreateElement(FloorClass, FloorKitClass);
                 floor.pickingMode = PickingMode.Ignore;
                 _floors.Add(floor);
             }
 
-            for (var i = 0; i < _floors.Count; i++)
-            {
-                if (i < rows)
-                {
-                    _floorLayer.Add(_floors[i]);
-                }
-                else
-                {
-                    _floors[i].RemoveFromHierarchy();
-                }
-            }
+            ShowFirst(_cells, _cellLayer, cells);
+            ShowFirst(_floors, _floorLayer, rows);
+        }
+
+        private void AddCell()
+        {
+            var cell = CreateElement(CellClass);
+            cell.pickingMode = PickingMode.Ignore;
+            var ghost = CreateElement(GhostClass);
+            ghost.pickingMode = PickingMode.Ignore;
+            ghost.SetVisible(false);
+            cell.Add(ghost);
+            _cells.Add(cell);
+            _ghosts.Add(ghost);
         }
     }
 }
