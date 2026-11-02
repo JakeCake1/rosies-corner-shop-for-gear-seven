@@ -15,7 +15,7 @@ using UnityEngine.UIElements;
 namespace Game.Features.Gameplay.Board
 {
     /// <summary>
-    /// The cabinet: three shelf columns and their stock tabs. Shelves drop in when they appear, slide down when a
+    /// The cabinet: three shelf columns under their stock tabs. Shelves drop in when they appear, slide down when a
     /// shelf below them leaves and fold away when emptied.
     /// </summary>
     public sealed class CabinetView : ElementView, IDisposable
@@ -23,16 +23,10 @@ namespace Game.Features.Gameplay.Board
         private const string ColumnsName = "columns";
         private const string TabsName = "stock-tabs";
         private const string ColumnClass = "cabinet__column";
-        private const string TabTextClass = "stock-tab__text";
-        private const string TabHammerClass = "stock-tab__hammer";
         private const int PoolCapacity = 24;
         private const int PoolMaxSize = 60;
-        private const float FoldSeconds = 0.3f;
-        private const int FoldDust = 16;
 
         private readonly VisualElement[] _columns = new VisualElement[LevelState.ColumnCount];
-        private readonly Label[] _stockLabels = new Label[LevelState.ColumnCount];
-        private readonly VisualElement[] _stockHammers = new VisualElement[LevelState.ColumnCount];
         private readonly Dictionary<int, ShelfView> _shelves = new Dictionary<int, ShelfView>();
         private readonly HashSet<ShelfView> _leaving = new HashSet<ShelfView>();
         private readonly VisualTreeAsset _shelfLayout;
@@ -41,12 +35,13 @@ namespace Game.Features.Gameplay.Board
         private readonly IAudioService _audio;
         private readonly ILocalizationService _texts;
         private readonly object _tweenId;
+        private StockTabsView _tabs;
         private ShelfAnimator _animator;
         private VisualElement _columnsRoot;
         private ElementPool<ShelfView> _pool;
 
         /// <summary>The stock tabs row (anchor for the "stock" tip).</summary>
-        public VisualElement StockTabs { get; private set; }
+        public VisualElement StockTabs => _tabs.Root;
 
         /// <summary>
         /// Creates the cabinet; attach it to the board's cabinet element.
@@ -92,7 +87,7 @@ namespace Game.Features.Gameplay.Board
             for (var c = 0; c < LevelState.ColumnCount; c++)
             {
                 var column = state.Columns[c];
-                UpdateStockTab(c, column);
+                _tabs.Render(c, column);
                 var offset = 0;
                 var fresh = 0;
                 foreach (var block in column.Blocks)
@@ -131,7 +126,7 @@ namespace Game.Features.Gameplay.Board
         /// </summary>
         /// <param name="column">Column index.</param>
         /// <returns>Panel coordinates.</returns>
-        public Vector2 StockCenter(int column) => _stockLabels[column].worldBound.center;
+        public Vector2 StockCenter(int column) => _tabs.Center(column);
 
         /// <summary>
         /// Returns every shelf to the pool. Called on rebuild; shelf tweens are killed by the board.
@@ -157,31 +152,17 @@ namespace Game.Features.Gameplay.Board
         protected override void OnAttached()
         {
             _columnsRoot = Q(ColumnsName);
-            StockTabs = Q(TabsName);
+            _tabs = new StockTabsView(_texts);
+            _tabs.Attach(Q(TabsName));
             var columns = _columnsRoot.Query(className: ColumnClass).ToList();
-            var labels = StockTabs.Query<Label>(className: TabTextClass).ToList();
-            var hammers = StockTabs.Query(className: TabHammerClass).ToList();
             for (var c = 0; c < LevelState.ColumnCount; c++)
             {
                 _columns[c] = columns[c];
-                _stockLabels[c] = labels[c];
-                _stockHammers[c] = hammers[c];
             }
 
             _pool = new ElementPool<ShelfView>(() => LayoutViews.Create<ShelfView>(_shelfLayout), PoolCapacity,
                 PoolMaxSize);
-            _animator = new ShelfAnimator(_audio, _tweenId);
-        }
-
-        private void UpdateStockTab(int c, Model.Column column)
-        {
-            var hasHammer = column.Queue.Any(j => j.IsTool);
-            var hasTiedHammer = column.Blocks.Any(b => b.IsLocked && b.Slots.Any(j => j != null && j.IsTool));
-            var stock = column.Queue.Count - (hasHammer ? 1 : 0);
-            _stockLabels[c].text = stock > 0
-                ? _texts.Format(GameplayTexts.Stock, stock)
-                : _texts.Get(GameplayTexts.StockEmpty);
-            _stockHammers[c].SetVisible(hasHammer || hasTiedHammer);
+            _animator = new ShelfAnimator(_audio, _overlay, _tweenId);
         }
 
         private ShelfView AddShelf(int column, Block block, BoardLayout layout)
@@ -218,22 +199,13 @@ namespace Game.Features.Gameplay.Board
                     continue;
                 }
 
-                FoldAway(view);
-            }
-        }
-
-        private void FoldAway(ShelfView view)
-        {
-            _leaving.Add(view);
-            _overlay.Burst(view.Root.worldBound.center, EffectKind.Dust, FoldDust);
-            _audio.Play(SoundId.Fold);
-            view.Root.Kill();
-            view.Root.DOScale(new Vector2(1f, 0f), FoldSeconds).SetEase(Ease.InBack).SetId(_tweenId)
-                .OnComplete(() =>
+                _leaving.Add(view);
+                _animator.FoldAway(view, () =>
                 {
                     _leaving.Remove(view);
                     _pool.Release(view);
                 });
+            }
         }
     }
 }
