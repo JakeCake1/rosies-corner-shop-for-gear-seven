@@ -13,17 +13,23 @@
         <ui:VisualElement name="cabinet" class="cabinet kit-cabinet" picking-mode="Ignore">
             <ui:VisualElement class="cabinet__awning" picking-mode="Ignore" />
             <ui:VisualElement name="stock-tabs" class="cabinet__tabs" picking-mode="Ignore">
-                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
-                    <ui:Label text="all out" class="stock-tab__text" />
-                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                <ui:VisualElement class="stock-tab" picking-mode="Ignore">
+                    <ui:VisualElement class="stock-tab__pill kit-chip" picking-mode="Ignore">
+                        <ui:Label text="all out" class="stock-tab__text" />
+                        <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
-                    <ui:Label text="all out" class="stock-tab__text" />
-                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                <ui:VisualElement class="stock-tab" picking-mode="Ignore">
+                    <ui:VisualElement class="stock-tab__pill kit-chip" picking-mode="Ignore">
+                        <ui:Label text="all out" class="stock-tab__text" />
+                        <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
-                    <ui:Label text="all out" class="stock-tab__text" />
-                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                <ui:VisualElement class="stock-tab" picking-mode="Ignore">
+                    <ui:VisualElement class="stock-tab__pill kit-chip" picking-mode="Ignore">
+                        <ui:Label text="all out" class="stock-tab__text" />
+                        <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="columns" class="cabinet__columns" picking-mode="Ignore">
@@ -48,7 +54,7 @@
                 <ui:VisualElement class="chip__coin icon-coin" picking-mode="Ignore" />
                 <ui:Label name="coins-value" text="150" class="chip__value" />
             </ui:VisualElement>
-            <ui:Button name="settings" class="btn kit-btn-wood hud-settings">
+            <ui:Button name="settings" class="btn kit-btn-gear hud-settings">
                 <ui:VisualElement class="hud-settings__icon icon-gear" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>

@@ -486,7 +486,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 822792305
-    m_Localized: start with three baskets
+    m_Localized: Start with three baskets
     m_Metadata:
       m_Items: []
   - m_Id: 822792306
@@ -494,19 +494,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 822792307
-    m_Localized: one extra for this level
-    m_Metadata:
-      m_Items: []
-  - m_Id: 822792308
-    m_Localized: '{0} left'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 822792309
-    m_Localized: '{0} coins'
-    m_Metadata:
-      m_Items: []
-  - m_Id: 822792310
-    m_Localized: "<b>{0}</b>\n<size=75%>{1} \xB7 {2}</size>"
+    m_Localized: One extra for this level
     m_Metadata:
       m_Items: []
   - m_Id: 822792311
@@ -755,6 +743,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 822792371
     m_Localized: 'New department: Sweets.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792372
+    m_Localized: '+1'
     m_Metadata:
       m_Items: []
   references:

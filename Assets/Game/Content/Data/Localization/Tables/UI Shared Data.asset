@@ -483,18 +483,6 @@ MonoBehaviour:
     m_Key: gameplay.start_quick_info
     m_Metadata:
       m_Items: []
-  - m_Id: 822792308
-    m_Key: gameplay.start_owned
-    m_Metadata:
-      m_Items: []
-  - m_Id: 822792309
-    m_Key: gameplay.start_price
-    m_Metadata:
-      m_Items: []
-  - m_Id: 822792310
-    m_Key: gameplay.start_toggle
-    m_Metadata:
-      m_Items: []
   - m_Id: 822792311
     m_Key: gameplay.start_play
     m_Metadata:
@@ -737,6 +725,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 822792371
     m_Key: tip.sweets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792372
+    m_Key: gameplay.back_mark
     m_Metadata:
       m_Items: []
   m_Metadata:

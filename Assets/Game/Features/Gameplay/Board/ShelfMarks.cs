@@ -14,6 +14,7 @@ namespace Game.Features.Gameplay.Board
     {
         private const string ContentName = "content";
         private const string CellsName = "cells";
+        private const string BackMarksName = "back-marks";
         private const string TiesName = "ties";
         private const string KeyTagName = "key-tag";
         private const string IceName = "ice";
@@ -29,6 +30,7 @@ namespace Game.Features.Gameplay.Board
         private readonly List<VisualElement> _boards = new List<VisualElement>();
         private readonly VisualElement _content;
         private readonly VisualElement _cellLayer;
+        private readonly VisualElement _backMarkLayer;
         private readonly VisualElement _ties;
         private readonly VisualElement _keyTag;
         private readonly VisualElement _ice;
@@ -43,6 +45,7 @@ namespace Game.Features.Gameplay.Board
         {
             _content = root.Q(ContentName);
             _cellLayer = root.Q(CellsName);
+            _backMarkLayer = root.Q(BackMarksName);
             _ties = root.Q(TiesName);
             _keyTag = root.Q(KeyTagName);
             _ice = root.Q(IceName);
@@ -71,6 +74,7 @@ namespace Game.Features.Gameplay.Board
             _boardLayer.SetVisible(isBoarded);
             _content.style.opacity = isLocked ? LockedOpacity : 1f;
             _cellLayer.SetVisible(!isBoarded);
+            _backMarkLayer.SetVisible(!isBoarded);
         }
 
         /// <summary>

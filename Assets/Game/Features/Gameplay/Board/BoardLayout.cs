@@ -36,7 +36,7 @@ namespace Game.Features.Gameplay.Board
         private const float CabinetBottomGap = 8f;
         private const float CabinetSides = 24f;
         private const float ColumnPadding = 10f;
-        private const float ColumnInset = 9f;
+        private const float ColumnInset = 13f;
         private const float ColumnGap = 2f;
         private const float BoosterBarHeight = 100f;
         private const float MinRowHeight = 40f;
