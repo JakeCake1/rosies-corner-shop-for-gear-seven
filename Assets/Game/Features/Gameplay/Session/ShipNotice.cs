@@ -5,6 +5,20 @@ namespace Game.Features.Gameplay.Session
     /// </summary>
     public readonly struct ShipNotice
     {
+        /// <summary>Basket slot (0..2).</summary>
+        public int Slot { get; }
+
+        /// <summary>Basket id.</summary>
+        public int BasketId { get; }
+
+        /// <summary>Combo count; more sparks and a higher pitch as it grows.</summary>
+        public int Combo { get; }
+
+        /// <summary>
+        /// UI string table key of the word to float up ("Lovely!" or a combo word); the board view resolves it.
+        /// </summary>
+        public string WordKey { get; }
+
         /// <summary>
         /// Creates a notice.
         /// </summary>
@@ -19,19 +33,5 @@ namespace Game.Features.Gameplay.Session
             Combo = combo;
             WordKey = wordKey;
         }
-
-        /// <summary>Basket slot (0..2).</summary>
-        public int Slot { get; }
-
-        /// <summary>Basket id.</summary>
-        public int BasketId { get; }
-
-        /// <summary>Combo count; more sparks and a higher pitch as it grows.</summary>
-        public int Combo { get; }
-
-        /// <summary>
-        /// UI string table key of the word to float up ("Lovely!" or a combo word); the board view resolves it.
-        /// </summary>
-        public string WordKey { get; }
     }
 }

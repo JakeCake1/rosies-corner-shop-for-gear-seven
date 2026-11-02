@@ -25,13 +25,19 @@ namespace Game.Services.UI
         /// <inheritdoc/>
         public void Coach(string message, VisualElement anchor, bool isAbove, float seconds)
         {
-            if (anchor != null) _root.Coach.ShowBubble(message, anchor, isAbove, seconds);
+            if (anchor != null)
+            {
+                _root.Coach.ShowBubble(message, anchor, isAbove, seconds);
+            }
         }
 
         /// <inheritdoc/>
         public void PointAt(VisualElement target)
         {
-            if (target != null) _root.Coach.ShowHand(target);
+            if (target != null)
+            {
+                _root.Coach.ShowHand(target);
+            }
         }
 
         /// <inheritdoc/>

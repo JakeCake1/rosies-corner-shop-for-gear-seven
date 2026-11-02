@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-16
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-16
+  m_GUID: b5d37025a9c1d134d9d0d2de4accbeaa
+  m_SerializeEntries:
+  - m_GUID: 1ba36f3b209256c4f98f4da4cbf6c925
+    m_Address: item/093_spaghetti
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cd45f44061ea2548a552d041a898150
+    m_Address: item/105_vanilla-ice-cream
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 838e3aa9e9e36b443a105d3e972424ef
+    m_Address: item/035_chocolate-muffin
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c41b0794e88299845a3b637193350a8d, type: 2}
+    - {fileID: 11400000, guid: c5a94033bafe6ae479674d26eb39d58b, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-16_BundledAssetGroupSchema
+    - Items-Level-16_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

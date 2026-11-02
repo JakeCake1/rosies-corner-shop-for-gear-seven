@@ -70,12 +70,14 @@ Reference skeletons in the topic files show structure only. When writing real co
 - **Code index:** use the `codebase-memory-mcp` MCP server (configured in `.mcp.json`) to find symbols, callers and
   package APIs before reading files. Re-index after large changes: `codebase-memory-mcp cli index_repository --repo-path <project root>
   --name rosies-corner-shop --persistence true`; the graph is stored in `.codebase-memory/graph.db.zst`.
-- **UI and scenes are authored assets** (EVG-8): scenes in `Assets/Game/Scenes`, UXML/USS next to each feature
-  (`Features/*/Layouts`, `Services/UI/Layouts`), configs next to their services. Edit them directly; there is no
+- **UI and scenes are authored assets** (EVG-8): every non-code asset is under `Assets/Game/Content` (EVG-10):
+  scenes in `Content/Scenes`, UXML/USS in `Content/Screens/<Feature>` and `Content/Screens/Shared`, configs and JSON in
+  `Content/Data/<Service or Feature>`, sprites and fonts in `Content/Visual`, sounds in `Content/Sounds`, prefabs in
+  `Content/Prefabs`. Move assets through the Editor (GUIDs stay). Edit them directly; there is no
   editor code that builds scenes or UI. USS sizes are prototype CSS pixels (panel reference 390×844), and every
   layout is checked against the mockups in `screens.rar`.
 - **Localization:** all player-facing text is in the Unity Localization string tables `UI` and `Items`
-  (`Services/Localization`); code uses keys from the feature `*Texts` classes through `ILocalizationService`, never
+  (`Content/Data/Localization`, service in `Services/Localization`); code uses keys from the feature `*Texts` classes through `ILocalizationService`, never
   string literals. How to add a text: `Docs/localization.md`.
 - **Agent bridge:** `Game.Bootstrap.Editor.Agent.AgentBridge` logs every compilation to `AgentBridge/compile.log`
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-15
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-15
+  m_GUID: dd37ad100404c424db41e5d61fbf971d
+  m_SerializeEntries:
+  - m_GUID: 0426b72e43399e14399a2669873b0300
+    m_Address: item/098_cherry-popsicle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e5e4b17d822bd4db3185cd3c7ee192
+    m_Address: item/064_mushroom-soup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 609505ffad929914889ccd29ecc60beb
+    m_Address: item/049_pink-lemonade
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93239c164d9ca2d459a083ef8ed4faa4
+    m_Address: item/001_chocolate-milk
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7f6105f2dd210847b85d89ae8c443e6
+    m_Address: item/060_sparkling-cider
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c88f6066293487e46b79c809ce9dfea7
+    m_Address: item/143_blueberries
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 0c1e53afe8bdc214d83714b2fdc20722, type: 2}
+    - {fileID: 11400000, guid: 3670b11804854ee46977e0e17d287ca2, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-15_BundledAssetGroupSchema
+    - Items-Level-15_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

@@ -9,20 +9,8 @@ namespace Game.Services.UI.Dialogs
     /// </summary>
     public sealed class DialogButton
     {
-        /// <summary>
-        /// Creates a button.
-        /// </summary>
-        /// <param name="label">Main label.</param>
-        /// <param name="style">Color.</param>
-        /// <param name="action">What happens on tap (after closing when <paramref name="isClosing"/>).</param>
-        /// <param name="isClosing">Close the dialog first.</param>
-        public DialogButton(string label, ButtonStyle style, Action action, bool isClosing = true)
-        {
-            Label = label;
-            Style = style;
-            Action = action;
-            IsClosing = isClosing;
-        }
+        /// <summary>Whether the button can be pressed (e.g. enough coins).</summary>
+        public ReactiveProperty<bool> IsEnabled { get; } = new ReactiveProperty<bool>(true);
 
         /// <summary>Main label.</summary>
         public string Label { get; }
@@ -39,9 +27,6 @@ namespace Game.Services.UI.Dialogs
         /// <summary>Coin price shown with the coin badge.</summary>
         public int Price { get; set; }
 
-        /// <summary>Whether the button can be pressed (e.g. enough coins).</summary>
-        public ReactiveProperty<bool> IsEnabled { get; } = new ReactiveProperty<bool>(true);
-
         /// <summary>Shares a row with the previous button marked the same way.</summary>
         public bool IsInRow { get; set; }
 
@@ -53,5 +38,20 @@ namespace Game.Services.UI.Dialogs
 
         /// <summary>The action.</summary>
         public Action Action { get; }
+
+        /// <summary>
+        /// Creates a button.
+        /// </summary>
+        /// <param name="label">Main label.</param>
+        /// <param name="style">Color.</param>
+        /// <param name="action">What happens on tap (after closing when <paramref name="isClosing"/>).</param>
+        /// <param name="isClosing">Close the dialog first.</param>
+        public DialogButton(string label, ButtonStyle style, Action action, bool isClosing = true)
+        {
+            Label = label;
+            Style = style;
+            Action = action;
+            IsClosing = isClosing;
+        }
     }
 }

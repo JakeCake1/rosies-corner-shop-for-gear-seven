@@ -49,7 +49,10 @@ namespace Game.Features.Gameplay
         public void Show(string title, string tip, bool isTricky, VisualElement anchor)
         {
             _sequence?.Kill();
-            if (Root == null) Attach(_layout.Instantiate());
+            if (Root == null)
+            {
+                Attach(_layout.Instantiate());
+            }
 
             _parent.Add(Root);
             Root.BringToFront();

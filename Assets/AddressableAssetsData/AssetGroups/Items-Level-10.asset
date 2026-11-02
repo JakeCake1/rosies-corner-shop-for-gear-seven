@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-10
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-10
+  m_GUID: aedd003477e70bd48b50b1405792ccb3
+  m_SerializeEntries:
+  - m_GUID: 0a3f92a76fa13074481ec298bf0a552b
+    m_Address: item/137_cabbage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10b64dbeaa96fd94aa600c579de6c983
+    m_Address: item/095_maple-syrup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1c6adc9c6459d6746919fd0cd77ece6b
+    m_Address: item/113_candy-cane
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b12a84e360d4934294205c5af6b01bd
+    m_Address: item/053_grape-juice
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a0299dde48fb0344c9e1302910717e6a
+    m_Address: item/020_pink-cupcake
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee81f7f7fb4e3334f9029376c4d71e1a
+    m_Address: item/161_orange-detergent
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe63423a39fc11d42995f9576613e403
+    m_Address: item/000_milk
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 947efb1ee012bf64eb4f4fafd78d5a0e, type: 2}
+    - {fileID: 11400000, guid: 3442e89c3a9bdd84f99190096588124a, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-10_BundledAssetGroupSchema
+    - Items-Level-10_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

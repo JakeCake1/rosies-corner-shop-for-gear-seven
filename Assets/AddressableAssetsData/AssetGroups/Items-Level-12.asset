@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-12
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-12
+  m_GUID: 59090d023e387da42b878a52df2acc7f
+  m_SerializeEntries:
+  - m_GUID: 039a03aacdc6af643a2f573d9be3a10f
+    m_Address: item/112_mint-chocolate
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21847e133270aad4d8e0be4ad8cb031f
+    m_Address: item/013_salted-butter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 254c63429df2a434d9f120918d093204
+    m_Address: item/038_cola
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 54dabb288b8ace7479ccb5a72865f8e2
+    m_Address: item/023_lemon-cupcake
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 74013e971d9022243bef901891c3d729
+    m_Address: item/140_plum
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 98349ed54acd1df4c89d752bf58c43af
+    m_Address: item/069_apricot-jam
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8408c4ea748e094fb4fe836e0fd9311
+    m_Address: item/160_detergent
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8cbc2c0df9d271c45bcc33f6772f4c45, type: 2}
+    - {fileID: 11400000, guid: 857bc33318eb1264d8b7b71b6836dd6d, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-12_BundledAssetGroupSchema
+    - Items-Level-12_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

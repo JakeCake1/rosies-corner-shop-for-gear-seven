@@ -16,12 +16,12 @@ MonoBehaviour:
   m_GUID: 3e4cb164431a48140a1ca70b5c525a7a
   m_SerializeEntries:
   - m_GUID: 1b883ce0133ff024d9ad1fae32abb8f3
-    m_Address: Assets/Game/Services/Localization/Tables/UI Shared Data.asset
+    m_Address: Assets/Game/Content/Data/Localization/Tables/UI Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8c617c14415957b4980b7b2101f37c0e
-    m_Address: Assets/Game/Services/Localization/Tables/Items Shared Data.asset
+    m_Address: Assets/Game/Content/Data/Localization/Tables/Items Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -31,7 +31,6 @@ MonoBehaviour:
     m_Schemas:
     - {fileID: 11400000, guid: 626bc363691c1e5449af7458aac0e191, type: 2}
     - {fileID: 11400000, guid: c004111924590aa41a4bb97b51bb808c, type: 2}
-    - {fileID: 11400000, guid: aae71e1902a748e46bf171bb9d3dded7, type: 2}
     m_SchemaDisplayOrder:
     - Localization-Assets-Shared_BundledAssetGroupSchema
     - Localization-Assets-Shared_ContentUpdateGroupSchema

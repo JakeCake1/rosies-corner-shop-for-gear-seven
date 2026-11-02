@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
+    <ui:VisualElement class="booster" picking-mode="Ignore">
+        <ui:VisualElement name="glow" class="booster__glow kit-circle" picking-mode="Ignore" />
+        <ui:Button name="tile" class="btn booster__tile kit-rounded-white">
+            <ui:VisualElement name="icon" class="booster__icon" picking-mode="Ignore" />
+            <ui:VisualElement name="badge" class="booster__badge kit-circle" picking-mode="Ignore">
+                <ui:Label name="count" text="2" class="booster__count" />
+            </ui:VisualElement>
+        </ui:Button>
+        <ui:Label name="title" text="Undo" class="booster__title" />
+    </ui:VisualElement>
+</ui:UXML>

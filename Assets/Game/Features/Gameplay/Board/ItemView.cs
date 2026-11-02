@@ -79,7 +79,10 @@ namespace Game.Features.Gameplay.Board
         {
             _hintTween?.Kill();
             _glow.SetVisible(isOn);
-            if (!isOn) return;
+            if (!isOn)
+            {
+                return;
+            }
 
             _glow.style.opacity = 0.9f;
             _hintTween = _glow.DOFade(0.25f, HintPulseSeconds).SetLoops(-1, LoopType.Yoyo);

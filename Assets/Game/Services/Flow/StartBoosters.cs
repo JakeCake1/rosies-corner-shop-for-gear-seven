@@ -10,6 +10,12 @@ namespace Game.Services.Flow
         /// </summary>
         public static readonly StartBoosters None = new StartBoosters(false, false);
 
+        /// <summary>Start with the third basket open.</summary>
+        public bool HasExtraBasket { get; }
+
+        /// <summary>One bonus Quick Pick usable only in this level.</summary>
+        public bool HasQuickPick { get; }
+
         /// <summary>
         /// Creates a selection.
         /// </summary>
@@ -20,11 +26,5 @@ namespace Game.Services.Flow
             HasExtraBasket = hasExtraBasket;
             HasQuickPick = hasQuickPick;
         }
-
-        /// <summary>Start with the third basket open.</summary>
-        public bool HasExtraBasket { get; }
-
-        /// <summary>One bonus Quick Pick usable only in this level.</summary>
-        public bool HasQuickPick { get; }
     }
 }

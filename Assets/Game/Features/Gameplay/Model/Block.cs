@@ -55,7 +55,10 @@ namespace Game.Features.Gameplay.Model
         {
             foreach (var slot in Slots)
             {
-                if (slot != null) return false;
+                if (slot != null)
+                {
+                    return false;
+                }
             }
 
             return true;

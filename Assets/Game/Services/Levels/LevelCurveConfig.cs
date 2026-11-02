@@ -56,31 +56,73 @@ namespace Game.Services.Levels
         /// <inheritdoc/>
         public void Validate(List<string> errors)
         {
-            if (string.IsNullOrEmpty(_id)) errors.Add($"{name}: Id is empty.");
-            if (string.IsNullOrEmpty(_labelKey)) errors.Add($"{name}: LabelKey is empty.");
-            if (string.IsNullOrEmpty(_subtitleKey)) errors.Add($"{name}: SubtitleKey is empty.");
-            if (_levels.Count == 0) errors.Add($"{name}: no levels.");
+            if (string.IsNullOrEmpty(_id))
+            {
+                errors.Add($"{name}: Id is empty.");
+            }
+            if (string.IsNullOrEmpty(_labelKey))
+            {
+                errors.Add($"{name}: LabelKey is empty.");
+            }
+            if (string.IsNullOrEmpty(_subtitleKey))
+            {
+                errors.Add($"{name}: SubtitleKey is empty.");
+            }
+            if (_levels.Count == 0)
+            {
+                errors.Add($"{name}: no levels.");
+            }
             for (var i = 0; i < _levels.Count; i++)
             {
                 var l = _levels[i];
                 var at = $"{name}: level {i + 1}";
-                if (l.JarsPerRow < 2 || l.JarsPerRow > 3) errors.Add($"{at}: JarsPerRow must be 2 or 3, got {l.JarsPerRow}.");
-                if (l.VisibleRows < 1) errors.Add($"{at}: VisibleRows must be positive, got {l.VisibleRows}.");
-                if (l.PerType % 3 != 0 || l.PerType <= 0) errors.Add($"{at}: PerType must be a positive multiple of 3, got {l.PerType}.");
-                if (l.Types < 1) errors.Add($"{at}: Types must be positive, got {l.Types}.");
-                if (l.Sizes == null || l.Sizes.Length == 0) errors.Add($"{at}: Sizes is empty.");
+                if (l.JarsPerRow < 2 || l.JarsPerRow > 3)
+                {
+                    errors.Add($"{at}: JarsPerRow must be 2 or 3, got {l.JarsPerRow}.");
+                }
+                if (l.VisibleRows < 1)
+                {
+                    errors.Add($"{at}: VisibleRows must be positive, got {l.VisibleRows}.");
+                }
+                if (l.PerType % 3 != 0 || l.PerType <= 0)
+                {
+                    errors.Add($"{at}: PerType must be a positive multiple of 3, got {l.PerType}.");
+                }
+                if (l.Types < 1)
+                {
+                    errors.Add($"{at}: Types must be positive, got {l.Types}.");
+                }
+                if (l.Sizes == null || l.Sizes.Length == 0)
+                {
+                    errors.Add($"{at}: Sizes is empty.");
+                }
                 else
                 {
                     foreach (var s in l.Sizes)
                     {
-                        if (s < 1 || s > l.VisibleRows) errors.Add($"{at}: shelf size {s} doesn't fit {l.VisibleRows} rows.");
+                        if (s < 1 || s > l.VisibleRows)
+                        {
+                            errors.Add($"{at}: shelf size {s} doesn't fit {l.VisibleRows} rows.");
+                        }
                     }
                 }
 
-                if (l.Wrap < 0f || l.Wrap > 1f) errors.Add($"{at}: Wrap must be in 0..1, got {l.Wrap}.");
-                if (l.Deep < 0f || l.Deep > 1f) errors.Add($"{at}: Deep must be in 0..1, got {l.Deep}.");
-                if (l.Boarded > 1) errors.Add($"{at}: at most one nailed shelf, got {l.Boarded}.");
-                if (l.Frozen > 0 && l.Thaw <= 0) errors.Add($"{at}: Thaw must be positive with frozen shelves.");
+                if (l.Wrap < 0f || l.Wrap > 1f)
+                {
+                    errors.Add($"{at}: Wrap must be in 0..1, got {l.Wrap}.");
+                }
+                if (l.Deep < 0f || l.Deep > 1f)
+                {
+                    errors.Add($"{at}: Deep must be in 0..1, got {l.Deep}.");
+                }
+                if (l.Boarded > 1)
+                {
+                    errors.Add($"{at}: at most one nailed shelf, got {l.Boarded}.");
+                }
+                if (l.Frozen > 0 && l.Thaw <= 0)
+                {
+                    errors.Add($"{at}: Thaw must be positive with frozen shelves.");
+                }
             }
         }
     }

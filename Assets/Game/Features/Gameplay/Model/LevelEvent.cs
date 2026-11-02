@@ -5,19 +5,6 @@ namespace Game.Features.Gameplay.Model
     /// </summary>
     public readonly struct LevelEvent
     {
-        /// <summary>
-        /// Creates an event.
-        /// </summary>
-        /// <param name="type">What happened.</param>
-        /// <param name="id">Main subject id: shelf, jar or basket id depending on <paramref name="type"/>.</param>
-        /// <param name="other">Secondary value: column index, source shelf id or basket slot.</param>
-        public LevelEvent(LevelEventType type, int id, int other)
-        {
-            Type = type;
-            Id = id;
-            Other = other;
-        }
-
         /// <summary>What happened.</summary>
         public LevelEventType Type { get; }
 
@@ -30,6 +17,19 @@ namespace Game.Features.Gameplay.Model
         /// Column for arrivals and folds, the key/hammer source for unlocks, the slot for new baskets.
         /// </summary>
         public int Other { get; }
+
+        /// <summary>
+        /// Creates an event.
+        /// </summary>
+        /// <param name="type">What happened.</param>
+        /// <param name="id">Main subject id: shelf, jar or basket id depending on <paramref name="type"/>.</param>
+        /// <param name="other">Secondary value: column index, source shelf id or basket slot.</param>
+        public LevelEvent(LevelEventType type, int id, int other)
+        {
+            Type = type;
+            Id = id;
+            Other = other;
+        }
 
         /// <summary>
         /// Shorthand constructor.

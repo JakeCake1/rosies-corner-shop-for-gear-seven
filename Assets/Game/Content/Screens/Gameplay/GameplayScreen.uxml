@@ -1,0 +1,57 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Game/Content/Screens/Gameplay/Gameplay.uss" />
+    <!-- BoardView positions basket-area, counter and cabinet for the level and screen size. -->
+    <ui:VisualElement name="board" class="board" picking-mode="Ignore">
+        <ui:VisualElement name="basket-area" class="basket-area" picking-mode="Ignore">
+            <ui:VisualElement class="basket-area__ledge" picking-mode="Ignore" />
+            <ui:VisualElement name="baskets" class="basket-area__baskets" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="counter" class="counter kit-board-oak" picking-mode="Ignore">
+            <ui:VisualElement name="counter-slots" class="counter__slots" picking-mode="Ignore" />
+            <ui:Label name="counter-label" text="COUNTER" class="counter__label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="cabinet" class="cabinet kit-cabinet" picking-mode="Ignore">
+            <ui:VisualElement class="cabinet__awning" picking-mode="Ignore" />
+            <ui:VisualElement name="stock-tabs" class="cabinet__tabs" picking-mode="Ignore">
+                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
+                    <ui:Label text="all out" class="stock-tab__text" />
+                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
+                    <ui:Label text="all out" class="stock-tab__text" />
+                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stock-tab kit-chip" picking-mode="Ignore">
+                    <ui:Label text="all out" class="stock-tab__text" />
+                    <ui:VisualElement class="stock-tab__hammer" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="columns" class="cabinet__columns" picking-mode="Ignore">
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="boosters" class="booster-bar" picking-mode="Ignore" />
+        <ui:VisualElement name="hud" class="hud" picking-mode="Ignore">
+            <ui:VisualElement name="badge" class="hud-badge kit-badge-gold" picking-mode="Ignore">
+                <ui:Label name="badge-title" text="LEVEL" class="hud-badge__title" />
+                <ui:Label name="level-number" text="1" class="hud-badge__number" />
+            </ui:VisualElement>
+            <ui:VisualElement name="progress" class="hud-progress kit-bar-track" picking-mode="Ignore">
+                <ui:VisualElement class="hud-progress__area" picking-mode="Ignore">
+                    <ui:VisualElement name="progress-fill" class="hud-progress__fill kit-bar-fill" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="progress-text" text="0 / 18" class="hud-progress__text" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-coins chip kit-chip" picking-mode="Ignore">
+                <ui:VisualElement class="chip__coin icon-coin" picking-mode="Ignore" />
+                <ui:Label name="coins-value" text="150" class="chip__value" />
+            </ui:VisualElement>
+            <ui:Button name="settings" class="btn kit-btn-wood hud-settings">
+                <ui:VisualElement class="hud-settings__icon icon-gear" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement name="flight" class="flight" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

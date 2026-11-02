@@ -115,8 +115,14 @@ namespace Game.Services.UI
 
         private void StartFollowing()
         {
-            if (_follow == null) _follow = Root.schedule.Execute(Follow).Every(0);
-            else _follow.Resume();
+            if (_follow == null)
+            {
+                _follow = Root.schedule.Execute(Follow).Every(0);
+            }
+            else
+            {
+                _follow.Resume();
+            }
         }
 
         private void Follow()
@@ -127,18 +133,30 @@ namespace Game.Services.UI
                 return;
             }
 
-            if (_bubbleAnchor != null) PlaceBubble();
-            if (_handTarget != null) PlaceHand();
+            if (_bubbleAnchor != null)
+            {
+                PlaceBubble();
+            }
+            if (_handTarget != null)
+            {
+                PlaceHand();
+            }
         }
 
         private void PlaceBubble()
         {
-            if (_bubbleAnchor == null || _bubbleAnchor.panel == null) return;
+            if (_bubbleAnchor == null || _bubbleAnchor.panel == null)
+            {
+                return;
+            }
 
             var bounds = Bounds(_bubbleAnchor);
             var space = Root.layout.size;
             var size = _bubble.layout.size;
-            if (float.IsNaN(size.x) || size.x <= 0f) size = new Vector2(270f, 60f);
+            if (float.IsNaN(size.x) || size.x <= 0f)
+            {
+                size = new Vector2(270f, 60f);
+            }
             var x = Mathf.Clamp(bounds.center.x - size.x / 2f, EdgeMargin, space.x - size.x - EdgeMargin);
             var y = _isAbove ? bounds.yMin - Gap - size.y : bounds.yMax + Gap;
             VisualElementTweens.SetPosition(_bubble, new Vector2(x, y));
@@ -146,7 +164,10 @@ namespace Game.Services.UI
 
         private void PlaceHand()
         {
-            if (_handTarget == null || _handTarget.panel == null) return;
+            if (_handTarget == null || _handTarget.panel == null)
+            {
+                return;
+            }
 
             var center = Bounds(_handTarget).center + HandOffset;
             _hand.PlaceCentered(center, HandSize);

@@ -12,6 +12,15 @@ namespace Game.Features.Album
     /// </summary>
     public sealed class AlbumEntry
     {
+        /// <summary>Item art.</summary>
+        public Sprite Sprite { get; }
+
+        /// <summary>Item name or "?".</summary>
+        public string Label { get; }
+
+        /// <summary>Shipped at least once.</summary>
+        public bool IsFound { get; }
+
         /// <summary>
         /// Creates a cell.
         /// </summary>
@@ -24,14 +33,5 @@ namespace Game.Features.Album
             Label = label;
             IsFound = isFound;
         }
-
-        /// <summary>Item art.</summary>
-        public Sprite Sprite { get; }
-
-        /// <summary>Item name or "?".</summary>
-        public string Label { get; }
-
-        /// <summary>Shipped at least once.</summary>
-        public bool IsFound { get; }
     }
 }

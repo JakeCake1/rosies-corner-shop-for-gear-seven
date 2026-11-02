@@ -35,7 +35,10 @@ namespace Game.Flow
             await _gate.WaitAsync(ct);
             try
             {
-                if (_current != null) await _current.Exit(ct);
+                if (_current != null)
+                {
+                    await _current.Exit(ct);
+                }
                 _current = _resolver.Resolve<TState>();
                 await _current.Enter(ct);
             }

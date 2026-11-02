@@ -84,6 +84,7 @@ UI Toolkit re-resolves styles and recomputes layout only for elements that chang
 7. Query elements once (`Q<T>(name)`) and cache them; never query per frame.
 8. Use one `PanelSettings` for the whole game; a second panel means a second layout and render pass.
 9. Don't animate UI with an `Animator`; use DOTween on element styles (`VisualElementTweens`) and kill tweens when the view is unbound or returned to a pool.
+10. **Sprite atlases:** UI sprites drawn at the same time on one screen go into one Sprite Atlas (V2) in `Content/Visual/Atlases/` (one atlas for the shared kit and icons, one per screen for its own sprites). UI Toolkit batches elements whose images share an atlas texture. Don't put sprites of different screens or rarely shown sprites (the album's item sprites) into a screen's atlas: the whole atlas texture is loaded with it.
 
 ## Assets, Memory and Loading
 

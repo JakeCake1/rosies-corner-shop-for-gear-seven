@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Items-Level-01
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Items-Level-01
+  m_GUID: 4b4436b11dd5cfe4d93eaf9a8612113d
+  m_SerializeEntries:
+  - m_GUID: 9d226fd9d223ec64ea59f03308a4a352
+    m_Address: item/050_iced-tea
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4f1cd3c0bba35a4cad447fd674c7d7c
+    m_Address: item/009_blueberry-yogurt
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f5c9287428feb2a448314dba9fa555d5
+    m_Address: item/029_cherry-pie
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: c6ad8b382ee1e674f9dcae24b838a357, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 94cf8178a48ec914bae330e96b50bdc6, type: 2}
+    - {fileID: 11400000, guid: 02b79842da5d9ed458b3d736d66aa8b2, type: 2}
+    m_SchemaDisplayOrder:
+    - Items-Level-01_BundledAssetGroupSchema
+    - Items-Level-01_ContentUpdateGroupSchema
+  m_IncludeInBuild: 1
+  m_IncludeInBuildMigrated: 1

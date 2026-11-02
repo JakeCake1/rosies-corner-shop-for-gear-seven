@@ -8,8 +8,9 @@ namespace Game.Services.Content
     /// shared by the level generator, the shelves, the home showcase and the album.
     /// </summary>
     /// <remarks>
-    /// Item sprites are referenced directly (not via <c>AssetReference</c>): the catalog is one addressable asset
-    /// whose sprites always load together, so per-item handles would add bookkeeping without saving memory.
+    /// Item sprites are <c>AssetReference</c>s in per-level Addressables groups (<c>Items-Level-NN</c> holds the items
+    /// that first appear in level NN of the default curve, <c>Items-Rest</c> the others), so the catalog bundle carries
+    /// only data. Groups and references are rebuilt by <c>Tools/Addressables/Rebuild Level Item Groups</c>.
     /// </remarks>
     [CreateAssetMenu(menuName = "Game/Item Catalog", fileName = "ItemCatalog")]
     public sealed class ItemCatalog : ScriptableObject, IValidatableConfig
@@ -62,13 +63,25 @@ namespace Game.Services.Content
         /// <inheritdoc/>
         public void Validate(List<string> errors)
         {
-            if (_items.Count == 0) errors.Add($"{name}: no items.");
+            if (_items.Count == 0)
+            {
+                errors.Add($"{name}: no items.");
+            }
             for (var i = 0; i < _items.Count; i++)
             {
                 var it = _items[i];
-                if (it.Id != i) errors.Add($"{name}: item at index {i} has id {it.Id}.");
-                if (it.Sprite == null) errors.Add($"{name}: item {it.Id} '{it.Name}' has no sprite.");
-                if (!_families.Contains(it.Family)) errors.Add($"{name}: item {it.Id} has unknown family '{it.Family}'.");
+                if (it.Id != i)
+                {
+                    errors.Add($"{name}: item at index {i} has id {it.Id}.");
+                }
+                if (it.Sprite == null || !it.Sprite.RuntimeKeyIsValid())
+                {
+                    errors.Add($"{name}: item {it.Id} '{it.Name}' has no sprite.");
+                }
+                if (!_families.Contains(it.Family))
+                {
+                    errors.Add($"{name}: item {it.Id} has unknown family '{it.Family}'.");
+                }
                 if (string.IsNullOrEmpty(it.Shape) || string.IsNullOrEmpty(it.ColorBucket))
                 {
                     errors.Add($"{name}: item {it.Id} is missing shape or color group.");
@@ -77,7 +90,10 @@ namespace Game.Services.Content
 
             foreach (var id in _defaultShowcase)
             {
-                if (id < 0 || id >= _items.Count) errors.Add($"{name}: showcase id {id} is out of range.");
+                if (id < 0 || id >= _items.Count)
+                {
+                    errors.Add($"{name}: showcase id {id} is out of range.");
+                }
             }
         }
     }

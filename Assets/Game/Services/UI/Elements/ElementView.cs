@@ -39,7 +39,10 @@ namespace Game.Services.UI.Elements
         protected T Q<T>(string name) where T : VisualElement
         {
             var element = Root.Q<T>(name);
-            if (element == null) Debug.LogError($"[UI] {GetType().Name}: no {typeof(T).Name} named '{name}'");
+            if (element == null)
+            {
+                Debug.LogError($"[UI] {GetType().Name}: no {typeof(T).Name} named '{name}'");
+            }
             return element;
         }
 
@@ -84,7 +87,7 @@ namespace Game.Services.UI.Elements
         /// <param name="text">Text (rich text allowed).</param>
         /// <param name="classes">USS classes.</param>
         /// <returns>The label.</returns>
-        protected static Label CreateLabel(string text, params string[] classes)
+        public static Label CreateLabel(string text, params string[] classes)
         {
             var label = new Label(text) { pickingMode = PickingMode.Ignore };
             foreach (var c in classes)
@@ -100,7 +103,7 @@ namespace Game.Services.UI.Elements
         /// </summary>
         /// <param name="classes">USS classes.</param>
         /// <returns>The element.</returns>
-        protected static VisualElement CreateElement(params string[] classes)
+        public static VisualElement CreateElement(params string[] classes)
         {
             var element = new VisualElement();
             foreach (var c in classes)
