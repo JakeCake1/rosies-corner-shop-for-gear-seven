@@ -11,6 +11,10 @@ namespace Game.Features.Gameplay.Board
     /// Shelf motion in the cabinet: new shelves drop in from above (column by column at a level start), shelves slide
     /// down when the shelf below them leaves. Records when each shelf settles, so items wait for it.
     /// </summary>
+    /// <remarks>
+    /// <c>style.bottom</c> is set to the resting place right away (one layout pass); the motion itself is a
+    /// <c>translate</c> tween toward zero, so a moving shelf with all its items doesn't relayout every frame.
+    /// </remarks>
     public sealed class ShelfAnimator
     {
         private const string SlotClass = "shelf-slot";
@@ -81,8 +85,8 @@ namespace Game.Features.Gameplay.Board
             }
 
             var delay = (isStart ? StartDropDelay + column * ColumnStagger : LaterDropDelay) + fresh * FreshStagger;
-            view.Root.style.bottom = layout.ColumnsHeight + DropStartAbove + fresh * layout.RowHeight * FreshStartStep;
-            var drop = view.Root.DOBottom(bottom, DropSeconds).SetDelay(delay).SetEase(Ease.OutBack, DropOvershoot)
+            var from = layout.ColumnsHeight + DropStartAbove + fresh * layout.RowHeight * FreshStartStep;
+            var drop = Slide(view, from, bottom, DropSeconds).SetDelay(delay).SetEase(Ease.OutBack, DropOvershoot)
                 .SetId(_tweenId);
             // The level session plays one roll for the whole opening drop; later shelves each get their own.
             if (!isStart)
@@ -107,14 +111,16 @@ namespace Game.Features.Gameplay.Board
                 return;
             }
 
+            var from = VisibleBottom(view);
             view.Root.Kill();
             if (isInstant)
             {
                 view.Root.style.bottom = bottom;
+                VisualElementTweens.SetTranslate(view.Root, Vector2.zero);
                 return;
             }
 
-            view.Root.DOBottom(bottom, SlideSeconds).SetDelay(SlideDelay).SetEase(Ease.OutBack, SlideOvershoot)
+            Slide(view, from, bottom, SlideSeconds).SetDelay(SlideDelay).SetEase(Ease.OutBack, SlideOvershoot)
                 .SetId(_tweenId);
             view.SettledAt = now + SlideSettle;
         }
@@ -131,6 +137,17 @@ namespace Game.Features.Gameplay.Board
             view.Root.Kill();
             view.Root.DOScale(new Vector2(1f, 0f), FoldSeconds).SetEase(Ease.InBack).SetId(_tweenId)
                 .OnComplete(() => done());
+        }
+
+        private static float VisibleBottom(ShelfView view) =>
+            view.Root.style.bottom.value.value - VisualElementTweens.GetTranslate(view.Root).y;
+
+        private static Tweener Slide(ShelfView view, float from, float to, float seconds)
+        {
+            view.Root.style.bottom = to;
+            // A positive translate moves down, so a shelf drawn higher than its resting place starts at to - from.
+            VisualElementTweens.SetTranslate(view.Root, new Vector2(0f, to - from));
+            return view.Root.DOTranslate(Vector2.zero, seconds);
         }
     }
 }

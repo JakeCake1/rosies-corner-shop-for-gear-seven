@@ -183,6 +183,8 @@ namespace Game.Features.Gameplay.Board
         /// <inheritdoc/>
         protected override void OnAttached()
         {
+            // Shelves drop and slide with translate; the hint moves the whole subtree (items included) on the GPU.
+            Root.usageHints = UsageHints.DynamicTransform;
             _floorLayer = Q(FloorsName);
             _cellLayer = Q(CellsName);
             _backMarkLayer = Q(BackMarksName);
