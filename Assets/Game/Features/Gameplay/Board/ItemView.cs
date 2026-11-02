@@ -21,6 +21,7 @@ namespace Game.Features.Gameplay.Board
         private VisualElement _image;
         private Action<ItemView> _tapped;
         private Tween _hintTween;
+        private Vector2 _spriteSize = Vector2.one;
 
         /// <summary>Jar id shown by this view (0 when pooled).</summary>
         public int JarId { get; private set; }
@@ -53,7 +54,7 @@ namespace Game.Features.Gameplay.Board
         {
             JarId = jarId;
             IsWrapped = isWrapped;
-            _image.SetSprite(sprite);
+            ShowSprite(sprite);
             _tapped = tapped;
             SetHint(false);
         }
@@ -65,7 +66,7 @@ namespace Game.Features.Gameplay.Board
         public void Unwrap(Sprite sprite)
         {
             IsWrapped = false;
-            _image.SetSprite(sprite);
+            ShowSprite(sprite);
             _image.Kill(true);
             VisualElementTweens.SetScale(_image, Vector2.one * 0.8f);
             _image.DOScale(1f, 0.25f).SetEase(Ease.OutBack);
@@ -95,6 +96,22 @@ namespace Game.Features.Gameplay.Board
         {
             _image.Kill(true);
             _image.DOShake(0.35f, new Vector2(6f, 0f), 14);
+        }
+
+        /// <summary>
+        /// Uniform scale that makes the item, laid out at <paramref name="layoutSize"/>, look as if it were laid out at
+        /// <paramref name="visibleSize"/>. Flights scale the item instead of resizing it, so they don't relayout the
+        /// panel every frame; the picture is fitted into its box (scale-to-fit), so the scale follows the fitted
+        /// picture rather than the box.
+        /// </summary>
+        /// <param name="layoutSize">Size the item is laid out at, in panel pixels.</param>
+        /// <param name="visibleSize">Size the item should appear at, in panel pixels.</param>
+        /// <returns>Scale factor for <c>style.scale</c> on both axes.</returns>
+        public float FitScale(Vector2 layoutSize, Vector2 visibleSize)
+        {
+            var from = Mathf.Min(layoutSize.x / _spriteSize.x, layoutSize.y / _spriteSize.y);
+            var to = Mathf.Min(visibleSize.x / _spriteSize.x, visibleSize.y / _spriteSize.y);
+            return from > 0f ? to / from : 1f;
         }
 
         /// <summary>
@@ -137,10 +154,18 @@ namespace Game.Features.Gameplay.Board
         protected override void OnAttached()
         {
             Root.AddToClassList(ItemClass);
+            // Items fly with translate/scale; the hint keeps their moves on the GPU instead of re-tessellating them.
+            Root.usageHints = UsageHints.DynamicTransform;
             _image = CreateElement(ImageClass);
             _image.pickingMode = PickingMode.Ignore;
             Root.Add(_image);
             Root.RegisterCallback<PointerDownEvent>(_ => _tapped?.Invoke(this));
+        }
+
+        private void ShowSprite(Sprite sprite)
+        {
+            _image.SetSprite(sprite);
+            _spriteSize = sprite != null ? sprite.rect.size : Vector2.one;
         }
     }
 }

@@ -13,7 +13,9 @@ namespace Game.Features.Gameplay.Board
     /// board, and the key that flies to the shelf it unlocks.
     /// </summary>
     /// <remarks>
-    /// Every tween uses the board's tween id, so a board rebuild kills all flights at once.
+    /// Every tween uses the board's tween id, so a board rebuild kills all flights at once. A flight sets the flyer's
+    /// layout (position and size) once at its start and then animates only <c>translate</c>, <c>scale</c> and
+    /// <c>rotate</c>, so a flying item doesn't trigger a layout pass every frame.
     /// </remarks>
     public sealed class ItemFlights
     {
@@ -53,14 +55,20 @@ namespace Game.Features.Gameplay.Board
         /// </summary>
         /// <param name="view">The item.</param>
         /// <param name="panelCenter">Where its center is now, in panel coordinates.</param>
-        /// <param name="size">Its size during the flight start.</param>
+        /// <param name="size">Its layout size at the flight start; the scale of an item caught mid-flight is applied
+        /// to it, so the item keeps its visible size.</param>
         public void Detach(ItemView view, Vector2 panelCenter, Vector2 size)
         {
-            view.Root.Kill();
-            _layer.Add(view.Root);
-            view.Root.PlaceCentered(_layer.WorldToLocal(panelCenter), size);
-            view.Root.style.right = StyleKeyword.Null;
-            view.Root.style.bottom = StyleKeyword.Null;
+            var root = view.Root;
+            var visibleSize = size * InlineScale(root);
+            root.Kill();
+            _layer.Add(root);
+            root.PlaceCentered(_layer.WorldToLocal(panelCenter), visibleSize);
+            root.style.right = StyleKeyword.Null;
+            root.style.bottom = StyleKeyword.Null;
+            // Explicit values, not Null: tween getters read inline values, resolved ones lag a frame behind.
+            VisualElementTweens.SetTranslate(root, Vector2.zero);
+            VisualElementTweens.SetScale(root, Vector2.one);
         }
 
         /// <summary>
@@ -79,7 +87,7 @@ namespace Game.Features.Gameplay.Board
             var root = view.Root;
             var startSize = new Vector2(root.style.width.value.value, root.style.height.value.value);
             var start = VisualElementTweens.GetPosition(root) + startSize / 2f;
-            DOTween.To(() => 0f, t => StepFlight(root, cell, start, startSize, lift, t), 1f, seconds)
+            DOTween.To(() => 0f, t => StepFlight(view, cell, start, startSize, lift, t), 1f, seconds)
                 .SetEase(Ease.InOutQuad)
                 .SetDelay(delay)
                 .SetTarget(root)
@@ -97,9 +105,10 @@ namespace Game.Features.Gameplay.Board
         {
             Detach(view, view.Root.worldBound.center, view.Root.layout.size);
             var size = new Vector2(view.Root.style.width.value.value, view.Root.style.height.value.value);
-            var target = _layer.WorldToLocal(panelTarget) - size / 2f;
+            var start = VisualElementTweens.GetPosition(view.Root) + size / 2f;
+            var offset = _layer.WorldToLocal(panelTarget) - start;
             DOTween.Sequence().SetId(_tweenId)
-                .Append(view.Root.DOPosition(target, FlyAwaySeconds).SetEase(Ease.InQuad))
+                .Append(view.Root.DOTranslate(offset, FlyAwaySeconds).SetEase(Ease.InQuad))
                 .Join(view.Root.DOScale(FlyAwayScale, FlyAwaySeconds))
                 .OnComplete(() => done());
         }
@@ -111,7 +120,7 @@ namespace Game.Features.Gameplay.Board
         /// <param name="target">The unlocked shelf; followed while it moves.</param>
         public void FlyKey(Vector2 start, VisualElement target)
         {
-            var key = new VisualElement { pickingMode = PickingMode.Ignore };
+            var key = new VisualElement { pickingMode = PickingMode.Ignore, usageHints = UsageHints.DynamicTransform };
             key.AddToClassList(KeyClass);
             _layer.Add(key);
             var from = _layer.WorldToLocal(start);
@@ -119,7 +128,7 @@ namespace Game.Features.Gameplay.Board
             DOTween.To(() => 0f, t =>
                 {
                     var to = _layer.WorldToLocal(target.worldBound.center);
-                    key.PlaceCentered(Arc(from, to, KeyLift, t), KeySize);
+                    VisualElementTweens.SetTranslate(key, Arc(from, to, KeyLift, t) - from);
                 }, 1f, KeySeconds)
                 .SetId(_tweenId)
                 .OnComplete(() =>
@@ -133,9 +142,15 @@ namespace Game.Features.Gameplay.Board
         private static Vector2 Arc(Vector2 from, Vector2 to, float lift, float t) =>
             Vector2.Lerp(from, to, t) + Vector2.down * (lift * ArcHeightFactor * t * (1f - t));
 
-        private void StepFlight(VisualElement root, VisualElement cell, Vector2 start, Vector2 startSize, float lift,
+        private static Vector2 InlineScale(VisualElement element) =>
+            element.style.scale.keyword == StyleKeyword.Undefined
+                ? VisualElementTweens.GetScale(element)
+                : Vector2.one;
+
+        private void StepFlight(ItemView view, VisualElement cell, Vector2 start, Vector2 startSize, float lift,
             float t)
         {
+            var root = view.Root;
             var end = _layer.WorldToLocal(cell.worldBound.center);
             var endSize = cell.layout.size;
             if (float.IsNaN(endSize.x))
@@ -143,7 +158,9 @@ namespace Game.Features.Gameplay.Board
                 endSize = startSize;
             }
 
-            root.PlaceCentered(Arc(start, end, lift, t), Vector2.Lerp(startSize, endSize, t));
+            var scale = view.FitScale(startSize, Vector2.Lerp(startSize, endSize, t));
+            VisualElementTweens.SetTranslate(root, Arc(start, end, lift, t) - start);
+            VisualElementTweens.SetScale(root, new Vector2(scale, scale));
             VisualElementTweens.SetRotation(root, lift > 0f ? -TiltDegrees * Mathf.Sin(t * Mathf.PI) : 0f);
         }
 
