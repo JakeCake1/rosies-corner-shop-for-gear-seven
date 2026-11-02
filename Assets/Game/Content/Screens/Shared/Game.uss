@@ -96,7 +96,10 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(199, 61, 79, 1);
+    /* #game.tricky: crossed 45 deg berry stripes (gingham) over the wallpaper */
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/gingham.png");
+    background-repeat: repeat repeat;
+    background-size: 45px 45px;
     opacity: 0;
 }
 
@@ -129,13 +132,36 @@
     white-space: nowrap;
 }
 
-.btn:hover {
+/* The default theme paints a dark background on hover/press/focus (its :hover:active outranks .btn:hover). */
+.btn:hover,
+.btn:active,
+.btn:focus,
+.btn:hover:active,
+.btn:hover:focus,
+.btn:active:focus,
+.btn:hover:active:focus {
     background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
 }
 
-.btn:active {
-    -unity-background-image-tint-color: rgb(217, 217, 217);
-    background-color: rgba(0, 0, 0, 0);
+/* Press: lipped kit buttons sink by the lip (the prototype's .btn:active translateY(4px)) and switch to the
+   *_pressed sprite with a 1 px lip (Kit.uss). */
+.btn {
+    transition-property: translate;
+    transition-duration: 0.08s;
+    transition-timing-function: ease-out;
+}
+
+.btn.kit-btn-berry:active,
+.btn.kit-btn-gold:active,
+.btn.kit-btn-green:active,
+.btn.kit-btn-grey:active,
+.btn.kit-btn-wood:active {
+    translate: 0 4px;
+}
+
+.btn.kit-btn-gear:active {
+    translate: 0 1px;
 }
 
 .btn:disabled {
@@ -164,13 +190,15 @@
 
 /* Hanging signs (home, album) */
 
+/* Ropes hang from the bunting string (y = 13..15 px at the rope positions) down onto the sign. */
 .sign-rope {
     position: absolute;
-    top: -42px;
-    width: 3px;
-    height: 44px;
-    background-color: #8C6A3E;
-    border-radius: 1px;
+    top: -48px;
+    width: 4px;
+    height: 52px;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/rope.png");
+    background-repeat: repeat-y;
+    background-size: 4px 8px;
 }
 
 .sign-rope--left {
@@ -197,12 +225,41 @@
     -unity-slice-top: 30;
     -unity-slice-right: 30;
     -unity-slice-bottom: 30;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
     -unity-background-image-tint-color: rgba(59, 41, 28, 0.92);
 }
 
 .toast--warning {
     -unity-background-image-tint-color: rgba(199, 61, 79, 0.95);
+}
+
+/* Tip that pops up above a button: zero-size anchor at the button's top centre, white pill with a shadow. */
+.toast-tip {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.toast-tip__pill {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    padding: 9px 18px 16px 18px;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/pill_shadow.png");
+    -unity-slice-left: 42;
+    -unity-slice-top: 38;
+    -unity-slice-right: 42;
+    -unity-slice-bottom: 54;
+    -unity-slice-scale: 1px;
+}
+
+.toast-tip__text {
+    font-size: 15px;
+    color: var(--ink);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
 }
 
 .toast__text {
@@ -221,7 +278,7 @@
     -unity-slice-top: 54;
     -unity-slice-right: 54;
     -unity-slice-bottom: 54;
-    -unity-slice-scale: 0.5px;
+    -unity-slice-scale: 1px;
 }
 
 .coach-bubble__text {
