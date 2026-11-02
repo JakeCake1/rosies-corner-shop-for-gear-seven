@@ -34,34 +34,35 @@
 }
 
 .hud-badge {
+    /* .lvlBadge: 52 px disc at (6, 2) in the 64 x 68 sprite (lip and shadow below it) */
     position: absolute;
-    left: 0;
-    top: -2px;
-    width: 52px;
-    height: 54px;
+    left: -6px;
+    top: -4px;
+    width: 64px;
+    height: 68px;
 }
 
 .hud-badge__title {
     position: absolute;
-    top: 8px;
-    left: 0;
-    right: 0;
+    top: 11px;
+    left: 6px;
+    right: 6px;
     height: 12px;
-    font-size: 9px;
-    letter-spacing: 1px;
-    color: var(--walnut);
+    font-size: 10px;
+    letter-spacing: 0.6px;
+    color: #5A3A0A;
     -unity-text-align: middle-center;
 }
 
 .hud-badge__number {
     position: absolute;
-    top: 14px;
-    bottom: 4px;
-    left: 0;
-    right: 0;
-    font-size: 24px;
+    top: 21px;
+    height: 26px;
+    left: 6px;
+    right: 6px;
+    font-size: 22px;
     -unity-font-style: bold;
-    color: var(--walnut);
+    color: #5A3A0A;
     -unity-text-align: middle-center;
 }
 
@@ -145,10 +146,11 @@
 }
 
 .basket-area__ledge {
+    /* The baskets stand on the plank: the basket art ends 89 px down its 92 px box. */
     position: absolute;
     left: -2%;
     right: -2%;
-    bottom: 16px;
+    top: 87px;
     height: 22px;
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/ledge.png");
     background-repeat: repeat no-repeat;
@@ -619,36 +621,51 @@
 .booster__glow {
     position: absolute;
     left: -3px;
-    top: -6px;
+    top: -9px;
     width: 76px;
     height: 76px;
     -unity-background-image-tint-color: rgb(255, 217, 102);
 }
 
 .booster__tile {
+    /* .bst .ic: 58 px face at (6, 2) in the 70 x 78 sprite (lip and shadow below it) */
     position: absolute;
-    left: 5px;
-    top: 0;
-    width: 60px;
-    height: 60px;
-    -unity-background-image-tint-color: #FFF8EA;
+    left: 0;
+    top: -2px;
+    width: 70px;
+    height: 78px;
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/booster_tile.png");
+    transition-property: translate;
+    transition-duration: 0.08s;
 }
 
+/* .bst:active .ic: down 3 px, the pressed sprite has a 1 px lip */
+.booster__tile:active {
+    background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/booster_tile_pressed.png");
+    translate: 0 3px;
+}
+
+/* .bst .ic svg: 38 px, centred on the face */
 .booster__icon {
     position: absolute;
-    left: 7px;
-    top: 7px;
-    right: 7px;
-    bottom: 7px;
+    left: 16px;
+    top: 12px;
+    width: 38px;
+    height: 38px;
     -unity-background-scale-mode: scale-to-fit;
 }
 
+/* .bst .cnt: top -6px, 9 px past the face's right edge */
 .booster__badge {
     position: absolute;
-    right: -8px;
-    top: -8px;
-    width: 24px;
-    height: 24px;
+    right: -5px;
+    top: -6px;
+    /* 22 px disc plus the 2 px white outline (0 0 0 2px #fff) */
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+    border-color: white;
+    border-radius: 13px;
     -unity-background-image-tint-color: var(--berry);
     justify-content: center;
 }
@@ -658,7 +675,7 @@
 }
 
 .booster__count {
-    font-size: 14px;
+    font-size: 13px;
     -unity-font-style: bold;
     color: white;
     -unity-text-align: middle-center;
@@ -673,10 +690,9 @@
     height: 22px;
     font-size: 13px;
     -unity-font-style: bold;
-    color: white;
+    color: #FFF8EA;
     -unity-text-align: middle-center;
-    -unity-text-outline-width: 1px;
-    -unity-text-outline-color: rgb(63, 39, 20);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 /* Level banner */

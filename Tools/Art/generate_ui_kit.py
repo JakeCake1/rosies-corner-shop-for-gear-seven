@@ -160,6 +160,27 @@ class Canvas:
         mask = ImageChops.subtract(self._rr_mask(box, r), self._rr_mask((x0, y0 + width, x1, y1 + width), r))
         self._paste(Image.new("RGBA", self.img.size, color), mask)
 
+    def radial_ellipse(self, box, focus, stops):
+        """Ellipse filled with a CSS radial-gradient(circle at focus, stops): focus is a fraction of the box, the
+        gradient ends at the farthest corner (CSS default)."""
+        x0, y0, x1, y1 = [v * AA for v in box]
+        fx, fy = x0 + (x1 - x0) * focus[0], y0 + (y1 - y0) * focus[1]
+        radius = max(math.hypot(cx - fx, cy - fy) for cx in (x0, x1) for cy in (y0, y1))
+        grad = Image.new("RGBA", self.img.size, (0, 0, 0, 0))
+        px = grad.load()
+        for y in range(int(y0), int(y1)):
+            for x in range(int(x0), int(x1)):
+                t = min(1, math.hypot(x - fx, y - fy) / radius)
+                for (ta, ca), (tb, cb) in zip(stops, stops[1:]):
+                    if t <= tb:
+                        px[x, y] = mix(ca, cb, 0 if tb == ta else (t - ta) / (tb - ta))
+                        break
+                else:
+                    px[x, y] = stops[-1][1]
+        mask = Image.new("L", self.img.size, 0)
+        ImageDraw.Draw(mask).ellipse((x0, y0, x1 - 1, y1 - 1), fill=255)
+        self._paste(grad, mask)
+
     def ring_rr(self, box, r, color, width):
         """Inset outline of a rounded rect (CSS inset box-shadow 0 0 0 width)."""
         self.rr(box, r, None, color, width)
@@ -456,12 +477,34 @@ def build():
     c = Canvas(30 * S, 24 * S)
     c.vgrad_rr((0, 0, c.w, c.h), 12 * S, shade(T["berry"], .2), rgba(T["berry_d"]))
     out("bar_fill", c, [12 * S] * 4)
-    for name, face, rim in (("badge_gold", T["gold"], T["gold_d"]), ("badge_red", T["berry"], T["berry_dd"])):
-        c = Canvas(52 * S, 54 * S)
-        c.ellipse((0, 2 * S, 52 * S, 54 * S), rgba(rim))
-        c.ellipse((0, 0, 52 * S, 52 * S), shade(face, -.05))
-        c.ellipse((4 * S, 4 * S, 48 * S, 48 * S), shade(face, .15))
+    # level badge (.lvlBadge / .lvlBadge.hard): 52 px disc, radial gradient lit from the top left, 3 px white inner
+    # ring, 3 px lip and a soft shadow (0 6px 10px). The disc sits at (6, 2) in a 64 x 68 sprite.
+    for name, stops, lip in (
+            ("badge_gold", [(0, rgba("#FFE7A8")), (.55, rgba(T["gold"])), (1, rgba(T["gold_d"]))], rgba("#8A5E10")),
+            ("badge_red", [(0, rgba("#FFB0A0")), (.55, rgba("#D84A3A")), (1, rgba("#8E2418"))], rgba("#5E170F"))):
+        c = Canvas(64 * S, 68 * S)
+        disc = (6 * S, 2 * S, 58 * S, 54 * S)
+        layer, d = c._layer()
+        d.ellipse((6 * S * AA, 8 * S * AA, 58 * S * AA, 60 * S * AA), fill=(0, 0, 0, 51))
+        c._commit(layer.filter(ImageFilter.GaussianBlur(5 * S * AA / 2)))
+        c.ellipse((disc[0], disc[1] + 3 * S, disc[2], disc[3] + 3 * S), lip)
+        c.radial_ellipse(disc, (.35, .30), stops)
+        c.ellipse(disc, None, (255, 255, 255, 89), 3 * S)
         out(name, c)
+
+    # booster tile (.bst .ic): 58 px, 18 px radius, cream gradient, 3 px tan inner ring, 4 px lip (0 4px 0 #A77A48)
+    # and a soft shadow (0 8px 12px). Pressed (.bst:active .ic): moved down 3 px by USS, 1 px lip, smaller shadow.
+    # The face sits at (6, 2) in a 70 x 78 sprite.
+    for pressed in (False, True):
+        c = Canvas(70 * S, 78 * S)
+        face = (6 * S, 2 * S, 64 * S, 60 * S)
+        lip_px = 1 if pressed else 4
+        c.shadow_rr((8 * S, (5 if pressed else 10) * S, 62 * S, (63 if pressed else 68) * S), 18 * S,
+                    (40, 20, 5, 51 if pressed else 64), (3 if pressed else 6) * S)
+        c.rr((face[0], face[1] + lip_px * S, face[2], face[3] + lip_px * S), 18 * S, rgba("#A77A48"))
+        c.vgrad_rr(face, 18 * S, rgba("#FFFDF5"), rgba("#F1E1C0"))
+        c.ring_rr(face, 18 * S, (150, 98, 47, 64), 3 * S)
+        out("booster_tile" + ("_pressed" if pressed else ""), c)
 
     # counter slot doily (lace ring) and red "hot" variant
     for name, ring in (("doily", (255, 255, 255, 235)), ("doily_hot", rgba("#F3B7B7"))):

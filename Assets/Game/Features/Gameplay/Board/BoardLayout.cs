@@ -25,7 +25,7 @@ namespace Game.Features.Gameplay.Board
         private const float SidePadding = 16f;
         private const float TopPadding = 8f;
         private const float HudHeight = 48f;
-        private const float BasketAreaHeight = 104f;
+        private const float BasketAreaHeight = 116f;
         private const float CounterTopGap = 6f;
         private const float CounterPadding = 30f;
         private const float MaxCounterSlot = 58f;
