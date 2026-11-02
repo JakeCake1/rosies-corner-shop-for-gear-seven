@@ -231,7 +231,7 @@ namespace Game.Bootstrap.Editor.Agent
 
         private static void ApplyDefines()
         {
-            foreach (var target in new[] { NamedBuildTargetName.Standalone, NamedBuildTargetName.Android, NamedBuildTargetName.iOS })
+            foreach (var target in new[] { BuildTargetGroup.Standalone, BuildTargetGroup.Android, BuildTargetGroup.iOS })
             {
                 var named = UnityEditor.Build.NamedBuildTarget.FromBuildTargetGroup(target);
                 var current = PlayerSettings.GetScriptingDefineSymbols(named);
@@ -301,13 +301,6 @@ namespace Game.Bootstrap.Editor.Agent
             var line = $"[{DateTime.UtcNow:O}] {message}";
             Debug.Log("[AgentBridge] " + message);
             File.AppendAllText(Path.Combine(BridgeFolder, "result.log"), line + Environment.NewLine);
-        }
-
-        private static class NamedBuildTargetName
-        {
-            public const BuildTargetGroup Standalone = BuildTargetGroup.Standalone;
-            public const BuildTargetGroup Android = BuildTargetGroup.Android;
-            public const BuildTargetGroup iOS = BuildTargetGroup.iOS;
         }
     }
 }
