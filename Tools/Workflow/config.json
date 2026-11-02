@@ -4,6 +4,7 @@
   },
   "git": { "base": "main", "remote": "origin" },
   "langfuse": { "environment": "default" },
+  "auto_draft_pr": true,
   "guarded_paths": ["Assets/", "Packages/", "ProjectSettings/"],
   "checks": [
     {

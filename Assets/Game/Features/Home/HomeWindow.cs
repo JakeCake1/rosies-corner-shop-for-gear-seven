@@ -15,15 +15,18 @@ namespace Game.Features.Home
     {
         private const string ShopNameName = "shop-name";
         private const string SubtitleName = "subtitle";
+        private const string TaglineName = "tagline";
         private const string ReviewersName = "reviewers";
         private const string ShowcaseName = "showcase-items";
         private const string CoinsName = "coins-value";
         private const string AlbumName = "album";
+        private const string AlbumTextName = "album-text";
         private const string AlbumLockName = "album-lock";
         private const string AlbumBadgeName = "album-badge";
         private const string AlbumBadgeTextName = "album-badge-text";
         private const string PlayName = "play";
         private const string PlayLineName = "play-line";
+        private const string PlayTitleName = "play-title";
         private const string SettingsName = "settings";
         private const string OpenAlbumClass = "kit-btn-wood";
         private const string LockedAlbumClass = "kit-btn-grey";
@@ -36,14 +39,17 @@ namespace Game.Features.Home
         private readonly List<VisualElement> _showcase = new List<VisualElement>();
         private Label _shopName;
         private Label _subtitle;
+        private Label _tagline;
         private Button _reviewers;
         private Label _coins;
         private Button _album;
+        private Label _albumText;
         private VisualElement _albumLock;
         private VisualElement _albumBadge;
         private Label _albumBadgeText;
         private Button _play;
         private Label _playLine;
+        private Label _playTitle;
         private Button _settings;
         private Tween _albumPulse;
 
@@ -55,21 +61,28 @@ namespace Game.Features.Home
         {
             _shopName = Q<Label>(ShopNameName);
             _subtitle = Q<Label>(SubtitleName);
+            _tagline = Q<Label>(TaglineName);
             _reviewers = Q<Button>(ReviewersName);
             _showcase.AddRange(Q(ShowcaseName).Children());
             _coins = Q<Label>(CoinsName);
             _album = Q<Button>(AlbumName);
+            _albumText = Q<Label>(AlbumTextName);
             _albumLock = Q(AlbumLockName);
             _albumBadge = Q(AlbumBadgeName);
             _albumBadgeText = Q<Label>(AlbumBadgeTextName);
             _play = Q<Button>(PlayName);
             _playLine = Q<Label>(PlayLineName);
+            _playTitle = Q<Label>(PlayTitleName);
             _settings = Q<Button>(SettingsName);
         }
 
         /// <inheritdoc/>
         protected override void OnBind(HomeViewModel vm)
         {
+            _tagline.text = vm.Tagline;
+            _reviewers.text = vm.ReviewersLink;
+            _albumText.text = vm.AlbumCaption;
+            _playTitle.text = vm.PlayTitle;
             vm.ShopName.Subscribe(SetShopName).AddTo(Bindings);
             vm.Subtitle.Subscribe(t => _subtitle.text = t).AddTo(Bindings);
             vm.Showcase.Subscribe(SetShowcase).AddTo(Bindings);

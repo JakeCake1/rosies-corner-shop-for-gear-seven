@@ -26,7 +26,7 @@ namespace Game.Services.Content
         /// Creates an item definition; used by the catalog importer and tests.
         /// </summary>
         /// <param name="id">Stable catalog id (0..161); saves and level layouts refer to it.</param>
-        /// <param name="name">Display name shown in the album.</param>
+        /// <param name="name">English name that identifies the item in the generator's lookalike pairs.</param>
         /// <param name="family">Department id.</param>
         /// <param name="shape">Product shape.</param>
         /// <param name="silhouette">Outline class.</param>
@@ -50,7 +50,10 @@ namespace Game.Services.Content
         /// <summary>Stable catalog id; saves (album) and the level generator refer to it.</summary>
         public int Id => _id;
 
-        /// <summary>Display name shown in the album.</summary>
+        /// <summary>
+        /// English name the level generator uses to find its lookalike pairs; not shown to the player. The
+        /// display name is the <c>item.&lt;id&gt;</c> entry of the <c>Items</c> string table.
+        /// </summary>
         public string Name => _name;
 
         /// <summary>Department id (dairy, bakery, drink, pantry, sweet, fresh, home).</summary>

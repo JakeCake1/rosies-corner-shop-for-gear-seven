@@ -238,7 +238,7 @@ namespace Game.Services.UI.Dialogs
                     row = null;
                 }
 
-                var view = DialogButtonView.Create(b);
+                var view = DialogButtonView.Create(b, vm.AdBadgeText);
                 if (parent == _body) Spawn(_body, view.Root);
                 else parent.Add(view.Root);
                 var button = b;

@@ -6,7 +6,7 @@
         <ui:VisualElement class="bunting icon-bunting" picking-mode="Ignore" />
     </ui:VisualElement>
     <ui:Button name="back" class="btn kit-btn-wood album-back">
-        <ui:Label text="Back" class="album-back__text" />
+        <ui:Label name="back-text" text="Back" class="album-back__text" />
     </ui:Button>
     <ui:VisualElement class="album-total kit-pill-white" picking-mode="Ignore">
         <ui:Label name="total" text="0 / 162" class="album-total__text" />
@@ -14,8 +14,8 @@
     <ui:VisualElement class="album-sign kit-board-walnut" picking-mode="Ignore">
         <ui:VisualElement class="sign-rope sign-rope--left" picking-mode="Ignore" />
         <ui:VisualElement class="sign-rope sign-rope--right" picking-mode="Ignore" />
-        <ui:Label text="My Album" class="album-sign__title display-font" />
-        <ui:Label text="PACK A BASKET TO ADD ITS ITEM" class="album-sign__subtitle" />
+        <ui:Label name="title" text="My Album" class="album-sign__title display-font" />
+        <ui:Label name="subtitle" text="PACK A BASKET TO ADD ITS ITEM" class="album-sign__subtitle" />
     </ui:VisualElement>
     <ui:VisualElement class="album-cabinet">
         <ui:VisualElement class="album-cabinet__inner">

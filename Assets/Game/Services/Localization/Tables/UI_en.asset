@@ -1,0 +1,762 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 1b883ce0133ff024d9ad1fae32abb8f3, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 692768768
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792192
+    m_Localized: My Album
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792193
+    m_Localized: PACK A BASKET TO ADD ITS ITEM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792194
+    m_Localized: <b>{0}</b> / {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792195
+    m_Localized: "{0} / {1} \xB7 collected, +{2}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792196
+    m_Localized: "{0} / {1} \xB7 {2} coins when complete"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792197
+    m_Localized: '?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792198
+    m_Localized: 'New: the Album!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792199
+    m_Localized: 'Rosie: "I kept one of everything you sold. {0} items so far! Fill
+      a whole department and I''ll pay you {1} coins."'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792200
+    m_Localized: Open the album
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792201
+    m_Localized: Later
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792202
+    m_Localized: Rewarded ad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792203
+    m_Localized: A rewarded video plays here in the real game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792204
+    m_Localized: "Playing\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792205
+    m_Localized: AD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792206
+    m_Localized: COUNTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792207
+    m_Localized: <b>{0}</b> in stock
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792208
+    m_Localized: all out
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792209
+    m_Localized: '{0} rows'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792210
+    m_Localized: LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792211
+    m_Localized: TRICKY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792212
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792213
+    m_Localized: Tricky Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792214
+    m_Localized: The hammer is in the left column's stock. Dig there first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792215
+    m_Localized: The hammer is in the middle column's stock. Dig there first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792216
+    m_Localized: The hammer is in the right column's stock. Dig there first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792217
+    m_Localized: The hammer is tied up in the left column. Find the key first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792218
+    m_Localized: The hammer is tied up in the middle column. Find the key first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792219
+    m_Localized: The hammer is tied up in the right column. Find the key first!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792220
+    m_Localized: Tap the hammer to open the nailed shelf.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792221
+    m_Localized: No basket wants this one yet, so it waits on the counter. If the
+      counter fills up, you're stuck!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792222
+    m_Localized: Basket full! It's on its way, and a new order arrives.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792223
+    m_Localized: The labels show how many items are still in the stock behind each
+      column.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792224
+    m_Localized: 'New: <b>Undo</b>. Took the wrong item? Take it back. Two free per
+      level.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792225
+    m_Localized: 'A gift from Rosie: <b>two Tidy Ups</b>. Each clears the counter
+      when it gets crowded.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792226
+    m_Localized: 'A gift from Rosie: <b>two Quick Picks</b>. Each fills a basket
+      for you.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792227
+    m_Localized: The counter is full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792228
+    m_Localized: Only one spot left!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792229
+    m_Localized: '{0} complete! +{1} coins'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792230
+    m_Localized: Tap the <b>{0}</b>. It goes straight into the basket that asks for
+      it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792231
+    m_Localized: Tap <b>+</b> to call one more customer. Free this time!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792232
+    m_Localized: Undo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792233
+    m_Localized: Quick Pick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792234
+    m_Localized: Tidy Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792235
+    m_Localized: Shuffle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792236
+    m_Localized: '{0} +1'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792237
+    m_Localized: Quick Pick filled a basket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792238
+    m_Localized: No basket to fill right now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792239
+    m_Localized: Items went back to the stockroom
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792240
+    m_Localized: The counter is already clear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792241
+    m_Localized: Nothing to shuffle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792242
+    m_Localized: Move undone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792243
+    m_Localized: Nothing to undo yet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792244
+    m_Localized: Out of free undos on this level. Take back your last move.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792245
+    m_Localized: Fills the basket that's closest to done, pulling items from the
+      counter, the shelves, even the stockroom.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792246
+    m_Localized: Puts up to three items from the counter back on a shelf, so the
+      counter has room again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792247
+    m_Localized: Mixes up all the items on the open shelves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792248
+    m_Localized: Get 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792249
+    m_Localized: Get 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792250
+    m_Localized: Get 1 free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792251
+    m_Localized: Not now
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792252
+    m_Localized: Rosie opened a third basket. On the house!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792253
+    m_Localized: Extra basket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792254
+    m_Localized: Open a third basket for this level. More baskets, fewer items waiting
+      on the counter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792255
+    m_Localized: Open
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792256
+    m_Localized: Open free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792257
+    m_Localized: Level {0} complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792258
+    m_Localized: Tricky level complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792259
+    m_Localized: Beautifully kept!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792260
+    m_Localized: Lovely work!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792261
+    m_Localized: Shelf cleared!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792262
+    m_Localized: The counter never got crowded. That's the neat way to do it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792263
+    m_Localized: Keep the counter at {0} items or fewer for three stars.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792264
+    m_Localized: Items packed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792265
+    m_Localized: Most items on the counter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792266
+    m_Localized: Moves
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792267
+    m_Localized: Double coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792268
+    m_Localized: +{0} coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792269
+    m_Localized: Replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792270
+    m_Localized: Next level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792271
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792272
+    m_Localized: "Tricky \xB7 Rewards \xD72"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792273
+    m_Localized: Oops, the counter is full!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792274
+    m_Localized: Only {0} item left!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792275
+    m_Localized: Only {0} items left!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792276
+    m_Localized: '{0} items left'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792277
+    m_Localized: Call one more customer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792278
+    m_Localized: One more customer is here!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792279
+    m_Localized: A third basket opens and takes items straight from the counter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792280
+    m_Localized: +1 counter spot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792281
+    m_Localized: One more spot on the counter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792282
+    m_Localized: "Undo last move \xB7 free"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792283
+    m_Localized: Tidy Up ({0} left)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792284
+    m_Localized: Start the level over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792285
+    m_Localized: Lovely!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792286
+    m_Localized: Sweet!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792287
+    m_Localized: Delicious!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792288
+    m_Localized: Well done!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792289
+    m_Localized: Perfect!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792290
+    m_Localized: Yummy!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792291
+    m_Localized: Neat!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792292
+    m_Localized: Tidy shop!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792293
+    m_Localized: Rosie is proud!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792294
+    m_Localized: On a roll!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792295
+    m_Localized: Busy hands!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792296
+    m_Localized: What a streak!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792297
+    m_Localized: The shop is buzzing!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792298
+    m_Localized: Look at you go!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792299
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792300
+    m_Localized: Tricky level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792301
+    m_Localized: 'New: start boosters! Rosie gives you two of each. Pick what you
+      want to begin the level with.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792302
+    m_Localized: A tricky one. A start booster helps!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792303
+    m_Localized: Get ready. Pick a start booster if you like.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792304
+    m_Localized: Extra basket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792305
+    m_Localized: start with three baskets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792306
+    m_Localized: Quick Pick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792307
+    m_Localized: one extra for this level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792308
+    m_Localized: '{0} left'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792309
+    m_Localized: '{0} coins'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792310
+    m_Localized: "<b>{0}</b>\n<size=75%>{1} \xB7 {2}</size>"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792311
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792312
+    m_Localized: Back to the shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792313
+    m_Localized: Not enough coins
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792314
+    m_Localized: Rosie's Corner Shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792315
+    m_Localized: "GROCERIES \xB7 BAKERY \xB7 SWEETS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792316
+    m_Localized: <u>For reviewers</u>
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792317
+    m_Localized: Album
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792318
+    m_Localized: Open the shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792319
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792320
+    m_Localized: "Level {0} \xB7 Tricky \xB7 Rewards \xD72"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792321
+    m_Localized: The album opens after level {0}. Keep going!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792322
+    m_Localized: You're my partner now!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792323
+    m_Localized: 'Rosie: "Ten busy days! Let''s put your name on the sign. What shall
+      we call the shop?"'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792324
+    m_Localized: Rosie & Me
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792325
+    m_Localized: Maple Street Market
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792326
+    m_Localized: The Corner Pantry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792327
+    m_Localized: Hang the sign
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792328
+    m_Localized: Keep Rosie's name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792329
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792330
+    m_Localized: Sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792331
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792332
+    m_Localized: Vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792333
+    m_Localized: Restart level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792334
+    m_Localized: Back to the shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792335
+    m_Localized: Rename the shop
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792336
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792337
+    m_Localized: Reset progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792338
+    m_Localized: Tap again to erase everything
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792339
+    m_Localized: For reviewers
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792340
+    m_Localized: Jump to any level, or switch the variants that would be A/B tested.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792341
+    m_Localized: Hard levels are red. Ads and purchases are placeholders. Vibration
+      works on Android only.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792342
+    m_Localized: Level curve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792343
+    m_Localized: Rewarded offer on a loss
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792344
+    m_Localized: +1 customer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792345
+    m_Localized: +1 counter spot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792346
+    m_Localized: Reset progress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792347
+    m_Localized: Close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792348
+    m_Localized: "New \xB7 20"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792349
+    m_Localized: "Prototype \xB7 20 levels \xB7 placeholder art"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792350
+    m_Localized: "Original \xB7 10"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792351
+    m_Localized: "Original prototype \xB7 10 levels"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792352
+    m_Localized: Tap an item. It goes to the basket that wants it, otherwise to the
+      counter.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792353
+    m_Localized: Empty a shelf and it folds away. Everything above slides down.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792354
+    m_Localized: 'Wider shelves now: three items in every row.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792355
+    m_Localized: Tall shelves fold only when every row is empty.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792356
+    m_Localized: Empty the shelf with the brass key to untie the tied one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792357
+    m_Localized: A nailed shelf! Tap the hammer to pull the boards off.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792358
+    m_Localized: 'Frozen shelf: it thaws as you pack baskets.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792359
+    m_Localized: Paper bags hide what's inside. Take one to find out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792360
+    m_Localized: Some shelves have a second row hiding behind the first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792361
+    m_Localized: 'Tricky: tall shelves only. Dig where the next basket''s items are
+      hiding.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792362
+    m_Localized: "Rewards \xD72."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792363
+    m_Localized: "Rewards \xD72. Bigger shelves today: plan before you tap."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792364
+    m_Localized: "Rewards \xD72. Plan before you tap."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792365
+    m_Localized: A calm day at the shop.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792366
+    m_Localized: Keep room on the counter for the next basket.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792367
+    m_Localized: Find the hammer and the key.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792368
+    m_Localized: Bags and ice on the same shelves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792369
+    m_Localized: 'New department: the Bakery.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792370
+    m_Localized: Second rows and frozen shelves.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792371
+    m_Localized: 'New department: Sweets.'
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

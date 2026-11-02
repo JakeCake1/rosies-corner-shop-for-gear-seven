@@ -1,5 +1,6 @@
 using System;
 using Game.Features.Gameplay.Session;
+using Game.Services.Localization;
 using Game.Services.Wallet;
 using Game.Services.UI;
 using UniRx;
@@ -11,22 +12,25 @@ namespace Game.Features.Gameplay.Hud
     /// </summary>
     public sealed class HudViewModel : ViewModel
     {
-        private readonly ReactiveProperty<string> _badgeTitle = new ReactiveProperty<string>("LEVEL");
+        private readonly ReactiveProperty<string> _badgeTitle = new ReactiveProperty<string>();
         private readonly ReactiveProperty<string> _levelNumber = new ReactiveProperty<string>("1");
         private readonly ReactiveProperty<bool> _isTricky = new ReactiveProperty<bool>();
         private readonly ReactiveProperty<string> _progressText = new ReactiveProperty<string>("0 / 0");
         private readonly ReactiveProperty<float> _progress = new ReactiveProperty<float>();
         private readonly Subject<Unit> _settingsRequested = new Subject<Unit>();
         private readonly LevelSession _session;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the view model and follows the session and the wallet.
         /// </summary>
         /// <param name="session">Level in play.</param>
         /// <param name="wallet">Coins.</param>
-        public HudViewModel(LevelSession session, IWalletService wallet)
+        /// <param name="texts">Badge title ("LEVEL" or "TRICKY").</param>
+        public HudViewModel(LevelSession session, IWalletService wallet, ILocalizationService texts)
         {
             _session = session;
+            _texts = texts;
             Coins = wallet.Coins;
             Disposables.Add(_badgeTitle);
             Disposables.Add(_levelNumber);
@@ -70,7 +74,7 @@ namespace Game.Features.Gameplay.Hud
             if (st == null) return;
 
             _isTricky.Value = _session.IsTricky;
-            _badgeTitle.Value = _session.IsTricky ? "TRICKY" : "LEVEL";
+            _badgeTitle.Value = _texts.Get(_session.IsTricky ? GameplayTexts.BadgeTricky : GameplayTexts.BadgeLevel);
             _levelNumber.Value = st.LevelNumber.ToString();
             _progressText.Value = $"{st.Collected} / {st.Total}";
             _progress.Value = st.Total > 0 ? st.Collected / (float)st.Total : 0f;

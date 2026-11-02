@@ -75,10 +75,12 @@ def opt(name):
     return a[a.index(name) + 1] if name in a else None
 if a[:2] == ["pr", "list"]:
     print(json.dumps([p for p in prs if p["head"] == opt("--head") and p["state"] == "open"]))
+elif a[:2] == ["pr", "ready"]:
+    next(p for p in prs if p["number"] == int(a[2]))["isDraft"] = False
 elif a[:2] == ["pr", "create"]:
     n = len(prs) + 1
     prs.append({"number": n, "url": f"https://github/pr/{n}", "title": opt("--title"), "head": opt("--head"),
-                "state": "open", "body": opt("--body")})
+                "state": "open", "body": opt("--body"), "isDraft": "--draft" in a})
     print(f"https://github/pr/{n}")
 elif a[:2] == ["pr", "edit"]:
     next(p for p in prs if p["number"] == int(a[2]))["body"] = opt("--body")
@@ -208,10 +210,38 @@ def main():
     os.remove(os.path.join(repo, "Assets", "Key.cs"))
     sh("git", "commit", "-m", "EVG-12: split profile into chunks")
 
+    # --- end of an agent reply (Stop): push + draft PR, nothing else changes
+    stop = lambda: wf("hook", "collect", inp=json.dumps({"transcript_path": t2, "session_id": "sess2",
+                                                         "hook_event_name": "Stop"}))
+    stop()
+    prs = json.load(open(env["FAKE_GH_DB"]))
+    assert len(prs) == 1 and prs[0]["isDraft"], prs
+    assert Fake.state["issue_state"] == "s-prog"  # not a handoff
+    assert os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
+    remote_head = sh("git", "rev-parse", "origin/pirit699/evg-12-rework-savemanager").strip()
+    stop()  # no new commits: no push, no second PR
+    assert len(json.load(open(env["FAKE_GH_DB"]))) == 1
+    open(os.path.join(repo, "Assets", "Save.cs"), "a").write("// chunk interface\n")
+    sh("git", "commit", "-am", "EVG-12: chunk interface")
+    stop()  # new commit: pushed to the same draft PR
+    assert sh("git", "rev-parse", "origin/pirit699/evg-12-rework-savemanager").strip() != remote_head
+    assert len(json.load(open(env["FAKE_GH_DB"]))) == 1
+    # SubagentStop does not push
+    open(os.path.join(repo, "Assets", "Save.cs"), "a").write("// x\n")
+    sh("git", "commit", "-am", "EVG-12: x")
+    wf("hook", "collect", inp=json.dumps({"transcript_path": t2, "session_id": "sess2", "hook_event_name": "SubagentStop"}))
+    assert sh("git", "rev-list", "--count", "origin/pirit699/evg-12-rework-savemanager..HEAD").strip() == "1"
+    # gh failing in the Stop hook never breaks the session
+    real = env["FAKE_GH_DB"]; env["FAKE_GH_DB"] = "/nonexistent/x.json"
+    stop()
+    env["FAKE_GH_DB"] = real
+    assert "failed" in wf("status")
+
     # --- handoff with Langfuse down: PR + In Review done, usage kept locally
     Fake.state["langfuse_down"] = True
     out = wf("handoff", "--check-result", "EditMode tests (Unity MCP): 12 passed")
-    assert "created https://github/pr/1" in out and Fake.state["issue_state"] == "s-rev", out
+    assert "draft marked ready for review" in out and Fake.state["issue_state"] == "s-rev", out
+    assert not json.load(open(env["FAKE_GH_DB"]))[0]["isDraft"]
     assert "queued" in out, out
     assert os.path.exists(os.path.join(repo, ".agent-workflow/outbox", attempt1 + ".json"))
     assert not os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
