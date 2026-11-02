@@ -33,9 +33,15 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="columns" class="cabinet__columns" picking-mode="Ignore">
-                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
-                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
-                <ui:VisualElement class="cabinet__column" picking-mode="Ignore" />
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore">
+                    <ui:VisualElement class="cabinet__column-clip" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore">
+                    <ui:VisualElement class="cabinet__column-clip" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="cabinet__column" picking-mode="Ignore">
+                    <ui:VisualElement class="cabinet__column-clip" picking-mode="Ignore" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="boosters" class="booster-bar" picking-mode="Ignore" />

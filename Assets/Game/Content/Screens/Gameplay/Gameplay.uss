@@ -355,12 +355,10 @@
     flex-direction: row;
 }
 
-/* Clips shelves dropping in from the stock, like the prototype's .col { overflow: hidden }. */
 .cabinet__column {
     flex-grow: 1;
     flex-basis: 0;
     margin: 0 2px;
-    overflow: hidden;
     /* The back panel stays where shelves have gone (02_game_L01_midplay.png). */
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/shelf_back.png");
     -unity-slice-left: 8;
@@ -369,6 +367,19 @@
     -unity-slice-bottom: 8;
     -unity-slice-scale: 1px;
     -unity-background-image-tint-color: rgba(255, 255, 255, 0.7);
+}
+
+/*
+ * Clips shelves dropping in from the stock, like the prototype's .col { overflow: hidden }. It reaches 6 px above the
+ * column, so the "N rows" badge of the top shelf (8 px over a shelf that starts 3 px down) isn't cut off.
+ */
+.cabinet__column-clip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -6px;
+    bottom: 0;
+    overflow: hidden;
 }
 
 /* Shelves */
@@ -616,15 +627,6 @@
 .booster-slot {
     width: 70px;
     height: 88px;
-}
-
-.booster__glow {
-    position: absolute;
-    left: -3px;
-    top: -9px;
-    width: 76px;
-    height: 76px;
-    -unity-background-image-tint-color: rgb(255, 217, 102);
 }
 
 .booster__tile {
