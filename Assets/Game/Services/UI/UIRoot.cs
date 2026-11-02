@@ -22,6 +22,7 @@ namespace Game.Services.UI
 
         [SerializeField] private UIDocument _document;
 
+        private readonly StuckTouchGuard _stuckTouchGuard = new StuckTouchGuard();
         private VisualElement _safe;
         private VisualElement _scene;
         private VisualElement _hud;
@@ -115,6 +116,8 @@ namespace Game.Services.UI
             {
                 return;
             }
+
+            _stuckTouchGuard.Tick(_document.rootVisualElement.panel);
 
             var panelSize = _document.rootVisualElement.layout.size;
             if (Screen.safeArea == _appliedSafeArea && panelSize == _appliedPanelSize)
