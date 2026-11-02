@@ -5,7 +5,7 @@ using Game.Features.Gameplay.Session;
 namespace Game.Features.Gameplay.Hud
 {
     /// <summary>
-    /// Rosie's gifts: on a booster's unlock level the player gets it for free once per profile, its button glows and
+    /// Rosie's gifts: on a booster's unlock level the player gets it for free once per profile, its icon pulses and
     /// a coach tip explains it. The Undo tip waits for the first move, because Undo means nothing before it.
     /// </summary>
     public sealed class BoosterGifts

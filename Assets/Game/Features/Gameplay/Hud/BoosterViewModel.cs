@@ -5,7 +5,7 @@ using UniRx;
 namespace Game.Features.Gameplay.Hud
 {
     /// <summary>
-    /// One button of the booster bar: count badge or "+", availability, pulsing and the gift glow.
+    /// One button of the booster bar: count badge or "+", availability, pulsing and the gift pulse.
     /// </summary>
     public sealed class BoosterViewModel : ViewModel
     {
@@ -34,7 +34,7 @@ namespace Game.Features.Gameplay.Hud
         /// <summary>Pulses to draw attention (Undo when the counter is almost full).</summary>
         public IReadOnlyReactiveProperty<bool> IsPulsing => _isPulsing;
 
-        /// <summary>Glows after Rosie's gift until first used.</summary>
+        /// <summary>Icon pulses after Rosie's gift until first used.</summary>
         public IReadOnlyReactiveProperty<bool> IsGift => _isGift;
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace Game.Features.Gameplay.Hud
         }
 
         /// <summary>
-        /// Turns the gift glow on or off.
+        /// Turns the gift pulse on or off.
         /// </summary>
-        /// <param name="isOn">Glow while the gift is unused.</param>
+        /// <param name="isOn">Pulse while the gift is unused.</param>
         public void SetGift(bool isOn) => _isGift.Value = isOn;
 
         /// <summary>
