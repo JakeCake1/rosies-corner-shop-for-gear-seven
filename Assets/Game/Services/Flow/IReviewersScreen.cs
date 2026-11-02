@@ -11,9 +11,9 @@ namespace Game.Services.Flow
         /// <summary>
         /// Opens the panel.
         /// </summary>
-        /// <param name="ct">Cancels waiting.</param>
+        /// <param name="ct">The home screen's showing; cancelling it closes the panel.</param>
         /// <returns>Completes when the panel closes.</returns>
-        /// <exception cref="System.OperationCanceledException">Waiting was cancelled.</exception>
+        /// <exception cref="System.OperationCanceledException"><paramref name="ct"/> was cancelled.</exception>
         UniTask OpenAsync(CancellationToken ct);
     }
 }
