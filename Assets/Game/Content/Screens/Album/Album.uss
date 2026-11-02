@@ -59,10 +59,10 @@
     margin-left: -170px;
 }
 
-/* The ropes reach up to the bunting string, as on home. */
+/* The ropes start under the counter pill (y 62 in 09_album.png), so they don't cross it. */
 .album-sign > .sign-rope {
-    top: -90px;
-    height: 94px;
+    top: -40px;
+    height: 44px;
 }
 
 .album-sign__title {
