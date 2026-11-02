@@ -87,6 +87,10 @@ namespace Game.Features.Gameplay
             new Queue<(string, VisualElement, bool)>();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
         private HudViewModel _hudModel;
+        private CancellationTokenSource _level;
+        // Cached: reading Token from the disposed source throws instead of reporting cancellation.
+        private readonly CancellationToken _lifetimeToken;
+        private CancellationToken _levelToken;
         private string _pendingGift;
         private float _lastActionTime;
         private float _tipBusyUntil;
@@ -124,9 +128,15 @@ namespace Game.Features.Gameplay
             _settings = services.Settings;
             _audio = services.Audio;
             _texts = services.Texts;
+            _lifetimeToken = _lifetime.Token;
+            ResetLevelLifetime();
         }
 
-        private CancellationToken Ct => _lifetime.Token;
+        /// <summary>
+        /// Lifetime of the level in play: cancelled on restart, replay, the next level and scene unload, so delayed
+        /// tips, gifts, result dialogs and ads of an old level never show over a new one.
+        /// </summary>
+        private CancellationToken Ct => _levelToken;
 
         private int Level => _session.LevelNumber;
 
@@ -152,7 +162,7 @@ namespace Game.Features.Gameplay
         private async UniTaskVoid StartWhenLaidOutAsync()
         {
             // The board sizes itself from the screen, so the first level waits for the first layout pass.
-            await _screen.WhenLaidOutAsync(Ct);
+            await _screen.WhenLaidOutAsync(_lifetimeToken);
             StartLevel(_request.Level, _request.StartBoosters);
         }
 
@@ -173,6 +183,8 @@ namespace Game.Features.Gameplay
         /// <inheritdoc/>
         public void Dispose()
         {
+            _level.Cancel();
+            _level.Dispose();
             _lifetime.Cancel();
             _lifetime.Dispose();
             _disposables.Dispose();
@@ -182,9 +194,11 @@ namespace Game.Features.Gameplay
 
         private void StartLevel(int level, StartBoosters startBoosters)
         {
+            ResetLevelLifetime();
             _dialogs.CloseAllAsync().Forget();
             _overlay.ClearCoach();
             _tipQueue.Clear();
+            _tipBusyUntil = 0f;
             _pendingGift = null;
             _isTutorialShown = false;
             _lastActionTime = Time.unscaledTime;
@@ -196,6 +210,18 @@ namespace Game.Features.Gameplay
             GiftBooster();
             if (level == 1) ShowTutorialAsync().Forget();
             if (level == GameplayBalance.ExtraBasketSlotLevel && !_onboarding.HasFlag(Flags.FreeBasket)) ShowBasketTipAsync().Forget();
+        }
+
+        private void ResetLevelLifetime()
+        {
+            if (_level != null)
+            {
+                _level.Cancel();
+                _level.Dispose();
+            }
+
+            _level = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeToken);
+            _levelToken = _level.Token;
         }
 
         private void BindHud()
@@ -217,7 +243,7 @@ namespace Game.Features.Gameplay
 
         private void OpenSettings()
         {
-            _settings.OpenAsync(() => StartLevel(Level, null)).Forget();
+            _settings.OpenAsync(() => StartLevel(Level, null), Ct).Forget();
         }
 
         private void ShowBanner()
@@ -618,6 +644,9 @@ namespace Game.Features.Gameplay
             await UniTask.Delay(220, cancellationToken: Ct);
             _overlay.Burst(_board.BasketArea.worldBound.center + Vector2.right * 80f, EffectKind.Confetti, 60);
             await UniTask.Delay(CompleteDelayMs - 220, cancellationToken: Ct);
+            // Undo still works on a won board and reopens the level without restarting it.
+            if (!_session.IsOver) return;
+
             await ShowCompleteAsync(outcome);
         }
 

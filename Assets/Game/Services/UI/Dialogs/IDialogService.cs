@@ -12,9 +12,9 @@ namespace Game.Services.UI.Dialogs
         /// Opens a dialog and returns when it has closed.
         /// </summary>
         /// <param name="dialog">Content; the UI service disposes it on close.</param>
-        /// <param name="ct">Cancels waiting (the dialog stays until closed).</param>
+        /// <param name="ct">The opener's lifetime; cancelling it closes the dialog.</param>
         /// <returns>Completes when the dialog is closed.</returns>
-        /// <exception cref="System.OperationCanceledException">Waiting was cancelled.</exception>
+        /// <exception cref="System.OperationCanceledException"><paramref name="ct"/> was cancelled.</exception>
         UniTask ShowAsync(DialogViewModel dialog, CancellationToken ct);
 
         /// <summary>

@@ -56,7 +56,7 @@ namespace Game.Features.Settings
         }
 
         /// <inheritdoc/>
-        public async UniTask OpenAsync(Action restartLevel)
+        public async UniTask OpenAsync(Action restartLevel, CancellationToken ct)
         {
             var dialog = new DialogViewModel(_texts.Get(SettingsTexts.Title), RibbonStyle.Green)
             {
@@ -90,7 +90,7 @@ namespace Game.Features.Settings
             if (_onboarding.HasFlag(Flags.NameAsked))
             {
                 dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.Rename), ButtonStyle.WoodSmall,
-                    () => _namePrompt.AskAsync(CancellationToken.None).Forget()));
+                    () => _namePrompt.AskAsync(ct).Forget()));
             }
 
             dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.Close), ButtonStyle.Berry, null));
@@ -109,7 +109,7 @@ namespace Game.Features.Settings
                 _flow.GoHomeAsync().Forget();
             }, false);
             dialog.Buttons.Add(reset);
-            await _dialogs.ShowAsync(dialog, CancellationToken.None);
+            await _dialogs.ShowAsync(dialog, ct);
         }
     }
 }
