@@ -132,16 +132,27 @@
     white-space: nowrap;
 }
 
-/* The default theme paints a dark background on hover/press/focus (its :hover:active outranks .btn:hover). */
-.btn:hover,
-.btn:active,
-.btn:focus,
-.btn:hover:active,
-.btn:hover:focus,
-.btn:active:focus,
-.btn:hover:active:focus {
+/*
+ * The default theme paints a grey background and border on hover/press/focus with selectors such as
+ * .unity-button:hover:active:enabled; .unity-button.btn plus the same states outranks every one of them.
+ */
+.unity-button.btn:hover,
+.unity-button.btn:hover:enabled,
+.unity-button.btn:active,
+.unity-button.btn:active:enabled,
+.unity-button.btn:focus,
+.unity-button.btn:focus:enabled,
+.unity-button.btn:hover:active,
+.unity-button.btn:hover:active:enabled,
+.unity-button.btn:hover:focus,
+.unity-button.btn:hover:focus:enabled,
+.unity-button.btn:active:focus,
+.unity-button.btn:active:focus:enabled,
+.unity-button.btn:hover:active:focus,
+.unity-button.btn:hover:active:focus:enabled {
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
+    border-color: rgba(0, 0, 0, 0);
 }
 
 /* Press: lipped kit buttons sink by the lip (the prototype's .btn:active translateY(4px)) and switch to the
@@ -242,10 +253,9 @@
 
 .toast-tip__pill {
     position: absolute;
-    left: 0;
+    right: 0;
     bottom: 0;
-    translate: -50% 0;
-    transform-origin: 50% 100%;
+    transform-origin: 100% 100%;
     padding: 9px 18px 16px 18px;
     background-image: url("project://database/Assets/Game/Content/Visual/UI/Kit/pill_shadow.png");
     -unity-slice-left: 42;

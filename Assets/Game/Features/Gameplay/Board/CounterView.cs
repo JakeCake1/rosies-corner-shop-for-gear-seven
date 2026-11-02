@@ -18,7 +18,7 @@ namespace Game.Features.Gameplay.Board
         private const string HotDoilyClass = "counter-slot__doily--hot";
         private const int MinSlotsWide = 5;
         private const float SlotGap = 8f;
-        private const float SlotBottom = 24f;
+        private const float SlotBottom = 36f;
         private const float SlotHeightShare = 0.62f;
         private const float ShakeSeconds = 0.4f;
         private const float ShakeDistance = 10f;

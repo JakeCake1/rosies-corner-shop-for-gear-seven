@@ -64,7 +64,7 @@ namespace Game.Services.UI
         /// Pops a white tip up above an element (a locked button), replacing the current tip.
         /// </summary>
         /// <param name="message">Text.</param>
-        /// <param name="anchor">Element the tip points at; its top centre is the tip's bottom centre.</param>
+        /// <param name="anchor">Element the tip sits on; the tip's bottom right is the element's top right.</param>
         public void ShowAbove(string message, VisualElement anchor)
         {
             _tipSequence?.Kill();
@@ -83,7 +83,9 @@ namespace Game.Services.UI
             _tip.BringToFront();
             _tipText.text = message;
             var bounds = anchor.worldBound;
-            var point = Root.WorldToLocal(new Vector2(bounds.center.x, bounds.yMin));
+            // The pill's right edge lines up with the anchor's right edge, so a button at the screen side keeps
+            // its tip on screen.
+            var point = Root.WorldToLocal(new Vector2(bounds.xMax, bounds.yMin));
             _tip.style.left = point.x;
             _tip.style.top = point.y - TipGap;
             _tip.style.opacity = 0f;
