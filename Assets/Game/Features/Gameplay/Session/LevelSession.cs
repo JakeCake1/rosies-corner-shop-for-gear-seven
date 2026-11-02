@@ -171,10 +171,16 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when the tap was ignored or refused.</returns>
         public bool Tap(int jarId)
         {
-            if (State == null || IsOver) return false;
+            if (State == null || IsOver)
+            {
+                return false;
+            }
 
             var location = LevelRules.VisibleJars(State, false).FirstOrDefault(v => v.Jar.Id == jarId);
-            if (location.Jar == null) return false;
+            if (location.Jar == null)
+            {
+                return false;
+            }
 
             var tapped = location.Jar;
             var snapshot = State.Clone();
@@ -192,10 +198,19 @@ namespace Game.Features.Gameplay.Session
             }
 
             SetSnapshot(snapshot);
-            if (tapped.IsTool || tapped.IsWrapped) _audio.Play(SoundId.TapRound);
-            else _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
+            if (tapped.IsTool || tapped.IsWrapped)
+            {
+                _audio.Play(SoundId.TapRound);
+            }
+            else
+            {
+                _audio.PlayTap(_content.Catalog.Get(tapped.Type).Silhouette);
+            }
             _haptics.Pulse(HapticKind.Tap);
-            if (result.Basket == null && !result.IsTool) _combo = -1;
+            if (result.Basket == null && !result.IsTool)
+            {
+                _combo = -1;
+            }
 
             _changed.OnNext(new BoardChange(BoardChangeKind.Tap, result.Events));
             if (result.Basket == null && !result.IsTool)
@@ -209,8 +224,14 @@ namespace Game.Features.Gameplay.Session
                 _notice.OnNext("counter");
             }
 
-            if (result.Events.Any(e => e.Type == LevelEventType.ShelfFolded)) _notice.OnNext("stock");
-            if (State.Counter.Count < State.Capacity - 1) _isWarned = false;
+            if (result.Events.Any(e => e.Type == LevelEventType.ShelfFolded))
+            {
+                _notice.OnNext("stock");
+            }
+            if (State.Counter.Count < State.Capacity - 1)
+            {
+                _isWarned = false;
+            }
             ScanDone();
             CheckEnd();
             return true;
@@ -222,8 +243,14 @@ namespace Game.Features.Gameplay.Session
         /// <returns><see cref="UndoResult.Done"/>, or why it could not be done.</returns>
         public UndoResult Undo()
         {
-            if (_snapshot == null) return UndoResult.NothingToUndo;
-            if (_undoLeft.Value <= 0) return UndoResult.NoUndosLeft;
+            if (_snapshot == null)
+            {
+                return UndoResult.NothingToUndo;
+            }
+            if (_undoLeft.Value <= 0)
+            {
+                return UndoResult.NoUndosLeft;
+            }
 
             _undoLeft.Value--;
             ResetEpoch();
@@ -248,17 +275,32 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when no basket is waiting or no Quick Pick is owned.</returns>
         public bool UseQuickPick()
         {
-            if (State == null || IsOver) return false;
-            if (_bonusPick.Value <= 0 && _boosters.Get(BoosterIds.Pick) <= 0) return false;
+            if (State == null || IsOver)
+            {
+                return false;
+            }
+            if (_bonusPick.Value <= 0 && _boosters.Get(BoosterIds.Pick) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
             var fromStock = new Dictionary<int, int>();
-            if (LevelRules.QuickPick(State, events, fromStock) < 0) return false;
+            if (LevelRules.QuickPick(State, events, fromStock) < 0)
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
-            if (_bonusPick.Value > 0) _bonusPick.Value--;
-            else _boosters.Add(BoosterIds.Pick, -1);
+            if (_bonusPick.Value > 0)
+            {
+                _bonusPick.Value--;
+            }
+            else
+            {
+                _boosters.Add(BoosterIds.Pick, -1);
+            }
             _audio.Play(SoundId.Magic);
             _changed.OnNext(new BoardChange(BoardChangeKind.QuickPick, events, fromStock));
             ScanDone();
@@ -271,12 +313,18 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when the counter is empty or no Tidy Up is owned.</returns>
         public bool UseTidy()
         {
-            if (State == null || _boosters.Get(BoosterIds.Tidy) <= 0) return false;
+            if (State == null || _boosters.Get(BoosterIds.Tidy) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var events = new List<LevelEvent>();
             var back = new List<int>();
-            if (LevelRules.Tidy(State, events, out var column, back) == 0) return false;
+            if (LevelRules.Tidy(State, events, out var column, back) == 0)
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
             _boosters.Add(BoosterIds.Tidy, -1);
@@ -293,11 +341,17 @@ namespace Game.Features.Gameplay.Session
         /// <returns>False when nothing can move or no Shuffle is owned.</returns>
         public bool UseShuffle()
         {
-            if (State == null || IsOver || _boosters.Get(BoosterIds.Shuffle) <= 0) return false;
+            if (State == null || IsOver || _boosters.Get(BoosterIds.Shuffle) <= 0)
+            {
+                return false;
+            }
 
             var snapshot = State.Clone();
             var seed = (uint)(DateTime.UtcNow.Ticks % 100000);
-            if (!LevelRules.Shuffle(State, new Mulberry32(seed))) return false;
+            if (!LevelRules.Shuffle(State, new Mulberry32(seed)))
+            {
+                return false;
+            }
 
             SetSnapshot(snapshot);
             _boosters.Add(BoosterIds.Shuffle, -1);
@@ -348,7 +402,10 @@ namespace Game.Features.Gameplay.Session
         /// <returns>True when its button is shown.</returns>
         public bool IsUnlocked(string boosterId)
         {
-            if (IsOriginalCurve) return true;
+            if (IsOriginalCurve)
+            {
+                return true;
+            }
 
             switch (boosterId)
             {
@@ -394,7 +451,10 @@ namespace Game.Features.Gameplay.Session
             for (var slot = 0; slot < LevelState.MaxBaskets; slot++)
             {
                 var b = State.Baskets[slot];
-                if (b == null || !b.IsDone || !_scheduled.Add(b.Id)) continue;
+                if (b == null || !b.IsDone || !_scheduled.Add(b.Id))
+                {
+                    continue;
+                }
 
                 ShipAsync(slot, b.Id, _epoch.Token).Forget();
             }
@@ -434,7 +494,10 @@ namespace Game.Features.Gameplay.Session
                 }
 
                 _changed.OnNext(new BoardChange(BoardChangeKind.Ship, events));
-                if (events.Any(e => e.Type == LevelEventType.ShelfThawed)) _audio.Play(SoundId.Magic);
+                if (events.Any(e => e.Type == LevelEventType.ShelfThawed))
+                {
+                    _audio.Play(SoundId.Magic);
+                }
                 _pendingShips--;
                 ScanDone();
                 if (LevelRules.IsWon(State))
@@ -458,7 +521,10 @@ namespace Game.Features.Gameplay.Session
 
         private void CheckEnd()
         {
-            if (State == null || IsOver || _pendingShips > 0) return;
+            if (State == null || IsOver || _pendingShips > 0)
+            {
+                return;
+            }
 
             if (LevelRules.IsWon(State))
             {
@@ -484,7 +550,10 @@ namespace Game.Features.Gameplay.Session
                 return;
             }
 
-            if (!IsOver) return;
+            if (!IsOver)
+            {
+                return;
+            }
 
             _levels.MarkFailed(LevelNumber);
             _audio.Play(SoundId.Fail);
@@ -494,7 +563,10 @@ namespace Game.Features.Gameplay.Session
 
         private void Win()
         {
-            if (IsOver) return;
+            if (IsOver)
+            {
+                return;
+            }
 
             IsOver = true;
             var stars = GameplayBalance.StarsFor(State.Peak, LevelNumber);

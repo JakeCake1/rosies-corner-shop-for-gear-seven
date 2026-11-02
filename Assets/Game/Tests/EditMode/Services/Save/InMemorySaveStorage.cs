@@ -21,9 +21,15 @@ namespace Game.Tests.EditMode.Services.Save
 
         public void Write(string key, string content)
         {
-            if (IsFull) throw new IOException("Disk full");
+            if (IsFull)
+            {
+                throw new IOException("Disk full");
+            }
 
-            if (Main.TryGetValue(key, out var old)) Backup[key] = old;
+            if (Main.TryGetValue(key, out var old))
+            {
+                Backup[key] = old;
+            }
             Main[key] = content;
         }
 

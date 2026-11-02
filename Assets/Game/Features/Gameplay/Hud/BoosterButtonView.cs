@@ -71,14 +71,20 @@ namespace Game.Features.Gameplay.Hud
         {
             _pulse?.Kill();
             VisualElementTweens.SetScale(Root, Vector2.one);
-            if (isOn) _pulse = Root.DOScale(1.08f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetId(this);
+            if (isOn)
+            {
+                _pulse = Root.DOScale(1.08f, 0.45f).SetLoops(-1, LoopType.Yoyo).SetId(this);
+            }
         }
 
         private void SetGlow(bool isOn)
         {
             _glowTween?.Kill();
             _glow.SetVisible(isOn);
-            if (!isOn) return;
+            if (!isOn)
+            {
+                return;
+            }
 
             _glow.style.opacity = 0.9f;
             _glowTween = _glow.DOFade(0.3f, 0.6f).SetLoops(-1, LoopType.Yoyo).SetId(this);

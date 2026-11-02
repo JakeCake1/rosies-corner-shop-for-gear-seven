@@ -45,7 +45,10 @@ namespace Game.Services.Levels
             var next = 1;
             for (var i = 1; i <= Count; i++)
             {
-                if (!_levels.IsCompleted(i)) break;
+                if (!_levels.IsCompleted(i))
+                {
+                    break;
+                }
 
                 next = i + 1;
             }

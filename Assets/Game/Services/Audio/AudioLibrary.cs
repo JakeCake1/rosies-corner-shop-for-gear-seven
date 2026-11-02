@@ -52,7 +52,10 @@ namespace Game.Services.Audio
                 _byId = new Dictionary<SoundId, AudioClip>();
                 foreach (var entry in _effects)
                 {
-                    if (entry.Clip != null) _byId[entry.Id] = entry.Clip;
+                    if (entry.Clip != null)
+                    {
+                        _byId[entry.Id] = entry.Clip;
+                    }
                 }
             }
 
@@ -75,22 +78,40 @@ namespace Game.Services.Audio
             var seen = new HashSet<SoundId>();
             foreach (var entry in _effects)
             {
-                if (!seen.Add(entry.Id)) errors.Add($"{name}: {entry.Id} is listed twice.");
-                if (entry.Clip == null) errors.Add($"{name}: {entry.Id} has no clip.");
+                if (!seen.Add(entry.Id))
+                {
+                    errors.Add($"{name}: {entry.Id} is listed twice.");
+                }
+                if (entry.Clip == null)
+                {
+                    errors.Add($"{name}: {entry.Id} has no clip.");
+                }
             }
 
             foreach (SoundId id in Enum.GetValues(typeof(SoundId)))
             {
-                if (!seen.Contains(id)) errors.Add($"{name}: no entry for {id}.");
+                if (!seen.Contains(id))
+                {
+                    errors.Add($"{name}: no entry for {id}.");
+                }
             }
 
-            if (_ship.Count != ShipSteps) errors.Add($"{name}: expected {ShipSteps} ship clips, got {_ship.Count}.");
+            if (_ship.Count != ShipSteps)
+            {
+                errors.Add($"{name}: expected {ShipSteps} ship clips, got {_ship.Count}.");
+            }
             for (var i = 0; i < _ship.Count; i++)
             {
-                if (_ship[i] == null) errors.Add($"{name}: ship clip {i} is missing.");
+                if (_ship[i] == null)
+                {
+                    errors.Add($"{name}: ship clip {i} is missing.");
+                }
             }
 
-            if (_music == null) errors.Add($"{name}: music clip is missing.");
+            if (_music == null)
+            {
+                errors.Add($"{name}: music clip is missing.");
+            }
         }
 
         /// <summary>

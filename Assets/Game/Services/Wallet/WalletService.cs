@@ -19,7 +19,10 @@ namespace Game.Services.Wallet
         /// <inheritdoc/>
         public void Add(int amount)
         {
-            if (amount <= 0) return;
+            if (amount <= 0)
+            {
+                return;
+            }
 
             Data.Coins += amount;
             Commit();
@@ -28,7 +31,10 @@ namespace Game.Services.Wallet
         /// <inheritdoc/>
         public bool TrySpend(int amount)
         {
-            if (amount < 0 || Data.Coins < amount) return false;
+            if (amount < 0 || Data.Coins < amount)
+            {
+                return false;
+            }
 
             Data.Coins -= amount;
             Commit();

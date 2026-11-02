@@ -58,7 +58,10 @@ namespace Game.Services.Audio
         /// <inheritdoc/>
         public void Play(SoundId id)
         {
-            if (_library != null) PlayClip(_library.Get(id));
+            if (_library != null)
+            {
+                PlayClip(_library.Get(id));
+            }
         }
 
         /// <inheritdoc/>
@@ -67,7 +70,10 @@ namespace Game.Services.Audio
         /// <inheritdoc/>
         public void PlayShip(int combo)
         {
-            if (_library != null) PlayClip(_library.Ship(combo));
+            if (_library != null)
+            {
+                PlayClip(_library.Ship(combo));
+            }
         }
 
         /// <inheritdoc/>
@@ -75,7 +81,10 @@ namespace Game.Services.Audio
         {
             if (_settings.IsMusicOn && _music.clip != null)
             {
-                if (!_music.isPlaying) _music.Play();
+                if (!_music.isPlaying)
+                {
+                    _music.Play();
+                }
             }
             else
             {
@@ -86,19 +95,31 @@ namespace Game.Services.Audio
         /// <inheritdoc/>
         public void SetPaused(bool isPaused)
         {
-            if (isPaused) _music.Pause();
-            else if (_settings.IsMusicOn) _music.UnPause();
+            if (isPaused)
+            {
+                _music.Pause();
+            }
+            else if (_settings.IsMusicOn)
+            {
+                _music.UnPause();
+            }
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (_host != null) Object.Destroy(_host);
+            if (_host != null)
+            {
+                Object.Destroy(_host);
+            }
         }
 
         private void PlayClip(AudioClip clip)
         {
-            if (!_settings.IsSoundOn || clip == null) return;
+            if (!_settings.IsSoundOn || clip == null)
+            {
+                return;
+            }
 
             // Round-robin voices so overlapping sounds (several items landing at once) don't cut each other off.
             var source = _voices[_next];

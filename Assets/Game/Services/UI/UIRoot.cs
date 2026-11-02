@@ -110,17 +110,26 @@ namespace Game.Services.UI
 
         private void Update()
         {
-            if (_safe == null) return;
+            if (_safe == null)
+            {
+                return;
+            }
 
             var panelSize = _document.rootVisualElement.layout.size;
-            if (Screen.safeArea == _appliedSafeArea && panelSize == _appliedPanelSize) return;
+            if (Screen.safeArea == _appliedSafeArea && panelSize == _appliedPanelSize)
+            {
+                return;
+            }
 
             ApplySafeArea(panelSize);
         }
 
         private void EnsureReady()
         {
-            if (_safe != null) return;
+            if (_safe != null)
+            {
+                return;
+            }
 
             var root = _document.rootVisualElement;
             root.pickingMode = PickingMode.Ignore;
@@ -146,7 +155,10 @@ namespace Game.Services.UI
             _appliedSafeArea = Screen.safeArea;
             _appliedPanelSize = panelSize;
             var panel = _document.rootVisualElement.panel;
-            if (panel == null || Screen.width <= 0 || Screen.height <= 0) return;
+            if (panel == null || Screen.width <= 0 || Screen.height <= 0)
+            {
+                return;
+            }
 
             // Screen space has y up, panel space has y down.
             var area = Screen.safeArea;

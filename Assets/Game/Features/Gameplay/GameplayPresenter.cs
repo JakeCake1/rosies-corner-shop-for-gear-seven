@@ -171,13 +171,25 @@ namespace Game.Features.Gameplay
         /// </summary>
         public void Tick()
         {
-            if (_session.State == null || _session.IsOver || _ui.IsPopupOpen) return;
-            if (Level > GameplayBalance.HintUntilLevel && !_levels.HasFailed(Level)) return;
-            if (Time.unscaledTime - _lastActionTime < GameplayBalance.HintIdleSeconds) return;
+            if (_session.State == null || _session.IsOver || _ui.IsPopupOpen)
+            {
+                return;
+            }
+            if (Level > GameplayBalance.HintUntilLevel && !_levels.HasFailed(Level))
+            {
+                return;
+            }
+            if (Time.unscaledTime - _lastActionTime < GameplayBalance.HintIdleSeconds)
+            {
+                return;
+            }
 
             _lastActionTime = Time.unscaledTime;
             var hint = _session.BestHint();
-            if (hint != null) _board.SetHint(hint.Id);
+            if (hint != null)
+            {
+                _board.SetHint(hint.Id);
+            }
         }
 
         /// <inheritdoc/>
@@ -208,8 +220,14 @@ namespace Game.Features.Gameplay
             BuildBoosters();
             ShowBanner();
             GiftBooster();
-            if (level == 1) ShowTutorialAsync().Forget();
-            if (level == GameplayBalance.ExtraBasketSlotLevel && !_onboarding.HasFlag(Flags.FreeBasket)) ShowBasketTipAsync().Forget();
+            if (level == 1)
+            {
+                ShowTutorialAsync().Forget();
+            }
+            if (level == GameplayBalance.ExtraBasketSlotLevel && !_onboarding.HasFlag(Flags.FreeBasket))
+            {
+                ShowBasketTipAsync().Forget();
+            }
         }
 
         private void ResetLevelLifetime()
@@ -234,7 +252,10 @@ namespace Game.Features.Gameplay
 
         private void DisposeHud()
         {
-            if (_hudModel == null) return;
+            if (_hudModel == null)
+            {
+                return;
+            }
 
             _hud.Unbind();
             _hudModel.Dispose();
@@ -290,12 +311,18 @@ namespace Game.Features.Gameplay
 
         private void OnItemTapped(int jarId)
         {
-            if (_ui.IsPopupOpen) return;
+            if (_ui.IsPopupOpen)
+            {
+                return;
+            }
 
             _lastActionTime = Time.unscaledTime;
             _board.SetHint(0);
             _overlay.ClearCoach();
-            if (!_session.Tap(jarId)) return;
+            if (!_session.Tap(jarId))
+            {
+                return;
+            }
 
             if (_pendingGift != null)
             {
@@ -340,11 +367,17 @@ namespace Game.Features.Gameplay
 
         private void QueueTip(string key, string textKey, VisualElement anchor, bool isAbove)
         {
-            if (Level > GameplayBalance.CoachTipsUntilLevel || _onboarding.HasSeenTip(key)) return;
+            if (Level > GameplayBalance.CoachTipsUntilLevel || _onboarding.HasSeenTip(key))
+            {
+                return;
+            }
 
             _onboarding.MarkTipSeen(key);
             _tipQueue.Enqueue((_texts.Get(textKey), anchor, isAbove));
-            if (Time.unscaledTime >= _tipBusyUntil) ShowNextTipAsync().Forget();
+            if (Time.unscaledTime >= _tipBusyUntil)
+            {
+                ShowNextTipAsync().Forget();
+            }
         }
 
         private async UniTaskVoid ShowNextTipAsync()
@@ -362,14 +395,23 @@ namespace Game.Features.Gameplay
         private async UniTaskVoid ShowTutorialAsync()
         {
             await UniTask.Delay(2300, cancellationToken: Ct);
-            if (_isTutorialShown || _session.State.Moves > 0 || _session.LevelNumber != 1) return;
+            if (_isTutorialShown || _session.State.Moves > 0 || _session.LevelNumber != 1)
+            {
+                return;
+            }
 
             var basket = _session.State.Baskets.FirstOrDefault(b => b != null);
-            if (basket == null) return;
+            if (basket == null)
+            {
+                return;
+            }
 
             var target = LevelRules.VisibleJars(_session.State, false).FirstOrDefault(v => v.Jar.Type == basket.Type);
             var rect = target.Jar != null ? _board.FindItem(target.Jar.Id) : null;
-            if (rect == null) return;
+            if (rect == null)
+            {
+                return;
+            }
 
             _isTutorialShown = true;
             var name = _texts.GetItemName(basket.Type);
@@ -382,7 +424,10 @@ namespace Game.Features.Gameplay
         {
             await UniTask.Delay(5200, cancellationToken: Ct);
             var plus = _board.FirstBasketLock();
-            if (plus == null || _ui.IsPopupOpen || Level != GameplayBalance.ExtraBasketSlotLevel) return;
+            if (plus == null || _ui.IsPopupOpen || Level != GameplayBalance.ExtraBasketSlotLevel)
+            {
+                return;
+            }
 
             _overlay.Coach(_texts.Get(GameplayTexts.BasketTip), plus, false, 6f);
         }
@@ -396,13 +441,25 @@ namespace Game.Features.Gameplay
             };
             foreach (var (id, level) in unlocks)
             {
-                if (level != Level || _inventory.IsGifted(id)) continue;
+                if (level != Level || _inventory.IsGifted(id))
+                {
+                    continue;
+                }
 
                 _inventory.MarkGifted(id);
-                if (id != BoosterIds.Undo) _inventory.Add(id, GameplayBalance.BoosterGift);
+                if (id != BoosterIds.Undo)
+                {
+                    _inventory.Add(id, GameplayBalance.BoosterGift);
+                }
                 // Undo means nothing before the first move, so its tip waits for that move.
-                if (id == BoosterIds.Undo) _pendingGift = id;
-                else ShowGiftAsync(id, 2400).Forget();
+                if (id == BoosterIds.Undo)
+                {
+                    _pendingGift = id;
+                }
+                else
+                {
+                    ShowGiftAsync(id, 2400).Forget();
+                }
             }
         }
 
@@ -410,7 +467,10 @@ namespace Game.Features.Gameplay
         {
             await UniTask.Delay(delayMs, cancellationToken: Ct);
             var vm = _boosters.FirstOrDefault(b => b.Id == id);
-            if (vm == null || _ui.IsPopupOpen) return;
+            if (vm == null || _ui.IsPopupOpen)
+            {
+                return;
+            }
 
             vm.SetGift(true);
             var index = _boosters.IndexOf(vm);
@@ -429,7 +489,10 @@ namespace Game.Features.Gameplay
             var all = new[] { BoosterIds.Undo, BoosterIds.Pick, BoosterIds.Tidy, BoosterIds.Shuffle };
             foreach (var id in all)
             {
-                if (!_session.IsUnlocked(id)) continue;
+                if (!_session.IsUnlocked(id))
+                {
+                    continue;
+                }
 
                 var vm = new BoosterViewModel(id, _texts.Get(BoosterNames[id]), UseBooster);
                 _boosters.Add(vm);
@@ -455,7 +518,10 @@ namespace Game.Features.Gameplay
 
         private void RefreshBoosters()
         {
-            if (_session.State == null) return;
+            if (_session.State == null)
+            {
+                return;
+            }
 
             foreach (var vm in _boosters)
             {
@@ -486,7 +552,10 @@ namespace Game.Features.Gameplay
                 return;
             }
 
-            if (_session.IsOver && id != BoosterIds.Tidy) return;
+            if (_session.IsOver && id != BoosterIds.Tidy)
+            {
+                return;
+            }
 
             var owned = _inventory.Get(id) + (id == BoosterIds.Pick ? _session.BonusPick.Value : 0);
             if (owned <= 0)
@@ -504,7 +573,10 @@ namespace Game.Features.Gameplay
                     _overlay.Toast(_texts.Get(_session.UseTidy() ? GameplayTexts.TidyDone : GameplayTexts.TidyNone));
                     break;
                 case BoosterIds.Shuffle:
-                    if (!_session.UseShuffle()) _overlay.Toast(_texts.Get(GameplayTexts.ShuffleNone));
+                    if (!_session.UseShuffle())
+                    {
+                        _overlay.Toast(_texts.Get(GameplayTexts.ShuffleNone));
+                    }
                     break;
             }
         }
@@ -536,7 +608,10 @@ namespace Game.Features.Gameplay
             };
             var buy = new DialogButton(_texts.Get(GameplayTexts.BuyTwo), ButtonStyle.Gold, () =>
             {
-                if (!_wallet.TrySpend(GameplayBalance.UndoPackPrice)) return;
+                if (!_wallet.TrySpend(GameplayBalance.UndoPackPrice))
+                {
+                    return;
+                }
 
                 _audio.Play(SoundId.Coin);
                 _session.AddUndos(GameplayBalance.UndoPackSize);
@@ -556,7 +631,10 @@ namespace Game.Features.Gameplay
 
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.NotNow), ButtonStyle.WoodSmall, () =>
             {
-                if (wasOver && _session.IsOver) ShowLossAsync(_session.State.Total - _session.State.Collected).Forget();
+                if (wasOver && _session.IsOver)
+                {
+                    ShowLossAsync(_session.State.Total - _session.State.Collected).Forget();
+                }
             }));
             await _dialogs.ShowAsync(dialog, Ct);
         }
@@ -570,7 +648,10 @@ namespace Game.Features.Gameplay
             var dialog = new DialogViewModel(title, RibbonStyle.Berry) { Icon = _art.IconOf(id), Text = text };
             var buy = new DialogButton(_texts.Get(GameplayTexts.BuyOne), ButtonStyle.Gold, () =>
             {
-                if (!_wallet.TrySpend(GameplayBalance.BoosterPrice)) return;
+                if (!_wallet.TrySpend(GameplayBalance.BoosterPrice))
+                {
+                    return;
+                }
 
                 _audio.Play(SoundId.Coin);
                 _inventory.Add(id, 1);
@@ -593,7 +674,10 @@ namespace Game.Features.Gameplay
 
         private async UniTaskVoid OfferExtraBasketAsync()
         {
-            if (_ui.IsPopupOpen || _session.IsOver) return;
+            if (_ui.IsPopupOpen || _session.IsOver)
+            {
+                return;
+            }
 
             _overlay.ClearCoach();
             if (!_onboarding.HasFlag(Flags.FreeBasket))
@@ -611,7 +695,10 @@ namespace Game.Features.Gameplay
             };
             var buy = new DialogButton(_texts.Get(GameplayTexts.BasketOpen), ButtonStyle.Gold, () =>
             {
-                if (_wallet.TrySpend(GameplayBalance.ExtraBasketPrice)) _session.OpenExtraBasket();
+                if (_wallet.TrySpend(GameplayBalance.ExtraBasketPrice))
+                {
+                    _session.OpenExtraBasket();
+                }
             }) { Badge = ButtonBadge.Coins, Price = GameplayBalance.ExtraBasketPrice };
             buy.IsEnabled.Value = _wallet.Coins.Value >= GameplayBalance.ExtraBasketPrice;
             dialog.Buttons.Add(buy);
@@ -627,7 +714,10 @@ namespace Game.Features.Gameplay
 
         private async UniTaskVoid RewardAsync(Action reward)
         {
-            if (await _ads.ShowAsync(Ct)) reward();
+            if (await _ads.ShowAsync(Ct))
+            {
+                reward();
+            }
         }
 
         private async UniTaskVoid OnFinishedAsync(LevelOutcome outcome)
@@ -645,7 +735,10 @@ namespace Game.Features.Gameplay
             _overlay.Burst(_board.BasketArea.worldBound.center + Vector2.right * 80f, EffectKind.Confetti, 60);
             await UniTask.Delay(CompleteDelayMs - 220, cancellationToken: Ct);
             // Undo still works on a won board and reopens the level without restarting it.
-            if (!_session.IsOver) return;
+            if (!_session.IsOver)
+            {
+                return;
+            }
 
             await ShowCompleteAsync(outcome);
         }
@@ -703,8 +796,14 @@ namespace Game.Features.Gameplay
         {
             // Prototype quirk kept on purpose: from level 9 on "Continue" returns to the shop, where the album and
             // shop-naming milestones are shown and "Open the shop" starts the next level.
-            if (Level < GameplayBalance.DirectNextLevelBelow && Level < _curves.Count) _flow.PlayLevelAsync(Level + 1).Forget();
-            else _flow.GoHomeAsync().Forget();
+            if (Level < GameplayBalance.DirectNextLevelBelow && Level < _curves.Count)
+            {
+                _flow.PlayLevelAsync(Level + 1).Forget();
+            }
+            else
+            {
+                _flow.GoHomeAsync().Forget();
+            }
         }
 
         private async UniTask ShowLossAsync(int left)
@@ -745,7 +844,10 @@ namespace Game.Features.Gameplay
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            if (canUndo) dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.UndoFree), ButtonStyle.Wood, Undo));
+            if (canUndo)
+            {
+                dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.UndoFree), ButtonStyle.Wood, Undo));
+            }
             if (_session.IsUnlocked(BoosterIds.Tidy))
             {
                 var tidyLabel = tidy > 0
@@ -755,7 +857,10 @@ namespace Game.Features.Gameplay
                 {
                     if (_inventory.Get(BoosterIds.Tidy) <= 0)
                     {
-                        if (!_wallet.TrySpend(GameplayBalance.BoosterPrice)) return;
+                        if (!_wallet.TrySpend(GameplayBalance.BoosterPrice))
+                        {
+                            return;
+                        }
 
                         _inventory.Add(BoosterIds.Tidy, 1);
                     }

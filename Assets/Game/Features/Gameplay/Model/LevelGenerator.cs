@@ -142,7 +142,10 @@ namespace Game.Features.Gameplay.Model
                     col.Blocks.Add(block);
                     col.SpawnCount++;
                     used += height;
-                    if (!isFirst) ApplyMechanics(st, block);
+                    if (!isFirst)
+                    {
+                        ApplyMechanics(st, block);
+                    }
                     events?.Add(LevelEvent.Of(LevelEventType.ShelfArrived, block.Id, c));
                 }
             }
@@ -152,7 +155,10 @@ namespace Game.Features.Gameplay.Model
         {
             var jar = col.Queue[0];
             col.Queue.RemoveAt(0);
-            if (jar.IsTool) return jar;
+            if (jar.IsTool)
+            {
+                return jar;
+            }
 
             var m = st.Mechanics;
             if (m.Wrap > 0 && st.NextRandom() < m.Wrap)
@@ -209,14 +215,26 @@ namespace Game.Features.Gameplay.Model
                     }
                 }
 
-                if (candidates.Count < 2) break;
+                if (candidates.Count < 2)
+                {
+                    break;
+                }
 
                 r.Shuffle(candidates);
                 var target = candidates.FirstOrDefault(x => x.Block.Height >= 2);
-                if (target.Block == null) target = candidates[0];
+                if (target.Block == null)
+                {
+                    target = candidates[0];
+                }
                 var keyShelf = candidates.FirstOrDefault(x => x.Block != target.Block && x.Column != target.Column);
-                if (keyShelf.Block == null) keyShelf = candidates.FirstOrDefault(x => x.Block != target.Block);
-                if (keyShelf.Block == null) break;
+                if (keyShelf.Block == null)
+                {
+                    keyShelf = candidates.FirstOrDefault(x => x.Block != target.Block);
+                }
+                if (keyShelf.Block == null)
+                {
+                    break;
+                }
 
                 target.Block.IsLocked = true;
                 keyShelf.Block.KeyTargetId = target.Block.Id;
@@ -228,7 +246,10 @@ namespace Game.Features.Gameplay.Model
         /// </summary>
         private static void PlaceBoard(LevelState st)
         {
-            if (st.Mechanics.Boarded <= 0) return;
+            if (st.Mechanics.Boarded <= 0)
+            {
+                return;
+            }
 
             var candidates = new List<(Block Block, int Column)>();
             for (var c = 0; c < LevelState.ColumnCount; c++)
@@ -243,7 +264,10 @@ namespace Game.Features.Gameplay.Model
                 }
             }
 
-            if (candidates.Count == 0) return;
+            if (candidates.Count == 0)
+            {
+                return;
+            }
 
             var target = candidates[(int)(st.NextRandom() * candidates.Count)];
             target.Block.IsBoarded = true;
@@ -252,8 +276,14 @@ namespace Game.Features.Gameplay.Model
             var mode = st.Mechanics.HammerMode;
 
             (Column Col, Block Block, int Slot, int ColIndex)? spot = null;
-            if (mode == 2) spot = ShelfSpot(st, others, b => b.IsLocked);
-            if (mode == 0) spot = ShelfSpot(st, others, b => b.IsOpen && b.KeyTargetId == 0);
+            if (mode == 2)
+            {
+                spot = ShelfSpot(st, others, b => b.IsLocked);
+            }
+            if (mode == 0)
+            {
+                spot = ShelfSpot(st, others, b => b.IsOpen && b.KeyTargetId == 0);
+            }
             if (spot.HasValue)
             {
                 var s = spot.Value;
@@ -282,17 +312,26 @@ namespace Game.Features.Gameplay.Model
                 var col = st.Columns[ci];
                 foreach (var b in col.Blocks)
                 {
-                    if (!filter(b)) continue;
+                    if (!filter(b))
+                    {
+                        continue;
+                    }
 
                     for (var i = 0; i < b.Slots.Length; i++)
                     {
                         var j = b.Slots[i];
-                        if (j != null && !j.IsTool && j.Back == null) spots.Add((col, b, i, ci));
+                        if (j != null && !j.IsTool && j.Back == null)
+                        {
+                            spots.Add((col, b, i, ci));
+                        }
                     }
                 }
             }
 
-            if (spots.Count == 0) return null;
+            if (spots.Count == 0)
+            {
+                return null;
+            }
 
             return spots[(int)(st.NextRandom() * spots.Count)];
         }
@@ -372,8 +411,14 @@ namespace Game.Features.Gameplay.Model
                 var got = 0;
                 foreach (var it in famList.ToList())
                 {
-                    if (got >= 3 || result.Count >= count) break;
-                    if (!IsAllowed(it)) continue;
+                    if (got >= 3 || result.Count >= count)
+                    {
+                        break;
+                    }
+                    if (!IsAllowed(it))
+                    {
+                        continue;
+                    }
 
                     Take(it);
                     got++;
@@ -391,7 +436,10 @@ namespace Game.Features.Gameplay.Model
 
                 index++;
                 var k = list.FindIndex(it => IsAllowed(it) && !found.Contains(it.Id));
-                if (k < 0) k = list.FindIndex(IsAllowed);
+                if (k < 0)
+                {
+                    k = list.FindIndex(IsAllowed);
+                }
                 if (k < 0)
                 {
                     list.Clear();
@@ -404,8 +452,14 @@ namespace Game.Features.Gameplay.Model
             // Safety net: if the look rules ran the catalog dry, fill up on shape alone.
             foreach (var it in _items)
             {
-                if (result.Count >= count) break;
-                if (result.Contains(it.Id) || shapes.Contains(it.Shape)) continue;
+                if (result.Count >= count)
+                {
+                    break;
+                }
+                if (result.Contains(it.Id) || shapes.Contains(it.Shape))
+                {
+                    continue;
+                }
 
                 shapes.Add(it.Shape);
                 result.Add(it.Id);

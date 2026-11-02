@@ -103,10 +103,19 @@ namespace Game.Features.Gameplay
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartPlay), ButtonStyle.Green, () => play = true));
             dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartBack), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, ct);
-            if (!play) return null;
+            if (!play)
+            {
+                return null;
+            }
 
-            if (useBasket) _boosters.AddStart(BoosterIds.StartBasket, -1);
-            if (useQuick) _boosters.AddStart(BoosterIds.StartQuick, -1);
+            if (useBasket)
+            {
+                _boosters.AddStart(BoosterIds.StartBasket, -1);
+            }
+            if (useQuick)
+            {
+                _boosters.AddStart(BoosterIds.StartQuick, -1);
+            }
             return new StartBoosters(useBasket, useQuick);
         }
 
@@ -121,7 +130,10 @@ namespace Game.Features.Gameplay
 
         private bool Select(bool isOn, string id, int price)
         {
-            if (!isOn) return false;
+            if (!isOn)
+            {
+                return false;
+            }
             if (_boosters.GetStart(id) > 0)
             {
                 _audio.Play(SoundId.Clink);

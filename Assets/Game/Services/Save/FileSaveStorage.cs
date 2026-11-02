@@ -64,7 +64,10 @@ namespace Game.Services.Save
         public void Quarantine(string key)
         {
             var main = MainPath(key);
-            if (!File.Exists(main)) return;
+            if (!File.Exists(main))
+            {
+                return;
+            }
 
             var aside = Path.Combine(_root, $"{key}.corrupt_{DateTime.UtcNow:yyyyMMddHHmmss}.json");
             File.Move(main, aside);
@@ -76,7 +79,10 @@ namespace Game.Services.Save
             var main = MainPath(key);
             foreach (var path in new[] { main, main + ".bak", main + ".tmp" })
             {
-                if (File.Exists(path)) File.Delete(path);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
             }
         }
 

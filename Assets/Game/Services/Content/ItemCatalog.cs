@@ -62,13 +62,25 @@ namespace Game.Services.Content
         /// <inheritdoc/>
         public void Validate(List<string> errors)
         {
-            if (_items.Count == 0) errors.Add($"{name}: no items.");
+            if (_items.Count == 0)
+            {
+                errors.Add($"{name}: no items.");
+            }
             for (var i = 0; i < _items.Count; i++)
             {
                 var it = _items[i];
-                if (it.Id != i) errors.Add($"{name}: item at index {i} has id {it.Id}.");
-                if (it.Sprite == null) errors.Add($"{name}: item {it.Id} '{it.Name}' has no sprite.");
-                if (!_families.Contains(it.Family)) errors.Add($"{name}: item {it.Id} has unknown family '{it.Family}'.");
+                if (it.Id != i)
+                {
+                    errors.Add($"{name}: item at index {i} has id {it.Id}.");
+                }
+                if (it.Sprite == null)
+                {
+                    errors.Add($"{name}: item {it.Id} '{it.Name}' has no sprite.");
+                }
+                if (!_families.Contains(it.Family))
+                {
+                    errors.Add($"{name}: item {it.Id} has unknown family '{it.Family}'.");
+                }
                 if (string.IsNullOrEmpty(it.Shape) || string.IsNullOrEmpty(it.ColorBucket))
                 {
                     errors.Add($"{name}: item {it.Id} is missing shape or color group.");
@@ -77,7 +89,10 @@ namespace Game.Services.Content
 
             foreach (var id in _defaultShowcase)
             {
-                if (id < 0 || id >= _items.Count) errors.Add($"{name}: showcase id {id} is out of range.");
+                if (id < 0 || id >= _items.Count)
+                {
+                    errors.Add($"{name}: showcase id {id} is out of range.");
+                }
             }
         }
     }

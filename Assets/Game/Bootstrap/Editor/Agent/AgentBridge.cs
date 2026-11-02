@@ -81,19 +81,31 @@ namespace Game.Bootstrap.Editor.Agent
         private static void OnUpdate()
         {
             PollPackageRequest();
-            if (EditorApplication.timeSinceStartup < _nextPoll) return;
+            if (EditorApplication.timeSinceStartup < _nextPoll)
+            {
+                return;
+            }
 
             _nextPoll = EditorApplication.timeSinceStartup + PollIntervalSeconds;
             var path = Path.Combine(BridgeFolder, "command.txt");
-            if (!File.Exists(path)) return;
-            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+            if (!File.Exists(path))
+            {
+                return;
+            }
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }
 
             var lines = File.ReadAllLines(path);
             File.Delete(path);
             foreach (var raw in lines)
             {
                 var line = raw.Trim();
-                if (line.Length == 0 || line.StartsWith("#")) continue;
+                if (line.Length == 0 || line.StartsWith("#"))
+                {
+                    continue;
+                }
                 Execute(line);
             }
         }
@@ -145,10 +157,16 @@ namespace Game.Bootstrap.Editor.Agent
             var type = AppDomain.CurrentDomain.GetAssemblies()
                 .Select(a => a.GetType(typeName, false))
                 .FirstOrDefault(t => t != null);
-            if (type == null) throw new InvalidOperationException("type not found: " + typeName);
+            if (type == null)
+            {
+                throw new InvalidOperationException("type not found: " + typeName);
+            }
 
             var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-            if (method == null) throw new InvalidOperationException("method not found: " + fullName);
+            if (method == null)
+            {
+                throw new InvalidOperationException("method not found: " + fullName);
+            }
 
             var result = method.Invoke(null, null);
             Log("ok " + fullName + (result != null ? " -> " + result : string.Empty));
@@ -180,14 +198,23 @@ namespace Game.Bootstrap.Editor.Agent
             }
 
             var extract = Path.Combine("Temp", "dotween");
-            if (Directory.Exists(extract)) Directory.Delete(extract, true);
+            if (Directory.Exists(extract))
+            {
+                Directory.Delete(extract, true);
+            }
             System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extract);
             var source = Directory.GetDirectories(extract, "Demigiant", SearchOption.AllDirectories).FirstOrDefault();
-            if (source == null) throw new InvalidOperationException("no Demigiant folder in the zip");
+            if (source == null)
+            {
+                throw new InvalidOperationException("no Demigiant folder in the zip");
+            }
 
             var target = Path.Combine("Assets", "Plugins", "Demigiant");
             Directory.CreateDirectory(Path.Combine("Assets", "Plugins"));
-            if (Directory.Exists(target)) Directory.Delete(target, true);
+            if (Directory.Exists(target))
+            {
+                Directory.Delete(target, true);
+            }
             Directory.Move(source, target);
 
             var modules = Directory.GetDirectories(target, "Modules", SearchOption.AllDirectories).FirstOrDefault();
@@ -219,7 +246,10 @@ namespace Game.Bootstrap.Editor.Agent
 
         private static void PollPackageRequest()
         {
-            if (_packageRequest == null || !_packageRequest.IsCompleted) return;
+            if (_packageRequest == null || !_packageRequest.IsCompleted)
+            {
+                return;
+            }
 
             Log(_packageRequest.Status == StatusCode.Success
                 ? "packages: installed " + string.Join(", ", _packageRequest.Result.Select(p => p.name + "@" + p.version))

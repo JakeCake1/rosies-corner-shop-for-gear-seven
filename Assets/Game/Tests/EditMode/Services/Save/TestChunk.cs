@@ -26,7 +26,10 @@ namespace Game.Tests.EditMode.Services.Save
 
         public override void Migrate(JObject data, int fromVersion)
         {
-            if (fromVersion >= 2 || data["title"] == null) return;
+            if (fromVersion >= 2 || data["title"] == null)
+            {
+                return;
+            }
 
             data["name"] = data["title"];
             data.Remove("title");

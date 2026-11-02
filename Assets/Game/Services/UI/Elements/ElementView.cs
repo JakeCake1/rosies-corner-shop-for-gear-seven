@@ -39,7 +39,10 @@ namespace Game.Services.UI.Elements
         protected T Q<T>(string name) where T : VisualElement
         {
             var element = Root.Q<T>(name);
-            if (element == null) Debug.LogError($"[UI] {GetType().Name}: no {typeof(T).Name} named '{name}'");
+            if (element == null)
+            {
+                Debug.LogError($"[UI] {GetType().Name}: no {typeof(T).Name} named '{name}'");
+            }
             return element;
         }
 
