@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1f26f0756de6093418e5364ff2add4b5
+    m_Address: config/audio
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5acdea1cb362a7742b54f06ca501ded4
     m_Address: config/item-catalog
     m_ReadOnly: 0
