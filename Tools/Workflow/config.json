@@ -5,6 +5,7 @@
   "git": { "base": "main", "remote": "origin" },
   "langfuse": { "environment": "default" },
   "auto_draft_pr": true,
+  "context_warning_tokens": 150000,
   "guarded_paths": ["Assets/", "Packages/", "ProjectSettings/"],
   "checks": [
     {
