@@ -58,6 +58,9 @@ namespace Game.Services.UI
         /// <inheritdoc/>
         public async UniTask HideAsync(CancellationToken ct)
         {
+            // A close during the opening would otherwise run both fades against each other. Killing the opening
+            // completes ShowAsync, which lifts the shield, so the shield goes up after it.
+            DOTween.Kill(this);
             SetShield(true);
             await Root.DOFade(0f, FadeSeconds * 0.75f).SetUpdate(true).SetId(this)
                 .ToUniTask(TweenCancelBehaviour.Kill, ct);

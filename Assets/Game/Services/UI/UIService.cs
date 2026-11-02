@@ -28,6 +28,8 @@ namespace Game.Services.UI
         private readonly Dictionary<UILayer, List<OpenWindow>> _stacks = new Dictionary<UILayer, List<OpenWindow>>();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
         private readonly EventCallback<ClickEvent> _onBlockerClicked;
+        // Cached: reading Token from the disposed source throws, and windows still close after Dispose at shutdown.
+        private readonly CancellationToken _lifetimeToken;
 
         /// <summary>
         /// Creates the service.
@@ -40,6 +42,7 @@ namespace Game.Services.UI
             _root = root;
             _assets = assets;
             _resolver = resolver;
+            _lifetimeToken = _lifetime.Token;
             foreach (UILayer layer in Enum.GetValues(typeof(UILayer)))
             {
                 _stacks[layer] = new List<OpenWindow>();
@@ -58,8 +61,11 @@ namespace Game.Services.UI
             where TWindow : WindowView<TViewModel>, new()
             where TViewModel : ViewModel
         {
-            await CloseAsync<TWindow>();
             var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
+            // Closed after the load, not before: two opens racing through the load (a double tap) would otherwise
+            // both find no window to replace and stack two copies.
+            await CloseAsync<TWindow>();
+            ct.ThrowIfCancellationRequested();
             var element = layout.Instantiate();
             element.AddToClassList(WindowClass);
             element.pickingMode = PickingMode.Ignore;
@@ -75,11 +81,12 @@ namespace Game.Services.UI
             _stacks[window.Layer].Add(entry);
             window.Bind(viewModel);
             UpdateBlocker();
-            using (var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _lifetime.Token))
-            {
-                await window.ShowAsync(linked.Token);
-            }
-
+            // The window lives no longer than its opener: a dialog of an unloaded scene or a hidden screen must not
+            // stay on top of the next one (an open popup blocks input everywhere through IsPopupOpen).
+            entry.OpenerRegistration = ct.Register(() => CloseAsync(window).Forget());
+            await window.ShowAsync(_lifetimeToken);
+            // Tween cancellation completes the transition instead of throwing, so report it here.
+            ct.ThrowIfCancellationRequested();
             return window;
         }
 
@@ -90,12 +97,19 @@ namespace Game.Services.UI
 
             var stack = _stacks[window.Layer];
             var entry = stack.FirstOrDefault(e => ReferenceEquals(e.Window, window));
-            if (entry == null || entry.IsClosing) return;
+            if (entry == null) return;
+
+            if (entry.IsClosing)
+            {
+                // Callers such as the flow states continue only once the window is really gone.
+                await window.Closed;
+                return;
+            }
 
             entry.IsClosing = true;
             try
             {
-                await window.HideAsync(_lifetime.Token);
+                await window.HideAsync(_lifetimeToken);
             }
             catch (OperationCanceledException)
             {
@@ -104,6 +118,7 @@ namespace Game.Services.UI
 
             stack.Remove(entry);
             entry.CloseSubscription?.Dispose();
+            entry.OpenerRegistration.Dispose();
             window.Root.RemoveFromHierarchy();
             window.Release();
             entry.ViewModel.Dispose();
@@ -177,6 +192,8 @@ namespace Game.Services.UI
             public ViewModel ViewModel { get; }
 
             public IDisposable CloseSubscription { get; set; }
+
+            public CancellationTokenRegistration OpenerRegistration { get; set; }
 
             public bool IsClosing { get; set; }
         }
