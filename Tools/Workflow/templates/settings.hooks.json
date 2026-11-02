@@ -29,7 +29,7 @@
           {
             "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
-            "timeout": 30
+            "timeout": 120
           }
         ]
       }
