@@ -36,7 +36,8 @@ namespace Game.Services.Levels
         [SerializeField] private bool _isHard;
         [Tooltip("Department of the day: up to three item types come from this family. Empty for none.")]
         [SerializeField] private string _family = string.Empty;
-        [SerializeField] private string _tip = string.Empty;
+        [Tooltip("UI string table key of the banner tip at level start (tip.*). Empty for none.")]
+        [SerializeField] private string _tipKey = string.Empty;
 
         /// <summary>
         /// Creates a level definition; used by the JSON importer and by tests.
@@ -57,12 +58,12 @@ namespace Game.Services.Levels
         /// <param name="family">Department of the day, or empty.</param>
         /// <param name="look">Lookalike strictness (0..2).</param>
         /// <param name="isHard">Tricky level with double rewards.</param>
-        /// <param name="tip">Banner tip at level start.</param>
+        /// <param name="tipKey">UI string table key of the banner tip at level start, empty for none.</param>
         /// <param name="capacity">Counter capacity override, 0 for default.</param>
         /// <param name="baskets">Open baskets at start, 0 for default.</param>
         public LevelDefinition(long seed, int jarsPerRow, int visibleRows, int[] sizes, int types, int perType,
             int locks = 0, int frozen = 0, int thaw = 3, int boarded = 0, int hammerMode = 0, float wrap = 0f,
-            float deep = 0f, string family = "", int look = 0, bool isHard = false, string tip = "", int capacity = 0,
+            float deep = 0f, string family = "", int look = 0, bool isHard = false, string tipKey = "", int capacity = 0,
             int baskets = 0)
         {
             _seed = seed;
@@ -81,7 +82,7 @@ namespace Game.Services.Levels
             _family = family ?? string.Empty;
             _look = look;
             _isHard = isHard;
-            _tip = tip ?? string.Empty;
+            _tipKey = tipKey ?? string.Empty;
             _capacity = capacity;
             _baskets = baskets;
         }
@@ -140,8 +141,10 @@ namespace Game.Services.Levels
         /// <summary>Department of the day (catalog family id), or empty.</summary>
         public string Family => _family;
 
-        /// <summary>Banner tip shown when the level starts; empty when the level has none.</summary>
-        public string Tip => _tip;
+        /// <summary>
+        /// UI string table key of the banner tip shown when the level starts; empty when the level has none.
+        /// </summary>
+        public string TipKey => _tipKey;
 
         /// <summary>Total items in the level; the progress bar's denominator.</summary>
         public int TotalItems => _types * _perType;

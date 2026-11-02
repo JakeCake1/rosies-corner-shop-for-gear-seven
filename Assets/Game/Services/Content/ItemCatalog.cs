@@ -22,7 +22,6 @@ namespace Game.Services.Content
         [SerializeField] private List<ItemDefinition> _items = new List<ItemDefinition>();
         [Tooltip("Departments in album order; the generator also relies on this order.")]
         [SerializeField] private List<string> _families = new List<string>();
-        [SerializeField] private List<string> _familyNames = new List<string>();
         [Tooltip("Items shown on the home showcase before the player has found seven items.")]
         [SerializeField] private List<int> _defaultShowcase = new List<int> { 0, 4, 10, 16, 22, 26, 32 };
 
@@ -32,7 +31,8 @@ namespace Game.Services.Content
         public IReadOnlyList<ItemDefinition> Items => _items;
 
         /// <summary>
-        /// Department ids in album order (dairy, bakery, drink, pantry, sweet, fresh, home).
+        /// Department ids in album order (dairy, bakery, drink, pantry, sweet, fresh, home). Display names come
+        /// from the <c>Items</c> string table (<c>ILocalizationService.GetFamilyName</c>).
         /// </summary>
         public IReadOnlyList<string> Families => _families;
 
@@ -49,27 +49,14 @@ namespace Game.Services.Content
         public ItemDefinition Get(int id) => _items[id];
 
         /// <summary>
-        /// Returns the display name of a department ("Fresh produce" for "fresh").
-        /// </summary>
-        /// <param name="family">Department id.</param>
-        /// <returns>The display name, or the id itself when unknown.</returns>
-        public string FamilyName(string family)
-        {
-            var i = _families.IndexOf(family);
-            return i >= 0 && i < _familyNames.Count ? _familyNames[i] : family;
-        }
-
-        /// <summary>
-        /// Replaces the catalog content; called by the editor importer only.
+        /// Replaces the catalog content; used by tests to build a catalog without the asset.
         /// </summary>
         /// <param name="items">Items ordered by id.</param>
         /// <param name="families">Department ids in album order.</param>
-        /// <param name="familyNames">Display names matching <paramref name="families"/>.</param>
-        public void SetContent(List<ItemDefinition> items, List<string> families, List<string> familyNames)
+        public void SetContent(List<ItemDefinition> items, List<string> families)
         {
             _items = items;
             _families = families;
-            _familyNames = familyNames;
         }
 
         /// <inheritdoc/>
@@ -88,7 +75,6 @@ namespace Game.Services.Content
                 }
             }
 
-            if (_familyNames.Count != _families.Count) errors.Add($"{name}: family names don't match families.");
             foreach (var id in _defaultShowcase)
             {
                 if (id < 0 || id >= _items.Count) errors.Add($"{name}: showcase id {id} is out of range.");

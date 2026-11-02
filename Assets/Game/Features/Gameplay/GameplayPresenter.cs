@@ -15,6 +15,7 @@ using Game.Services.Content;
 using Game.Services.Experiments;
 using Game.Services.Flow;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
@@ -33,18 +34,29 @@ namespace Game.Features.Gameplay
     /// </summary>
     public sealed class GameplayPresenter : IStartable, ITickable, IDisposable
     {
-        private const string TipCounter = "No basket wants this one yet, so it waits on the counter. If the counter fills up, you're stuck!";
-        private const string TipShip = "Basket full! It's on its way, and a new order arrives.";
-        private const string TipStock = "The labels show how many items are still in the stock behind each column.";
         private const float TipSeconds = 4.5f;
         private const int CompleteDelayMs = 900;
 
-        private static readonly string[] ColumnNames = { "left", "middle", "right" };
+        private static readonly string[] HammerStockTips =
+        {
+            GameplayTexts.HammerStockLeft, GameplayTexts.HammerStockMiddle, GameplayTexts.HammerStockRight,
+        };
+        private static readonly string[] HammerTiedTips =
+        {
+            GameplayTexts.HammerTiedLeft, GameplayTexts.HammerTiedMiddle, GameplayTexts.HammerTiedRight,
+        };
         private static readonly Dictionary<string, string> Gifts = new Dictionary<string, string>
         {
-            [BoosterIds.Undo] = "New: <b>Undo</b>. Took the wrong item? Take it back. Two free per level.",
-            [BoosterIds.Tidy] = "A gift from Rosie: <b>two Tidy Ups</b>. Each clears the counter when it gets crowded.",
-            [BoosterIds.Pick] = "A gift from Rosie: <b>two Quick Picks</b>. Each fills a basket for you.",
+            [BoosterIds.Undo] = GameplayTexts.GiftUndo,
+            [BoosterIds.Tidy] = GameplayTexts.GiftTidy,
+            [BoosterIds.Pick] = GameplayTexts.GiftPick,
+        };
+        private static readonly Dictionary<string, string> BoosterNames = new Dictionary<string, string>
+        {
+            [BoosterIds.Undo] = GameplayTexts.BoosterUndo,
+            [BoosterIds.Pick] = GameplayTexts.BoosterPick,
+            [BoosterIds.Tidy] = GameplayTexts.BoosterTidy,
+            [BoosterIds.Shuffle] = GameplayTexts.BoosterShuffle,
         };
 
         private readonly LevelSession _session;
@@ -68,6 +80,7 @@ namespace Game.Features.Gameplay
         private readonly IRewardedAdService _ads;
         private readonly ISettingsScreen _settings;
         private readonly IAudioService _audio;
+        private readonly ILocalizationService _texts;
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly List<BoosterViewModel> _boosters = new List<BoosterViewModel>();
         private readonly Queue<(string Text, VisualElement Anchor, bool IsAbove)> _tipQueue =
@@ -114,6 +127,7 @@ namespace Game.Features.Gameplay
             _ads = services.Ads;
             _settings = services.Settings;
             _audio = services.Audio;
+            _texts = services.Texts;
             _lifetimeToken = _lifetime.Token;
             ResetLevelLifetime();
         }
@@ -213,7 +227,7 @@ namespace Game.Features.Gameplay
         private void BindHud()
         {
             DisposeHud();
-            _hudModel = new HudViewModel(_session, _wallet);
+            _hudModel = new HudViewModel(_session, _wallet, _texts);
             _hudModel.SettingsRequested.Subscribe(_ => OpenSettings()).AddTo(_disposables);
             _hud.Bind(_hudModel);
         }
@@ -234,25 +248,28 @@ namespace Game.Features.Gameplay
 
         private void ShowBanner()
         {
-            var title = _session.IsTricky ? "Tricky Level" : "Level " + Level;
-            var hammer = _session.State.HammerPlace;
-            var column = _session.State.HammerColumn >= 0 ? ColumnNames[_session.State.HammerColumn] : string.Empty;
-            string tip;
-            switch (hammer)
+            var title = _session.IsTricky
+                ? _texts.Get(GameplayTexts.BannerTricky)
+                : _texts.Format(GameplayTexts.BannerLevel, Level);
+            var column = _session.State.HammerColumn;
+            string tipKey;
+            switch (_session.State.HammerPlace)
             {
                 case HammerPlace.Stock:
-                    tip = $"The hammer is in the {column} column's stock. Dig there first!";
+                    tipKey = HammerStockTips[column];
                     break;
                 case HammerPlace.Tied:
-                    tip = $"The hammer is tied up in the {column} column. Find the key first!";
+                    tipKey = HammerTiedTips[column];
                     break;
                 case HammerPlace.Shelf:
-                    tip = "Tap the hammer to open the nailed shelf.";
+                    tipKey = GameplayTexts.HammerShelf;
                     break;
                 default:
-                    tip = _session.Definition.Tip;
+                    tipKey = _session.Definition.TipKey;
                     break;
             }
+
+            var tip = string.IsNullOrEmpty(tipKey) ? string.Empty : _texts.Get(tipKey);
 
             _screen.Banner.Show(title, tip, _session.IsTricky, _board.Counter);
         }
@@ -291,7 +308,7 @@ namespace Game.Features.Gameplay
         private void OnRefused(int jarId)
         {
             _board.ShakeCounter(jarId);
-            _overlay.Toast("The counter is full", true);
+            _overlay.Toast(_texts.Get(GameplayTexts.CounterFull), true);
         }
 
         private void OnNotice(string notice)
@@ -299,34 +316,34 @@ namespace Game.Features.Gameplay
             switch (notice)
             {
                 case "oneLeft":
-                    _overlay.Toast("Only one spot left!", true);
+                    _overlay.Toast(_texts.Get(GameplayTexts.OneSpotLeft), true);
                     break;
                 case "counter":
-                    QueueTip("counter", TipCounter, _board.Counter, false);
+                    QueueTip("counter", GameplayTexts.TipCounter, _board.Counter, false);
                     break;
                 case "stock":
-                    QueueTip("stock", TipStock, _board.StockLabels, false);
+                    QueueTip("stock", GameplayTexts.TipStock, _board.StockLabels, false);
                     break;
                 case "ship":
-                    QueueTip("ship", TipShip, _board.BasketArea, false);
+                    QueueTip("ship", GameplayTexts.TipShip, _board.BasketArea, false);
                     break;
                 default:
                     if (notice.StartsWith("family:"))
                     {
-                        var family = _content.Catalog.FamilyName(notice.Substring("family:".Length));
-                        _overlay.Toast($"{family} complete! +{AlbumService.FamilyBonus} coins");
+                        var family = _texts.GetFamilyName(notice.Substring("family:".Length));
+                        _overlay.Toast(_texts.Format(GameplayTexts.FamilyComplete, family, AlbumService.FamilyBonus));
                     }
 
                     break;
             }
         }
 
-        private void QueueTip(string key, string text, VisualElement anchor, bool isAbove)
+        private void QueueTip(string key, string textKey, VisualElement anchor, bool isAbove)
         {
             if (Level > GameplayBalance.CoachTipsUntilLevel || _onboarding.HasSeenTip(key)) return;
 
             _onboarding.MarkTipSeen(key);
-            _tipQueue.Enqueue((text, anchor, isAbove));
+            _tipQueue.Enqueue((_texts.Get(textKey), anchor, isAbove));
             if (Time.unscaledTime >= _tipBusyUntil) ShowNextTipAsync().Forget();
         }
 
@@ -355,10 +372,10 @@ namespace Game.Features.Gameplay
             if (rect == null) return;
 
             _isTutorialShown = true;
-            var name = _content.Catalog.Get(basket.Type).Name;
+            var name = _texts.GetItemName(basket.Type);
             _board.SetHint(target.Jar.Id);
             _overlay.PointAt(rect);
-            _overlay.Coach($"Tap the <b>{name}</b>. It goes straight into the basket that asks for it.", rect, true, 0f);
+            _overlay.Coach(_texts.Format(GameplayTexts.Tutorial, name), rect, true, 0f);
         }
 
         private async UniTaskVoid ShowBasketTipAsync()
@@ -367,7 +384,7 @@ namespace Game.Features.Gameplay
             var plus = _board.FirstBasketLock();
             if (plus == null || _ui.IsPopupOpen || Level != GameplayBalance.ExtraBasketSlotLevel) return;
 
-            _overlay.Coach("Tap <b>+</b> to call one more customer. Free this time!", plus, false, 6f);
+            _overlay.Coach(_texts.Get(GameplayTexts.BasketTip), plus, false, 6f);
         }
 
         private void GiftBooster()
@@ -397,7 +414,7 @@ namespace Game.Features.Gameplay
 
             vm.SetGift(true);
             var index = _boosters.IndexOf(vm);
-            _overlay.Coach(Gifts[id], _boosterViews[index].Root, true, 4f);
+            _overlay.Coach(_texts.Get(Gifts[id]), _boosterViews[index].Root, true, 4f);
         }
 
         private void BuildBoosters()
@@ -409,16 +426,12 @@ namespace Game.Features.Gameplay
 
             _boosters.Clear();
             ClearBoosterViews();
-            var all = new[]
-            {
-                (BoosterIds.Undo, "Undo"), (BoosterIds.Pick, "Quick Pick"), (BoosterIds.Tidy, "Tidy Up"),
-                (BoosterIds.Shuffle, "Shuffle"),
-            };
-            foreach (var (id, title) in all)
+            var all = new[] { BoosterIds.Undo, BoosterIds.Pick, BoosterIds.Tidy, BoosterIds.Shuffle };
+            foreach (var id in all)
             {
                 if (!_session.IsUnlocked(id)) continue;
 
-                var vm = new BoosterViewModel(id, title, UseBooster);
+                var vm = new BoosterViewModel(id, _texts.Get(BoosterNames[id]), UseBooster);
                 _boosters.Add(vm);
                 var view = _screen.AddBooster();
                 view.SetIcon(_art.IconOf(id));
@@ -485,13 +498,13 @@ namespace Game.Features.Gameplay
             switch (id)
             {
                 case BoosterIds.Pick:
-                    _overlay.Toast(_session.UseQuickPick() ? "Quick Pick filled a basket" : "No basket to fill right now");
+                    _overlay.Toast(_texts.Get(_session.UseQuickPick() ? GameplayTexts.PickDone : GameplayTexts.PickNone));
                     break;
                 case BoosterIds.Tidy:
-                    _overlay.Toast(_session.UseTidy() ? "Items went back to the stockroom" : "The counter is already clear");
+                    _overlay.Toast(_texts.Get(_session.UseTidy() ? GameplayTexts.TidyDone : GameplayTexts.TidyNone));
                     break;
                 case BoosterIds.Shuffle:
-                    if (!_session.UseShuffle()) _overlay.Toast("Nothing to shuffle");
+                    if (!_session.UseShuffle()) _overlay.Toast(_texts.Get(GameplayTexts.ShuffleNone));
                     break;
             }
         }
@@ -502,10 +515,10 @@ namespace Game.Features.Gameplay
             {
                 case UndoResult.Done:
                     _dialogs.CloseAllAsync().Forget();
-                    _overlay.Toast("Move undone");
+                    _overlay.Toast(_texts.Get(GameplayTexts.UndoDone));
                     break;
                 case UndoResult.NothingToUndo:
-                    _overlay.Toast("Nothing to undo yet");
+                    _overlay.Toast(_texts.Get(GameplayTexts.UndoNone));
                     break;
                 case UndoResult.NoUndosLeft:
                     OfferUndoAsync().Forget();
@@ -516,12 +529,12 @@ namespace Game.Features.Gameplay
         private async UniTaskVoid OfferUndoAsync()
         {
             var wasOver = _session.IsOver;
-            var dialog = new DialogViewModel("Undo", RibbonStyle.Berry)
+            var dialog = new DialogViewModel(_texts.Get(GameplayTexts.BoosterUndo), RibbonStyle.Berry)
             {
                 Icon = _art.Undo,
-                Text = "Out of free undos on this level. Take back your last move.",
+                Text = _texts.Get(GameplayTexts.UndoOffer),
             };
-            var buy = new DialogButton("Get 2", ButtonStyle.Gold, () =>
+            var buy = new DialogButton(_texts.Get(GameplayTexts.BuyTwo), ButtonStyle.Gold, () =>
             {
                 if (!_wallet.TrySpend(GameplayBalance.UndoPackPrice)) return;
 
@@ -533,14 +546,15 @@ namespace Game.Features.Gameplay
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
-                dialog.Buttons.Add(new DialogButton("Get 1 free", ButtonStyle.Green, () => RewardAsync(() =>
+                var adLabel = _texts.Get(GameplayTexts.GetOneFree);
+                dialog.Buttons.Add(new DialogButton(adLabel, ButtonStyle.Green, () => RewardAsync(() =>
                 {
                     _session.AddUndos(1);
                     Undo();
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            dialog.Buttons.Add(new DialogButton("Not now", ButtonStyle.WoodSmall, () =>
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.NotNow), ButtonStyle.WoodSmall, () =>
             {
                 if (wasOver && _session.IsOver) ShowLossAsync(_session.State.Total - _session.State.Collected).Forget();
             }));
@@ -549,14 +563,12 @@ namespace Game.Features.Gameplay
 
         private async UniTaskVoid OfferBoosterAsync(string id)
         {
-            var title = id == BoosterIds.Pick ? "Quick Pick" : id == BoosterIds.Tidy ? "Tidy Up" : "Shuffle";
-            var text = id == BoosterIds.Pick
-                ? "Fills the basket that's closest to done, pulling items from the counter, the shelves, even the stockroom."
-                : id == BoosterIds.Tidy
-                    ? "Puts up to three items from the counter back on a shelf, so the counter has room again."
-                    : "Mixes up all the items on the open shelves.";
+            var title = _texts.Get(BoosterNames[id]);
+            var text = _texts.Get(id == BoosterIds.Pick ? GameplayTexts.PickInfo
+                : id == BoosterIds.Tidy ? GameplayTexts.TidyInfo
+                : GameplayTexts.ShuffleInfo);
             var dialog = new DialogViewModel(title, RibbonStyle.Berry) { Icon = _art.IconOf(id), Text = text };
-            var buy = new DialogButton("Get 1", ButtonStyle.Gold, () =>
+            var buy = new DialogButton(_texts.Get(GameplayTexts.BuyOne), ButtonStyle.Gold, () =>
             {
                 if (!_wallet.TrySpend(GameplayBalance.BoosterPrice)) return;
 
@@ -567,14 +579,15 @@ namespace Game.Features.Gameplay
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
-                dialog.Buttons.Add(new DialogButton("Get 1 free", ButtonStyle.Green, () => RewardAsync(() =>
+                var adLabel = _texts.Get(GameplayTexts.GetOneFree);
+                dialog.Buttons.Add(new DialogButton(adLabel, ButtonStyle.Green, () => RewardAsync(() =>
                 {
                     _inventory.Add(id, 1);
-                    _overlay.Toast(title + " +1");
+                    _overlay.Toast(_texts.Format(GameplayTexts.BoosterAdded, title));
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            dialog.Buttons.Add(new DialogButton("Not now", ButtonStyle.WoodSmall, null));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.NotNow), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, Ct);
         }
 
@@ -587,16 +600,16 @@ namespace Game.Features.Gameplay
             {
                 _onboarding.SetFlag(Flags.FreeBasket);
                 _session.OpenExtraBasket();
-                _overlay.Toast("Rosie opened a third basket. On the house!");
+                _overlay.Toast(_texts.Get(GameplayTexts.BasketFree));
                 return;
             }
 
-            var dialog = new DialogViewModel("Extra basket", RibbonStyle.Green)
+            var dialog = new DialogViewModel(_texts.Get(GameplayTexts.BasketTitle), RibbonStyle.Green)
             {
                 Icon = _art.Basket,
-                Text = "Open a third basket for this level. More baskets, fewer items waiting on the counter.",
+                Text = _texts.Get(GameplayTexts.BasketText),
             };
-            var buy = new DialogButton("Open", ButtonStyle.Gold, () =>
+            var buy = new DialogButton(_texts.Get(GameplayTexts.BasketOpen), ButtonStyle.Gold, () =>
             {
                 if (_wallet.TrySpend(GameplayBalance.ExtraBasketPrice)) _session.OpenExtraBasket();
             }) { Badge = ButtonBadge.Coins, Price = GameplayBalance.ExtraBasketPrice };
@@ -604,11 +617,11 @@ namespace Game.Features.Gameplay
             dialog.Buttons.Add(buy);
             if (HasAds)
             {
-                dialog.Buttons.Add(new DialogButton("Open free", ButtonStyle.Green,
+                dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.BasketOpenFree), ButtonStyle.Green,
                     () => RewardAsync(_session.OpenExtraBasket).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            dialog.Buttons.Add(new DialogButton("Not now", ButtonStyle.WoodSmall, null));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.NotNow), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, Ct);
         }
 
@@ -641,34 +654,47 @@ namespace Game.Features.Gameplay
         {
             var st = _session.State;
             var threshold = GameplayBalance.StarThreshold(Level);
-            var dialog = new DialogViewModel(_session.IsTricky ? "Tricky level complete" : $"Level {Level} complete",
-                RibbonStyle.Green)
+            var title = _session.IsTricky
+                ? _texts.Get(GameplayTexts.CompleteTrickyTitle)
+                : _texts.Format(GameplayTexts.CompleteTitle, Level);
+            var headline = outcome.Stars == 3 ? GameplayTexts.HeadlineThreeStars
+                : outcome.Stars == 2 ? GameplayTexts.HeadlineTwoStars
+                : GameplayTexts.HeadlineOneStar;
+            var dialog = new DialogViewModel(title, RibbonStyle.Green)
             {
                 Stars = outcome.Stars,
-                Headline = outcome.Stars == 3 ? "Beautifully kept!" : outcome.Stars == 2 ? "Lovely work!" : "Shelf cleared!",
+                Headline = _texts.Get(headline),
                 Text = outcome.Stars == 3
-                    ? "The counter never got crowded. That's the neat way to do it."
-                    : $"Keep the counter at {threshold} items or fewer for three stars.",
+                    ? _texts.Get(GameplayTexts.CompleteNeat)
+                    : _texts.Format(GameplayTexts.CompleteHint, threshold),
                 Reward = "+" + outcome.Reward,
             };
-            dialog.Stats.Add(("Items packed", st.Total.ToString()));
-            dialog.Stats.Add(("Most items on the counter", $"{st.Peak} / {st.Capacity}"));
-            dialog.Stats.Add(("Moves", st.Moves.ToString()));
+            dialog.Stats.Add((_texts.Get(GameplayTexts.StatItems), st.Total.ToString()));
+            dialog.Stats.Add((_texts.Get(GameplayTexts.StatPeak), $"{st.Peak} / {st.Capacity}"));
+            dialog.Stats.Add((_texts.Get(GameplayTexts.StatMoves), st.Moves.ToString()));
             if (HasAds)
             {
-                dialog.Buttons.Add(new DialogButton("Double coins", ButtonStyle.Green, () => RewardAsync(() =>
+                var adLabel = _texts.Get(GameplayTexts.DoubleCoins);
+                dialog.Buttons.Add(new DialogButton(adLabel, ButtonStyle.Green, () => RewardAsync(() =>
                 {
                     _wallet.Add(outcome.Reward);
                     _audio.Play(SoundId.Coin);
-                    _overlay.Toast($"+{outcome.Reward} coins");
+                    _overlay.Toast(_texts.Format(GameplayTexts.CoinsAdded, outcome.Reward));
                     AfterWin();
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            dialog.Buttons.Add(new DialogButton("Replay", ButtonStyle.Wood, () => StartLevel(Level, null)) { IsInRow = true });
+            var replay = new DialogButton(_texts.Get(GameplayTexts.Replay), ButtonStyle.Wood, () => StartLevel(Level, null));
+            replay.IsInRow = true;
+            dialog.Buttons.Add(replay);
             var isDirect = Level < GameplayBalance.DirectNextLevelBelow;
-            var next = new DialogButton(isDirect ? "Next level" : "Continue", ButtonStyle.Berry, AfterWin) { IsInRow = true };
-            if (isDirect && Level < _curves.Count && _curves.Get(Level + 1).IsHard) next.SubLabel = "Tricky · Rewards ×2";
+            var nextLabel = _texts.Get(isDirect ? GameplayTexts.NextLevel : GameplayTexts.Continue);
+            var next = new DialogButton(nextLabel, ButtonStyle.Berry, AfterWin) { IsInRow = true };
+            if (isDirect && Level < _curves.Count && _curves.Get(Level + 1).IsHard)
+            {
+                next.SubLabel = _texts.Get(GameplayTexts.NextTricky);
+            }
+
             dialog.Buttons.Add(next);
             await _dialogs.ShowAsync(dialog, Ct);
         }
@@ -690,36 +716,42 @@ namespace Game.Features.Gameplay
                 ? null
                 : _experiments.LossOffer == "basket" && st.UnlockedBaskets < LevelState.MaxBaskets ? "basket"
                 : st.Capacity < GameplayBalance.ExtendedCapacity ? "slot" : null;
-            var dialog = new DialogViewModel("Oops, the counter is full!", RibbonStyle.Berry)
+            var caption = left / (float)st.Total > 0.35f ? GameplayTexts.LossLeft
+                : left == 1 ? GameplayTexts.LossOneLeft
+                : GameplayTexts.LossFewLeft;
+            var dialog = new DialogViewModel(_texts.Get(GameplayTexts.LossTitle), RibbonStyle.Berry)
             {
                 Progress = st.Collected / (float)st.Total,
-                ProgressCaption = left / (float)st.Total <= 0.35f
-                    ? $"Only {left} item{(left == 1 ? string.Empty : "s")} left!"
-                    : $"{left} items left",
+                ProgressCaption = _texts.Format(caption, left),
             };
             dialog.Items.AddRange(st.Counter.Select(j => _content.Catalog.Get(j.Type).Sprite));
             if (offer == "basket")
             {
-                dialog.Buttons.Add(new DialogButton("Call one more customer", ButtonStyle.Green, () => RewardAsync(() =>
+                var adLabel = _texts.Get(GameplayTexts.CallCustomer);
+                dialog.Buttons.Add(new DialogButton(adLabel, ButtonStyle.Green, () => RewardAsync(() =>
                 {
                     _session.OpenExtraBasket();
-                    _overlay.Toast("One more customer is here!");
+                    _overlay.Toast(_texts.Get(GameplayTexts.CustomerArrived));
                 }).Forget()) { Badge = ButtonBadge.Ad });
-                dialog.Note = "A third basket opens and takes items straight from the counter.";
+                dialog.Note = _texts.Get(GameplayTexts.CustomerNote);
             }
             else if (offer == "slot")
             {
-                dialog.Buttons.Add(new DialogButton("+1 counter spot", ButtonStyle.Green, () => RewardAsync(() =>
+                var adLabel = _texts.Get(GameplayTexts.ExtraSpot);
+                dialog.Buttons.Add(new DialogButton(adLabel, ButtonStyle.Green, () => RewardAsync(() =>
                 {
                     _session.ExtendCounter();
-                    _overlay.Toast("One more spot on the counter");
+                    _overlay.Toast(_texts.Get(GameplayTexts.SpotAdded));
                 }).Forget()) { Badge = ButtonBadge.Ad });
             }
 
-            if (canUndo) dialog.Buttons.Add(new DialogButton("Undo last move · free", ButtonStyle.Wood, Undo));
+            if (canUndo) dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.UndoFree), ButtonStyle.Wood, Undo));
             if (_session.IsUnlocked(BoosterIds.Tidy))
             {
-                var tidyButton = new DialogButton(tidy > 0 ? $"Tidy Up ({tidy} left)" : "Tidy Up", ButtonStyle.Gold, () =>
+                var tidyLabel = tidy > 0
+                    ? _texts.Format(GameplayTexts.TidyLeft, tidy)
+                    : _texts.Get(GameplayTexts.BoosterTidy);
+                var tidyButton = new DialogButton(tidyLabel, ButtonStyle.Gold, () =>
                 {
                     if (_inventory.Get(BoosterIds.Tidy) <= 0)
                     {
@@ -740,7 +772,8 @@ namespace Game.Features.Gameplay
                 dialog.Buttons.Add(tidyButton);
             }
 
-            dialog.Buttons.Add(new DialogButton("Start the level over", ButtonStyle.WoodSmall, () => StartLevel(Level, null)));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(GameplayTexts.StartOver), ButtonStyle.WoodSmall,
+                () => StartLevel(Level, null)));
             await _dialogs.ShowAsync(dialog, Ct);
         }
     }

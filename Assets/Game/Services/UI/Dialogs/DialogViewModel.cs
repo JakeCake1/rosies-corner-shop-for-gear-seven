@@ -78,6 +78,11 @@ namespace Game.Services.UI.Dialogs
         /// <summary>Optional small print under the main content.</summary>
         public string Note { get; set; }
 
+        /// <summary>
+        /// Caption of the badge on rewarded-ad buttons; filled by <see cref="DialogService"/> before the card opens.
+        /// </summary>
+        public string AdBadgeText { get; set; }
+
         /// <summary>Buttons, top to bottom; consecutive buttons marked <see cref="DialogButton.IsInRow"/> share a row.</summary>
         public List<DialogButton> Buttons { get; } = new List<DialogButton>();
 

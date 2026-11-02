@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Game.Services.Content;
 using Game.Services.Flow;
 using Game.Services.Levels;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using UniRx;
@@ -30,6 +31,7 @@ namespace Game.Features.Home
         private readonly IShopNamePrompt _namePrompt;
         private readonly IAlbumScreen _album;
         private readonly IReviewersScreen _reviewers;
+        private readonly ILocalizationService _texts;
         private readonly CompositeDisposable _subscriptions = new CompositeDisposable();
         private HomeWindow _window;
         private CancellationTokenSource _shown;
@@ -47,10 +49,12 @@ namespace Game.Features.Home
         /// <param name="namePrompt">Shop naming.</param>
         /// <param name="album">Album screen.</param>
         /// <param name="reviewers">Reviewers panel.</param>
+        /// <param name="texts">Home texts.</param>
         public HomeScreen(IUIService ui, IOverlayService overlay, HomeProgress progress, ILevelCurveService curves,
             IContentService content, IGameFlow flow, ISettingsScreen settings, IShopNamePrompt namePrompt,
-            IAlbumScreen album, IReviewersScreen reviewers)
+            IAlbumScreen album, IReviewersScreen reviewers, ILocalizationService texts)
         {
+            _texts = texts;
             _ui = ui;
             _overlay = overlay;
             _progress = progress;
@@ -80,7 +84,7 @@ namespace Game.Features.Home
             var shown = _shown.Token;
             _overlay.SetBackground(false, true);
             _subscriptions.Clear();
-            var vm = new HomeViewModel(_progress, _curves, _content);
+            var vm = new HomeViewModel(_progress, _curves, _content, _texts);
             vm.Commands.Subscribe(command => OnCommand(command, shown)).AddTo(_subscriptions);
             _window = await _ui.OpenAsync<HomeWindow, HomeViewModel>(vm, shown);
             ShowMilestonesAsync(shown).Forget();
@@ -131,7 +135,7 @@ namespace Game.Features.Home
                     _album.OpenAsync(shown).Forget();
                     break;
                 case HomeCommand.AlbumLocked:
-                    _overlay.Toast($"The album opens after level {AlbumFromLevel}. Keep going!");
+                    _overlay.Toast(_texts.Format(HomeTexts.AlbumLocked, AlbumFromLevel));
                     break;
                 case HomeCommand.Settings:
                     _settings.OpenAsync(null, shown).Forget();

@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Ads;
+using Game.Services.Localization;
 using Game.Services.UI.Dialogs;
 
 namespace Game.Features.Ads
@@ -14,24 +15,27 @@ namespace Game.Features.Ads
         private const int AdMilliseconds = 2300;
 
         private readonly IDialogService _dialogs;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the service.
         /// </summary>
         /// <param name="dialogs">Shows the placeholder card.</param>
-        public FakeRewardedAdService(IDialogService dialogs)
+        /// <param name="texts">Card texts.</param>
+        public FakeRewardedAdService(IDialogService dialogs, ILocalizationService texts)
         {
             _dialogs = dialogs;
+            _texts = texts;
         }
 
         /// <inheritdoc/>
         public async UniTask<bool> ShowAsync(CancellationToken ct)
         {
-            var card = new DialogViewModel("Rewarded ad", RibbonStyle.Green)
+            var card = new DialogViewModel(_texts.Get(AdsTexts.Title), RibbonStyle.Green)
             {
-                Text = "A rewarded video plays here in the real game.",
+                Text = _texts.Get(AdsTexts.Text),
                 Progress = 1f,
-                ProgressCaption = "Playing…",
+                ProgressCaption = _texts.Get(AdsTexts.Playing),
             };
             var shown = _dialogs.ShowAsync(card, ct);
             await UniTask.Delay(AdMilliseconds, true, cancellationToken: ct);

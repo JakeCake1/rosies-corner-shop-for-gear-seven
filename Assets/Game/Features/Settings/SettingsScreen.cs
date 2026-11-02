@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Audio;
 using Game.Services.Flow;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.Save;
 using Game.Services.Settings;
@@ -25,6 +26,7 @@ namespace Game.Features.Settings
         private readonly IGameFlow _flow;
         private readonly IShopNamePrompt _namePrompt;
         private readonly IOverlayService _overlay;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the screen.
@@ -37,10 +39,12 @@ namespace Game.Features.Settings
         /// <param name="flow">Back to the shop.</param>
         /// <param name="namePrompt">Rename the shop.</param>
         /// <param name="overlay">Reset confirmation toast.</param>
+        /// <param name="texts">Card texts.</param>
         public SettingsScreen(IDialogService dialogs, ISettingsService settings, IProfileService profile,
             IOnboardingService onboarding, IAudioService audio, IGameFlow flow, IShopNamePrompt namePrompt,
-            IOverlayService overlay)
+            IOverlayService overlay, ILocalizationService texts)
         {
+            _texts = texts;
             _overlay = overlay;
             _dialogs = dialogs;
             _settings = settings;
@@ -54,44 +58,49 @@ namespace Game.Features.Settings
         /// <inheritdoc/>
         public async UniTask OpenAsync(Action restartLevel, CancellationToken ct)
         {
-            var dialog = new DialogViewModel("Settings", RibbonStyle.Green) { IsClosedByBlocker = true };
-            dialog.Toggles.Add(new DialogToggle("Sound", _settings.IsSoundOn, on =>
+            var dialog = new DialogViewModel(_texts.Get(SettingsTexts.Title), RibbonStyle.Green)
+            {
+                IsClosedByBlocker = true,
+            };
+            dialog.Toggles.Add(new DialogToggle(_texts.Get(SettingsTexts.Sound), _settings.IsSoundOn, on =>
             {
                 _settings.SetSoundOn(on);
                 _audio.Play(SoundId.Clink);
                 return on;
             }));
-            dialog.Toggles.Add(new DialogToggle("Music", _settings.IsMusicOn, on =>
+            dialog.Toggles.Add(new DialogToggle(_texts.Get(SettingsTexts.Music), _settings.IsMusicOn, on =>
             {
                 _settings.SetMusicOn(on);
                 _audio.ApplySettings();
                 return on;
             }));
-            dialog.Toggles.Add(new DialogToggle("Vibration", _settings.IsHapticsOn, on =>
+            dialog.Toggles.Add(new DialogToggle(_texts.Get(SettingsTexts.Vibration), _settings.IsHapticsOn, on =>
             {
                 _settings.SetHapticsOn(on);
                 return on;
             }));
             if (restartLevel != null)
             {
-                dialog.Buttons.Add(new DialogButton("Restart level", ButtonStyle.Wood, restartLevel));
-                dialog.Buttons.Add(new DialogButton("Back to the shop", ButtonStyle.Wood, () => _flow.GoHomeAsync().Forget()));
+                dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.RestartLevel), ButtonStyle.Wood,
+                    restartLevel));
+                dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.BackHome), ButtonStyle.Wood,
+                    () => _flow.GoHomeAsync().Forget()));
             }
 
             if (_onboarding.HasFlag(Flags.NameAsked))
             {
-                dialog.Buttons.Add(new DialogButton("Rename the shop", ButtonStyle.WoodSmall,
+                dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.Rename), ButtonStyle.WoodSmall,
                     () => _namePrompt.AskAsync(ct).Forget()));
             }
 
-            dialog.Buttons.Add(new DialogButton("Close", ButtonStyle.Berry, null));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(SettingsTexts.Close), ButtonStyle.Berry, null));
             var armed = false;
-            var reset = new DialogButton("Reset progress", ButtonStyle.WoodSmall, () =>
+            var reset = new DialogButton(_texts.Get(SettingsTexts.Reset), ButtonStyle.WoodSmall, () =>
             {
                 if (!armed)
                 {
                     armed = true;
-                    _overlay.Toast("Tap again to erase everything", true);
+                    _overlay.Toast(_texts.Get(SettingsTexts.ResetConfirm), true);
                     return;
                 }
 

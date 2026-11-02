@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Services.Audio;
 using Game.Services.Flow;
+using Game.Services.Localization;
 using Game.Services.Onboarding;
 using Game.Services.UI;
 using Game.Services.UI.Dialogs;
@@ -20,13 +22,14 @@ namespace Game.Features.Home
         /// </summary>
         public const int MaxNameLength = 24;
 
-        private static readonly string[] Ideas = { "Rosie & Me", "Maple Street Market", "The Corner Pantry" };
+        private static readonly string[] IdeaKeys = { HomeTexts.NameIdea1, HomeTexts.NameIdea2, HomeTexts.NameIdea3 };
 
         private readonly IDialogService _dialogs;
         private readonly IShopProfile _shop;
         private readonly IOnboardingService _onboarding;
         private readonly IAudioService _audio;
         private readonly IOverlayService _overlay;
+        private readonly ILocalizationService _texts;
 
         /// <summary>
         /// Creates the prompt.
@@ -36,9 +39,11 @@ namespace Game.Features.Home
         /// <param name="onboarding">Stores the "asked" flag.</param>
         /// <param name="audio">Fanfare.</param>
         /// <param name="overlay">Confetti.</param>
+        /// <param name="texts">Card texts, name ideas and the default name.</param>
         public ShopNamePrompt(IDialogService dialogs, IShopProfile shop, IOnboardingService onboarding, IAudioService audio,
-            IOverlayService overlay)
+            IOverlayService overlay, ILocalizationService texts)
         {
+            _texts = texts;
             _dialogs = dialogs;
             _shop = shop;
             _onboarding = onboarding;
@@ -50,13 +55,14 @@ namespace Game.Features.Home
         public async UniTask AskAsync(CancellationToken ct)
         {
             _onboarding.SetFlag(Flags.NameAsked);
-            var dialog = new DialogViewModel("You're my partner now!", RibbonStyle.Green)
+            var ideas = IdeaKeys.Select(_texts.Get).ToArray();
+            var dialog = new DialogViewModel(_texts.Get(HomeTexts.NameTitle), RibbonStyle.Green)
             {
-                Text = "Rosie: \"Ten busy days! Let's put your name on the sign. What shall we call the shop?\"",
-                Input = new DialogInput("Rosie's Corner Shop", MaxNameLength, Ideas),
+                Text = _texts.Get(HomeTexts.NameText),
+                Input = new DialogInput(_texts.Get(HomeTexts.DefaultShopName), MaxNameLength, ideas),
             };
             dialog.InputText.Value = _shop.Name;
-            dialog.Buttons.Add(new DialogButton("Hang the sign", ButtonStyle.Green, () =>
+            dialog.Buttons.Add(new DialogButton(_texts.Get(HomeTexts.NameConfirm), ButtonStyle.Green, () =>
             {
                 var name = (dialog.InputText.Value ?? string.Empty).Trim();
                 if (name.Length > MaxNameLength) name = name.Substring(0, MaxNameLength);
@@ -66,7 +72,7 @@ namespace Game.Features.Home
                 _audio.Play(SoundId.Win);
                 _overlay.Burst(new Vector3(Screen.width / 2f, Screen.height * 0.8f, 0f), EffectKind.Confetti, 50);
             }));
-            dialog.Buttons.Add(new DialogButton("Keep Rosie's name", ButtonStyle.WoodSmall, null));
+            dialog.Buttons.Add(new DialogButton(_texts.Get(HomeTexts.NameKeep), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, ct);
         }
     }
