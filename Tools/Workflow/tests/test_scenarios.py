@@ -267,7 +267,14 @@ def main():
     real = env["FAKE_GH_DB"]; env["FAKE_GH_DB"] = "/nonexistent/x.json"
     stop()
     env["FAKE_GH_DB"] = real
-    assert "failed" in wf("status")
+    assert "failed" not in wf("status")  # the attempt already has its PR: gh is not asked on every reply
+    # a draft PR closed by hand is not recreated by the Stop hook
+    json.dump([], open(real, "w"))
+    open(os.path.join(repo, "Assets", "Save.cs"), "a").write("// after manual close\n")
+    sh("git", "commit", "-am", "EVG-12: after manual close")
+    stop()
+    assert json.load(open(real)) == [], "Stop hook recreated a PR that was closed by hand"
+    json.dump(prs, open(real, "w"))
 
     # --- handoff with Langfuse down: PR + In Review done, usage kept locally
     Fake.state["langfuse_down"] = True
@@ -304,7 +311,7 @@ def main():
     assert sub["replies"] == 1 and sub["share"] == 0.2 and sub["tokens"]["output"] == 4, sub
     assert json.loads(meta("context")["stringValue"]) == {"avg": 110, "max": 110}
     diff = json.loads(meta("diff")["stringValue"])
-    assert diff["files"] == 1 and diff["insertions"] == 3, diff
+    assert diff["files"] == 1 and diff["insertions"] == 4, diff
 
     # --- return from review: new attempt, same issue and PR, status back to In Progress
     out = wf("start", "EVG-12")

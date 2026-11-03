@@ -58,8 +58,16 @@ def linear(query, variables, key):
     return body["data"]
 
 
-def issue_ids(*texts):
-    return sorted({m.upper() for t in texts if t for m in ISSUE_RE.findall(t)})
+_ID = ISSUE_RE.pattern.replace("(?<![A-Za-z0-9])", "", 1)
+BRANCH_RE = re.compile(rf"^(?:[^/]*/)?{_ID}(?=-|$)", ISSUE_RE.flags)  # `<user>/evg-12-slug`: the leading id only
+TITLE_RE = re.compile(rf"^\s*{_ID}", ISSUE_RE.flags)                    # `EVG-12: title`: the leading id only
+
+
+def issue_ids(branch, title):
+    """The PR's own issue: the id the branch starts with (after `<user>/`) and the id the title starts with.
+    Ids mentioned later (`Re-review of EVG-19...22`, `...-of-evg-1922-...`) are references, not the PR's issue."""
+    found = (BRANCH_RE.match(branch or ""), TITLE_RE.match(title or ""))
+    return sorted({m.group(1).upper() for m in found if m})
 
 
 def main():
