@@ -15,6 +15,11 @@ namespace Game.Services.Assets
     {
         private readonly Dictionary<object, AsyncOperationHandle> _handles = new Dictionary<object, AsyncOperationHandle>();
 
+        /// <summary>
+        /// Replaces the Addressables load with a test double; null uses Addressables.
+        /// </summary>
+        internal Func<object, AsyncOperationHandle> StartLoad { get; set; }
+
         /// <inheritdoc/>
         public async UniTask InitializeAsync(CancellationToken ct)
         {
@@ -34,16 +39,38 @@ namespace Game.Services.Assets
             {
                 if (!cached.IsDone)
                 {
-                    await cached.ToUniTask(cancellationToken: ct);
+                    try
+                    {
+                        await cached.ToUniTask(cancellationToken: ct);
+                    }
+                    catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                    {
+                        // Only this caller stopped waiting; the shared load goes on.
+                        throw;
+                    }
+                    catch
+                    {
+                        Evict(key, cached);
+                        throw;
+                    }
                 }
-                return cached.Result as T;
+
+                if (cached.Status == AsyncOperationStatus.Succeeded)
+                {
+                    return cached.Result as T;
+                }
+
+                // The load failed after its first caller stopped waiting (nobody evicted it): load again instead of
+                // handing out null for the rest of the session.
+                Evict(key, cached);
             }
 
-            var handle = Addressables.LoadAssetAsync<T>(key);
+            AsyncOperationHandle handle = StartLoad != null ? StartLoad(key) : Addressables.LoadAssetAsync<T>(key);
             _handles[key] = handle;
             try
             {
-                return await handle.ToUniTask(cancellationToken: ct);
+                await handle.ToUniTask(cancellationToken: ct);
+                return handle.Result as T;
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -52,12 +79,22 @@ namespace Game.Services.Assets
             }
             catch
             {
-                _handles.Remove(key);
-                if (handle.IsValid())
-                {
-                    Addressables.Release(handle);
-                }
+                Evict(key, handle);
                 throw;
+            }
+        }
+
+        private void Evict(object key, AsyncOperationHandle handle)
+        {
+            // Another caller may have replaced the failed handle already.
+            if (_handles.TryGetValue(key, out var current) && current.Equals(handle))
+            {
+                _handles.Remove(key);
+            }
+
+            if (handle.IsValid())
+            {
+                Addressables.Release(handle);
             }
         }
 

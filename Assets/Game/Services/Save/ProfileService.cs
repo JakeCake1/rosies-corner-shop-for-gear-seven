@@ -72,9 +72,15 @@ namespace Game.Services.Save
         /// <inheritdoc/>
         public void SaveAll()
         {
+            // Synchronous: the OS may kill a paused app before a background write runs.
+            if (!_isLoaded)
+            {
+                return;
+            }
+
             foreach (var chunk in _chunks)
             {
-                Save(chunk);
+                _save.Save(chunk);
             }
         }
 

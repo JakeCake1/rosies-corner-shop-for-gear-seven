@@ -16,6 +16,8 @@ namespace Game.Services.Save
         /// </summary>
         /// <param name="chunk">Chunk to restore; left untouched when nothing usable is stored.</param>
         /// <returns>True when stored data was restored.</returns>
+        /// <remarks>When a file exists but can't be read (I/O or permission error, unlike a missing file) the chunk
+        /// stays read-only for the session: later saves are skipped so the stored data isn't replaced by defaults.</remarks>
         bool TryLoad(IProfileChunk chunk);
 
         /// <summary>
@@ -33,7 +35,17 @@ namespace Game.Services.Save
         /// <param name="chunk">Chunk to save.</param>
         /// <param name="ct">Cancelled on app shutdown.</param>
         /// <returns>Completes after the write (or after it was skipped because a newer one superseded it).</returns>
-        /// <exception cref="System.OperationCanceledException">The token was cancelled while waiting.</exception>
+        /// <exception cref="System.OperationCanceledException">The token was cancelled before the write started.</exception>
+        /// <remarks>Does nothing for a chunk whose stored data could not be read at startup (see <see cref="TryLoad"/>).</remarks>
         UniTask SaveAsync(IProfileChunk chunk, CancellationToken ct);
+
+        /// <summary>
+        /// Serializes and writes on the calling thread, and returns after the data is on disk; replaces any queued
+        /// write of the chunk. For app pause and exit, where the OS may stop the process before a background write
+        /// finishes.
+        /// </summary>
+        /// <param name="chunk">Chunk to save.</param>
+        /// <remarks>Blocks while another write is in progress. Write failures are logged, not thrown.</remarks>
+        void Save(IProfileChunk chunk);
     }
 }

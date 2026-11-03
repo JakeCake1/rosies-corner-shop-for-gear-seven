@@ -31,5 +31,7 @@ namespace Game.Tests.EditMode.Services.Save
             Tokens.Add(ct);
             return UniTask.CompletedTask;
         }
+
+        public void Save(IProfileChunk chunk) => Saved.Add(chunk.Key);
     }
 }
