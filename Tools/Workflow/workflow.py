@@ -983,6 +983,22 @@ def deny(reason):
                                              "permissionDecisionReason": reason}}))
 
 
+UNITY_READONLY_TOOLS = {"read_console", "find_gameobjects", "find_in_file", "get_sha", "validate_script",
+                        "get_test_job", "debug_request_context", "unity_docs", "unity_reflect",
+                        "manage_script_capabilities"}
+UNITY_READONLY_ACTION = re.compile(r"^(get|list|find|read|search|query|inspect|describe|info|status|check|"
+                                   r"validate|stats|view|show|preview|screenshot|capture)(?![a-z])", re.I)
+
+
+def is_unity_mcp_readonly(tool, tin):
+    """Unity MCP tools edit the project only through some actions; decide by the action field."""
+    name = tool.lower().split("__", 2)[-1]
+    if name in UNITY_READONLY_TOOLS:
+        return True
+    action = str(tin.get("action") or "").strip()
+    return bool(action) and bool(UNITY_READONLY_ACTION.match(action))
+
+
 def hook_guard(data):
     cfg = load_config()
     tool = data.get("tool_name", "")
@@ -995,7 +1011,12 @@ def hook_guard(data):
             return deny(f"Force-pushing {cfg['git']['base']} is not allowed.")
         return
     path = tin.get("file_path") or tin.get("notebook_path") or tin.get("path") or ""
-    rel = "Assets/" if tool.lower().startswith("mcp__unitymcp__") else rel_path(path)  # Unity MCP script tools edit Assets/
+    if tool.lower().startswith("mcp__unitymcp__"):
+        if is_unity_mcp_readonly(tool, tin):
+            return
+        rel = "Assets/"  # Unity MCP write actions edit Assets/
+    else:
+        rel = rel_path(path)
     if any(rel.startswith(p) for p in cfg["guarded_paths"]) and not active_attempt():
         deny(f"No active implementation attempt. Changes to {rel} are implementation work: identify the Linear "
              f"issue and run /impl-start <ISSUE-ID> first (discussion and planning need no attempt).")

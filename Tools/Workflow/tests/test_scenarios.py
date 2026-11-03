@@ -180,6 +180,14 @@ def main():
     assert out.strip() == "", out
     out = wf("hook", "guard", inp=json.dumps({"tool_name": "Bash", "tool_input": {"command": "gh pr merge 3 --squash"}}))
     assert '"deny"' in out
+    # Unity MCP: read-only calls pass without an attempt, edits are denied
+    for tool, tin, denied in [("mcp__UnityMCP__read_console", {"action": "get"}, False),
+                              ("mcp__UnityMCP__manage_scene", {"action": "get_hierarchy"}, False),
+                              ("mcp__UnityMCP__manage_asset", {"action": "search"}, False),
+                              ("mcp__UnityMCP__manage_scene", {"action": "save"}, True),
+                              ("mcp__UnityMCP__create_script", {"path": "A.cs"}, True)]:
+        out = wf("hook", "guard", inp=json.dumps({"tool_name": tool, "tool_input": tin}))
+        assert ('"deny"' in out) == denied, (tool, tin, out)
     hook("session-start", t1, "sess1")  # session start alone changes nothing
     assert Fake.state["transitions"] == [] and not os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
 
