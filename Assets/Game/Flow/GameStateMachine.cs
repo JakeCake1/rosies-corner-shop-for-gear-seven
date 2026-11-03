@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using VContainer;
@@ -28,19 +29,26 @@ namespace Game.Flow
         /// </summary>
         /// <typeparam name="TState">Target state, registered in the project scope.</typeparam>
         /// <param name="ct">Cancelled on app shutdown.</param>
+        /// <param name="prepare">Runs under the transition lock right before the state enters (e.g. sets its request).</param>
         /// <returns>Completes when the new state has entered.</returns>
         /// <exception cref="System.OperationCanceledException">The transition was cancelled.</exception>
-        public async UniTask Enter<TState>(CancellationToken ct) where TState : IGameState
+        public async UniTask Enter<TState>(CancellationToken ct, Action prepare = null) where TState : IGameState
         {
             await _gate.WaitAsync(ct);
             try
             {
                 if (_current != null)
                 {
-                    await _current.Exit(ct);
+                    var previous = _current;
+                    _current = null;
+                    await previous.Exit(ct);
                 }
-                _current = _resolver.Resolve<TState>();
-                await _current.Enter(ct);
+
+                prepare?.Invoke();
+                // Published only after Enter succeeded: a failed state is never exited and the next Enter can retry.
+                var next = _resolver.Resolve<TState>();
+                await next.Enter(ct);
+                _current = next;
             }
             finally
             {

@@ -50,10 +50,10 @@ namespace Game.Features.Album
         /// <inheritdoc/>
         public async UniTask OpenAsync(CancellationToken ct)
         {
-            _album.MarkSeen();
-            _onboarding.SetFlag(Flags.AlbumOpened);
             await _content.LoadAllItemSpritesAsync(ct);
             await _ui.OpenAsync<AlbumWindow, AlbumViewModel>(new AlbumViewModel(_content, _album, _texts), ct);
+            _album.MarkSeen();
+            _onboarding.SetFlag(Flags.AlbumOpened);
         }
 
         /// <inheritdoc/>

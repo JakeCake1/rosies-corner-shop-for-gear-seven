@@ -63,6 +63,7 @@ namespace Game.Features.Gameplay.Session
         private LevelState _prepared;
         private LevelDefinition _preparedDefinition;
         private int _pendingShips;
+        private int _lossId;
         private int _combo = -1;
         private int _praiseIndex;
         private int _comboIndex;
@@ -153,6 +154,9 @@ namespace Game.Features.Gameplay.Session
         /// <returns>The generated level.</returns>
         public LevelState Prepare(int level)
         {
+            // The old level is replaced from here on: its pending shipments and loss delay must not outlive the
+            // (possibly long) sprite loading that sits between Prepare and Start.
+            ResetEpoch();
             _preparedDefinition = _curves.Get(level);
             var generator = new LevelGenerator(_content.Catalog.Items, _content.Catalog.Families);
             _prepared = generator.Generate(level, _preparedDefinition, new HashSet<int>(_album.Found));
@@ -171,7 +175,6 @@ namespace Game.Features.Gameplay.Session
                 throw new InvalidOperationException($"Call {nameof(Prepare)} before {nameof(Start)}.");
             }
 
-            ResetEpoch();
             _hasGrantedWinReward = false;
             Definition = _preparedDefinition;
             State = _prepared;
@@ -569,11 +572,11 @@ namespace Game.Features.Gameplay.Session
             if (LevelRules.IsLost(State))
             {
                 IsOver = true;
-                LoseAsync(_epoch.Token).Forget();
+                LoseAsync(_epoch.Token, ++_lossId).Forget();
             }
         }
 
-        private async UniTaskVoid LoseAsync(CancellationToken ct)
+        private async UniTaskVoid LoseAsync(CancellationToken ct, int lossId)
         {
             try
             {
@@ -584,7 +587,8 @@ namespace Game.Features.Gameplay.Session
                 return;
             }
 
-            if (!IsOver)
+            // A Tidy Up during the delay reopens the level; if it is lost again a newer delay owns the outcome.
+            if (!IsOver || lossId != _lossId)
             {
                 return;
             }

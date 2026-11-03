@@ -105,11 +105,25 @@ namespace Game.Features.Settings
                 }
 
                 dialog.Close();
-                _profile.ResetProgress();
-                _flow.GoHomeAsync().Forget();
+                ResetAndGoHomeAsync(restartLevel != null).Forget();
             }, false);
             dialog.Buttons.Add(reset);
             await _dialogs.ShowAsync(dialog, ct);
+        }
+
+        private async UniTask ResetAndGoHomeAsync(bool isInLevel)
+        {
+            // In a level the reset waits for the way home: Profile.Changed must not reach the level's live scope.
+            // On the home screen the reset comes first so the reloaded home shows the fresh profile.
+            if (isInLevel)
+            {
+                await _flow.GoHomeAsync();
+                _profile.ResetProgress();
+                return;
+            }
+
+            _profile.ResetProgress();
+            await _flow.GoHomeAsync();
         }
     }
 }

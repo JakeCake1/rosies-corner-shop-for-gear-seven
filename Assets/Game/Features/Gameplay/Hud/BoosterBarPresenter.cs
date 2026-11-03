@@ -31,15 +31,27 @@ namespace Game.Features.Gameplay.Hud
         }
 
         /// <summary>
-        /// Rebuilds the bar with a button per booster unlocked on the level that just started.
+        /// Prepares the bar for the level that just started: a button per unlocked booster, reused when the set is unchanged.
         /// </summary>
         public void Build()
         {
-            DisposeModels();
-            ClearViews();
-            foreach (var id in Order.Where(_context.Session.IsUnlocked))
+            var ids = Order.Where(_context.Session.IsUnlocked).ToList();
+            if (ids.SequenceEqual(_models.Select(m => m.Id)))
             {
-                AddButton(id);
+                // Same set as the previous level: keep the buttons (pooling), only drop the old gift pulse.
+                foreach (var model in _models)
+                {
+                    model.SetGift(false);
+                }
+            }
+            else
+            {
+                DisposeModels();
+                ClearViews();
+                foreach (var id in ids)
+                {
+                    AddButton(id);
+                }
             }
 
             Refresh();

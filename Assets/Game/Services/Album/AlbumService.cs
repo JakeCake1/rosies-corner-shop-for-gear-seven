@@ -55,17 +55,17 @@ namespace Game.Services.Album
             var family = _content.Catalog.Get(itemId).Family;
             var isCompleted = !Data.CompletedFamilies.Contains(family) &&
                               _content.Catalog.Items.Where(i => i.Family == family).All(i => Data.Found.Contains(i.Id));
-            if (isCompleted)
-            {
-                Data.CompletedFamilies.Add(family);
-            }
-            MarkChanged();
             if (!isCompleted)
             {
+                MarkChanged();
                 return null;
             }
 
+            // The wallet is saved before the family is marked done: a process kill in between repeats the bonus
+            // check on the next find instead of losing the bonus for good.
             _wallet.Add(FamilyBonus);
+            Data.CompletedFamilies.Add(family);
+            MarkChanged();
             return family;
         }
 
