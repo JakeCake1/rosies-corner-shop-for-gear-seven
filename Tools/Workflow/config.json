@@ -6,6 +6,7 @@
   "git": { "base": "main", "remote": "origin" },
   "langfuse": { "environment": "default" },
   "auto_draft_pr": true,
+  "code_index": { "command": "codebase-memory-mcp", "name": "rosies-corner-shop", "timeout": 900 },
   "context_warning_tokens": 150000,
   "guarded_paths": ["Assets/", "Packages/", "ProjectSettings/"],
   "checks": [

@@ -34,6 +34,7 @@ import glob
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -51,6 +52,9 @@ USAGE_DIR = os.path.join(STATE, "usage")
 OUTBOX_DIR = os.path.join(STATE, "outbox")
 ISSUES_DIR = os.path.join(STATE, "issues")
 LOG_FILE = os.path.join(STATE, "hook.log")
+NUDGE_DIR = os.path.join(STATE, "nudges")
+INDEX_HEAD_FILE = os.path.join(STATE, "index-head")
+INDEX_LOCK_FILE = os.path.join(STATE, "reindex.lock")
 CONFIG_FILE = os.path.join(HERE, "config.json")
 TEMPLATES = os.path.join(HERE, "templates")
 HOOK_MARK = "Tools/Workflow/wf.sh"
@@ -929,6 +933,68 @@ def rel_path(path):
         return full.replace("\\", "/")
 
 
+def index_settings():
+    return {"command": "codebase-memory-mcp", "name": "rosies-corner-shop", "timeout": 900,
+            **(load_config().get("code_index") or {})}
+
+
+def spawn_reindex():
+    """Starts `workflow.py reindex` detached: the caller (commit, session start) never waits for it."""
+    if os.environ.get("CLAUDE_WORKFLOW_NO_INDEX") == "1":  # tests and throwaway clones must not touch the index
+        return
+    kwargs = {"stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL, "cwd": ROOT}
+    if os.name == "nt":
+        kwargs["creationflags"] = 0x00000008 | 0x00000200  # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+    else:
+        kwargs["start_new_session"] = True
+    try:
+        subprocess.Popen([sys.executable, os.path.abspath(__file__), "reindex"], **kwargs)
+    except OSError as e:
+        log(f"reindex not started: {e!r}")
+
+
+def cmd_reindex(args):
+    """Refreshes the code graph of codebase-memory-mcp. Failures only go to hook.log."""
+    cfg = index_settings()
+    head = git("rev-parse", "HEAD", check=False)
+    os.makedirs(STATE, exist_ok=True)
+    try:
+        if time.time() - os.path.getmtime(INDEX_LOCK_FILE) < cfg["timeout"]:
+            return  # another refresh is running
+    except OSError:
+        pass
+    open(INDEX_LOCK_FILE, "w").close()
+    try:
+        proc = run([cfg["command"], "cli", "index_repository", "--repo-path", ROOT, "--name", cfg["name"],
+                    "--persistence", "true"], check=False, timeout=cfg["timeout"])
+        if proc.returncode == 0:
+            with open(INDEX_HEAD_FILE, "w", encoding="utf-8") as f:
+                f.write(head)
+            log(f"reindex ok at {head[:8]}")
+        else:
+            log(f"reindex failed ({proc.returncode}): {(proc.stderr or proc.stdout).strip()[:300]}")
+    except OSError as e:  # server binary missing
+        log(f"reindex failed: {e!r}")
+    finally:
+        try:
+            os.remove(INDEX_LOCK_FILE)
+        except OSError:
+            pass
+
+
+def index_is_stale():
+    head = git("rev-parse", "HEAD", check=False)
+    try:
+        with open(INDEX_HEAD_FILE, encoding="utf-8") as f:
+            return bool(head) and f.read().strip() != head
+    except OSError:
+        return bool(head)
+
+
+def hook_post_commit():
+    spawn_reindex()
+
+
 def hook_session_start(data):
     with Lock():
         attempt = active_attempt()
@@ -936,6 +1002,8 @@ def hook_session_start(data):
             save_attempt(attempt)
     for aid, ok, detail in send_outbox(load_env(), timeout=5):
         log(f"session-start flush {aid}: {'sent' if ok else detail}")
+    if index_is_stale():
+        spawn_reindex()
     if attempt:
         branch = git("rev-parse", "--abbrev-ref", "HEAD", check=False)
         note = "" if branch == attempt["branch"] else f" WARNING: current branch is {branch}."
@@ -1063,6 +1131,95 @@ def is_unity_mcp_readonly(tool, tin):
             and not UNITY_WRITEISH_ACTION.search(action))
 
 
+SYMBOL_PART = re.compile(r"^(?:\.)?(?:[A-Z][A-Za-z0-9_]*[a-z0-9_][A-Za-z0-9_]*\(?|[A-Za-z_]\w*\()$")
+SEARCH_ARG_FLAGS = {"-A", "-B", "-C", "-m", "-t", "-g", "-f", "--include", "--exclude", "--type", "--glob",
+                    "--max-count", "--context", "--file"}
+
+
+def looks_like_symbol(pattern):
+    """True if a search pattern names a code symbol: PascalCase identifier, `Name(` or an alternation of them."""
+    for part in re.split(r"\\\||\|", pattern):
+        part = re.sub(r"\\\(", "(", part)
+        part = re.sub(r"\\[bswd<>][+*]?|\\\.|[\^$]", "", part)
+        part = re.sub(r"^(?:class|interface|struct|enum|void|new)\s+", "", part.strip().strip("'\""))
+        if SYMBOL_PART.match(part.strip()):
+            return True
+    return False
+
+
+def parse_text_search(command):
+    """Yields (tool, pattern, over_csharp) for each grep / rg / find in a shell command line."""
+    try:
+        lexer = shlex.shlex(command, posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        words = list(lexer)
+    except ValueError:
+        words = command.split()
+    segments, current = [], []
+    for word in words:  # operators are their own words, so a `\|` inside a quoted pattern does not split
+        if word and set(word) <= set(";&|()"):
+            segments.append(current)
+            current = []
+        else:
+            current.append(word)
+    segments.append(current)
+    for tokens in segments:
+        while tokens and re.match(r"^\w+=", tokens[0]):
+            tokens.pop(0)
+        if not tokens:
+            continue
+        tool = os.path.basename(tokens[0]).lower()
+        if tool.endswith(".exe"):
+            tool = tool[:-4]
+        if tool in ("grep", "egrep", "rg"):
+            pattern, rest, i = None, [], 1
+            while i < len(tokens):
+                tok = tokens[i]
+                if tok in ("-e", "--regexp") and i + 1 < len(tokens):
+                    pattern = tokens[i + 1]
+                    i += 2
+                    continue
+                if tok.startswith("--") and "=" in tok:
+                    rest.append(tok)
+                elif tok.startswith("-") and len(tok) > 1:
+                    if tok in SEARCH_ARG_FLAGS and i + 1 < len(tokens):
+                        rest.append(tokens[i + 1])
+                        i += 1
+                elif pattern is None:
+                    pattern = tok
+                else:
+                    rest.append(tok)
+                i += 1
+            if pattern is not None:
+                over_cs = bool(re.search(r"\.cs\b|\bassets\b|\bcsharp?\b|\bcs\b", " ".join(rest).lower()))
+                yield tool, pattern, over_cs
+        elif tool == "find":
+            for i, tok in enumerate(tokens[:-1]):
+                if tok in ("-name", "-iname"):
+                    yield "find", tokens[i + 1].strip("*"), True
+
+
+def search_nudge(data):
+    """Soft hint once per session: a symbol-like text search over C# code should go through the code graph."""
+    tin = data.get("tool_input") or {}
+    hit = next((p for t, p, cs in parse_text_search(tin.get("command", "")) if t != "find" and cs
+                and looks_like_symbol(p)), None)
+    if hit is None:
+        return
+    session = re.sub(r"[^A-Za-z0-9_-]", "_", str(data.get("session_id") or "unknown"))
+    marker = os.path.join(NUDGE_DIR, session)
+    if os.path.exists(marker):
+        return
+    os.makedirs(NUDGE_DIR, exist_ok=True)
+    open(marker, "w").close()
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": (
+        f"[workflow] `{hit}` looks like a code symbol. Callers, implementations, registrations and symbol lookup "
+        "are faster and cheaper through the code graph: load the tools with one ToolSearch "
+        "`select:mcp__codebase-memory-mcp__search_graph,mcp__codebase-memory-mcp__trace_path,"
+        "mcp__codebase-memory-mcp__get_code_snippet`, or delegate to the codebase-memory-scout agent. Text "
+        "search stays fine for strings, USS/UXML and localization keys. This hint is shown once per session.")}}))
+
+
 def hook_guard(data):
     cfg = load_config()
     tool = data.get("tool_name", "")
@@ -1074,7 +1231,7 @@ def hook_guard(data):
             return deny("Merging is never automatic in this workflow; the user merges PRs on GitHub.")
         if re.search(r"\bgit\s+push\b.*(--force\b|--force-with-lease\b|\s-f\b|\s\+\S)", cmd) and re.search(rf"\b{cfg['git']['base']}\b", cmd):
             return deny(f"Force-pushing {cfg['git']['base']} is not allowed.")
-        return
+        return search_nudge(data)
     path = tin.get("file_path") or tin.get("notebook_path") or tin.get("path") or ""
     if tool.lower().startswith("mcp__unitymcp__"):
         if is_unity_mcp_readonly(tool, tin):
@@ -1145,6 +1302,8 @@ def cmd_hook(args):
             return hook_commit_msg(args.file)
         if args.event == "pre-commit":
             return hook_pre_commit()
+        if args.event == "post-commit":
+            return hook_post_commit()
         data = hook_input()
         {"session-start": hook_session_start, "collect": hook_collect, "guard": hook_guard}[args.event](data)
     except SystemExit:
@@ -1213,7 +1372,8 @@ def cmd_install(args):
         print(f"installed {dst} (commit it and add the LINEAR_API_KEY repository secret)")
     hooks_dir = git_hooks_dir()
     os.makedirs(hooks_dir, exist_ok=True)
-    for name, call in (("commit-msg", 'hook commit-msg "$1"'), ("pre-commit", "hook pre-commit")):
+    for name, call in (("commit-msg", 'hook commit-msg "$1"'), ("pre-commit", "hook pre-commit"),
+                       ("post-commit", "hook post-commit")):
         path = os.path.join(hooks_dir, name)
         if os.path.exists(path) and GIT_HOOK_MARK not in open(path, encoding="utf-8", errors="replace").read():
             raise WorkflowError(f"{path} exists and is not managed by this workflow; merge it by hand")
@@ -1234,7 +1394,7 @@ def cmd_uninstall(args):
             os.remove(path)
             print(f"removed {path}")
     hooks_dir = git_hooks_dir()
-    for name in ("commit-msg", "pre-commit"):
+    for name in ("commit-msg", "pre-commit", "post-commit"):
         path = os.path.join(hooks_dir, name)
         if os.path.exists(path) and GIT_HOOK_MARK in open(path, encoding="utf-8", errors="replace").read():
             os.remove(path)
@@ -1259,7 +1419,7 @@ def main():
     p.add_argument("--allow-failed-checks", action="store_true")
     p.add_argument("--transcript", help="transcript to include if no hook registered it")
     p.set_defaults(func=cmd_handoff)
-    for name, func in (("status", cmd_status), ("flush", cmd_flush), ("abandon", cmd_abandon),
+    for name, func in (("status", cmd_status), ("flush", cmd_flush), ("reindex", cmd_reindex), ("abandon", cmd_abandon),
                        ("uninstall", cmd_uninstall)):
         sub.add_parser(name).set_defaults(func=func)
     p = sub.add_parser("install")
@@ -1269,7 +1429,7 @@ def main():
     p.add_argument("--transcript")
     p.set_defaults(func=cmd_collect)
     p = sub.add_parser("hook")
-    p.add_argument("event", choices=["session-start", "collect", "guard", "commit-msg", "pre-commit"])
+    p.add_argument("event", choices=["session-start", "collect", "guard", "commit-msg", "pre-commit", "post-commit"])
     p.add_argument("file", nargs="?")
     p.set_defaults(func=cmd_hook)
     args = ap.parse_args()

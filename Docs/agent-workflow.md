@@ -69,6 +69,30 @@ The older `Tools/Langfuse` per-phase report is independent of this workflow. Its
 installed and its generated files (`ledger.jsonl`, `otel/`, `usage_summary.json`) are not tracked in git; run
 `usage_report.py` by hand if you need them.
 
+## Code graph (codebase-memory)
+
+Agents are pointed at the graph by the trigger table in `AGENTS.md`, the routing rule in `CLAUDE.md` and a soft
+hint from the guard hook. The graph itself (`.codebase-memory/graph.db.zst`) is kept fresh without any manual step.
+
+- **Nudge:** the `PreToolUse` guard hook adds a hint (`additionalContext`) when a Bash / PowerShell `grep` or `rg`
+  over C# code (`*.cs`, `Assets/`) searches for a symbol-like pattern (PascalCase identifier, `Name(`). It shows
+  once per session (marker in `.agent-workflow/nudges/`) and never denies: text search keeps working.
+- **Index refresh:** the git `post-commit` hook and the `SessionStart` hook (only when `HEAD` differs from the last
+  indexed commit, `.agent-workflow/index-head`) start `workflow.py reindex` detached. It runs
+  `codebase-memory-mcp cli index_repository` (command, project name and timeout: `code_index` in
+  `Tools/Workflow/config.json`) and never blocks the commit or the session; failures go to
+  `.agent-workflow/hook.log`. Run it by hand with `sh Tools/Workflow/wf.sh reindex`.
+  `CLAUDE_WORKFLOW_NO_INDEX=1` disables the background start (the tests set it, so a throwaway repo never
+  overwrites the project's index).
+- **Adoption report:** `sh Tools/Workflow/wf.sh adoption [--since YYYY-MM-DD] [--json]` reads the local session
+  transcripts (`~/.claude/projects/<project>/`, subagents included) and prints, per session and in total: graph
+  searches, text searches for symbol-like patterns (`grep` / `rg` / `find -name` in Bash, `Grep`, `Glob`), the graph
+  share (target: above 50%), the fallback rate (a graph search followed within 5 tool calls by a text search or
+  `Read` of the same identifier) and the subagent types launched. It runs locally only: nothing is sent to Langfuse
+  and tool names stay on this machine.
+- **Manual verification** of the refresh: commit anything, then `.agent-workflow/hook.log` shows `reindex ok at
+  <sha>` within a minute or two and `index-head` holds the new `HEAD`.
+
 ## Install
 
 1. **Python 3.8+** on PATH (`python`, `python3` or `py`) and **Git for Windows** (Claude Code runs hooks with its
@@ -82,7 +106,8 @@ installed and its generated files (`ledger.jsonl`, `otel/`, `usage_summary.json`
 4. **Install** (once per clone, from Git Bash in the project root): `sh Tools/Workflow/wf.sh install`. It adds the
    workflow hooks to `.claude/settings.json` (existing hooks and settings are kept, re-running adds nothing twice),
    copies `/impl-start` and `/handoff` to `.claude/commands/`, copies the GitHub Action to
-   `.github/workflows/linear-done-on-merge.yml` and installs the git `commit-msg` and `pre-commit` hooks. Commit
+   `.github/workflows/linear-done-on-merge.yml` and installs the git `commit-msg`, `pre-commit` and `post-commit`
+   hooks. Commit
    `.claude/` and `.github/` changes, then restart Claude Desktop so it loads the hooks. Sources are in
    `Tools/Workflow/templates/`.
 5. **Merge → Done automation**: GitHub → repository → Settings → Secrets and variables → Actions → new secret
@@ -101,7 +126,8 @@ installed and its generated files (`ledger.jsonl`, `otel/`, `usage_summary.json`
 ## Verify
 
 - Offline scenario tests (fake Linear, Langfuse and `gh`): `python Tools/Workflow/tests/test_scenarios.py` and
-  `python Tools/Workflow/tests/test_done_on_merge.py`. They cover start, repeated start, restart with a new
+  `python Tools/Workflow/tests/test_done_on_merge.py`, plus `test_guard.py` (guard, code-graph nudge, index
+  refresh) and `test_adoption.py`. They cover start, repeated start, restart with a new
   transcript, duplicate hooks, Langfuse down then flush, a failed PR step and re-run without a second PR, return from
   review, missing usage, guards and git hooks, automatic draft PRs after agent replies.
 - Live: open the project in Claude Desktop; the first message shows `[workflow] No active implementation attempt`.
