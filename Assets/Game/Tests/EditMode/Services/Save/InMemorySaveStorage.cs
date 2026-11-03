@@ -13,6 +13,7 @@ namespace Game.Tests.EditMode.Services.Save
         public readonly Dictionary<string, string> Backup = new Dictionary<string, string>();
         public readonly List<string> Quarantined = new List<string>();
         public readonly List<string> Deleted = new List<string>();
+        public readonly List<string> WriteOrder = new List<string>();
         public bool IsFull;
         public bool IsDenied;
         public bool HasReadFailure;
@@ -41,6 +42,7 @@ namespace Game.Tests.EditMode.Services.Save
                 throw new IOException("Disk full");
             }
 
+            WriteOrder.Add(key);
             if (Main.TryGetValue(key, out var old))
             {
                 Backup[key] = old;

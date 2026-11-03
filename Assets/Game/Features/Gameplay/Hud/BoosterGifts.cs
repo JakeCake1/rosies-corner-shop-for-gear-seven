@@ -34,7 +34,13 @@ namespace Game.Features.Gameplay.Hud
         /// </summary>
         public void OnLevelStarted()
         {
-            _pendingGift = null;
+            // The Undo tip waits for the first move; a restart of its level before that move must not lose it, because
+            // the gift is already marked as given.
+            if (_context.Level != _context.Services.Balance.UndoUnlockLevel)
+            {
+                _pendingGift = null;
+            }
+
             var inventory = _context.Services.Boosters;
             var unlocks = new[]
             {

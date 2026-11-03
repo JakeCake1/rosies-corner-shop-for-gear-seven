@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using Game.Services.Save;
@@ -129,6 +130,53 @@ namespace Game.Tests.EditMode.Services.Save
             Assert.That(_chunk.Name, Is.EqualTo("backup"));
             Assert.That(_storage.Quarantined, Is.EqualTo(new[] { TestKey }));
         }
+
+        [Test]
+        public void TryLoad_WhenMainIsEmpty_QuarantinesItAndUsesBackup()
+        {
+            _storage.Main[TestKey] = "  ";
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"backup\"}";
+            LogAssert.Expect(LogType.Error, new Regex("is broken, trying the backup"));
+
+            var isLoaded = _service.TryLoad(_chunk);
+
+            Assert.That(isLoaded, Is.True);
+            Assert.That(_chunk.Name, Is.EqualTo("backup"));
+            Assert.That(_storage.Quarantined, Is.EqualTo(new[] { TestKey }));
+        }
+
+        [UnityTest]
+        public IEnumerator SaveAsync_WhenBrokenMainCouldNotBeQuarantined_DoesNotOverwriteIt() => UniTask.ToCoroutine(async () =>
+        {
+            const string newerSave = "{\"version\":99,\"name\":\"future\"}";
+            _storage.Main[TestKey] = newerSave;
+            _storage.HasQuarantineFailure = true;
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"backup\"}";
+            LogAssert.Expect(LogType.Error, new Regex("is broken, trying the backup"));
+            LogAssert.Expect(LogType.Error, new Regex("could not be quarantined"));
+            LogAssert.Expect(LogType.Warning, new Regex("is not written"));
+            _service.TryLoad(_chunk);
+            _chunk.Set("new", 1);
+
+            await _service.SaveAsync(_chunk, default);
+
+            Assert.That(_storage.Main[TestKey], Is.EqualTo(newerSave));
+        });
+
+        [UnityTest]
+        public IEnumerator SaveAsync_WhenSavesOverlap_WritesInCallOrder() => UniTask.ToCoroutine(async () =>
+        {
+            var wallet = new WalletService();
+            var settings = new SettingsService();
+
+            await UniTask.WhenAll(_service.SaveAsync(wallet, default), _service.SaveAsync(settings, default),
+                _service.SaveAsync(wallet, default));
+
+            Assert.That(_storage.WriteOrder.First(), Is.EqualTo("profile_wallet"));
+            Assert.That(_storage.WriteOrder.IndexOf("profile_settings"), Is.GreaterThan(0));
+            wallet.Dispose();
+            settings.Dispose();
+        });
 
         [Test]
         public void TryParse_WhenSaveIsFromNewerBuild_Refuses()

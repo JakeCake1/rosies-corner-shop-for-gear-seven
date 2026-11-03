@@ -90,6 +90,11 @@ namespace Game.Services.UI
                 var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
                 // Closed after the load, not before: two opens racing through the load (a double tap) would otherwise
                 // both find no window to replace and stack two copies.
+                foreach (var replaced in _stacks.Values.SelectMany(s => s).Where(e => e.Window is TWindow))
+                {
+                    replaced.ViewModel.IsReplaced = true;
+                }
+
                 await CloseAsync<TWindow>();
                 ct.ThrowIfCancellationRequested();
                 var element = layout.Instantiate();
@@ -112,8 +117,8 @@ namespace Game.Services.UI
                 catch
                 {
                     // A half-bound window must not stay on the stack: it would keep the popup blocker up for good.
+                    // Discard disposes the view model; entry stays set so the outer catch doesn't dispose it again.
                     Discard(entry);
-                    entry = null;
                     throw;
                 }
 

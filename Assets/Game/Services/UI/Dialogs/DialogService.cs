@@ -30,6 +30,11 @@ namespace Game.Services.UI.Dialogs
             var window = await _ui.OpenAsync<DialogWindow, DialogViewModel>(dialog, ct);
             // Closing by button, blocker or back all end with the window being released.
             await window.Closed.AttachExternalCancellation(ct);
+            if (dialog.IsReplaced)
+            {
+                // Another dialog took its place: nobody answered, so the opener must not read it as "declined".
+                throw new System.OperationCanceledException();
+            }
         }
 
         /// <inheritdoc/>

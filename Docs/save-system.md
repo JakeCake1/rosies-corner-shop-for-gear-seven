@@ -35,12 +35,14 @@ Owners live in `Services/` when a service or several features read the data (ass
 ## When writes happen
 
 - **After a change:** `SaveAsync` serializes on the main thread and writes on the thread pool. Every call gets its
-  own pool task and a write lock (a monitor) serializes the files; nothing waits for the main thread, so queued
-  writes still finish while the player loop is stopped. Overlapping saves of one chunk are merged: only the latest
-  snapshot is written.
+  own pool task; whichever task holds the write lock (a monitor) writes everything queued so far, oldest first, so
+  chunks reach the disk in the order they were saved (the wallet before the album that marks its bonus done).
+  Nothing waits for the main thread, so queued writes still finish while the player loop is stopped. Overlapping
+  saves of one chunk are merged: only the latest snapshot is written.
 - **App pause, focus loss, quit:** `IProfileService.SaveAll` calls `ISaveService.Save` for every chunk. It writes on
   the calling thread and returns after the data is on disk, because the OS may kill a paused process at any moment.
-  It replaces a queued background write of the same chunk and waits for a running one.
+  It replaces a queued background write of the same chunk and waits for a running one. A chunk that throws is
+  logged and skipped; the others are still saved.
 - **Write errors** (`IOException`, `UnauthorizedAccessException`) are logged and the previous file stays intact.
 
 ## Files
@@ -56,11 +58,14 @@ Owners live in `Services/` when a service or several features read the data (ass
 ```
 
 Loading a chunk: main file → backup → new player's defaults. A broken chunk falls back on its own; the other chunks
-are not affected. A chunk written by a newer build is refused (moved aside) instead of being overwritten.
+are not affected. A chunk written by a newer build is refused (moved aside) instead of being overwritten; an empty
+file counts as broken and is moved aside too. If moving it aside fails, the chunk is **read-only for the session**
+so the first save can't overwrite it.
 
 A file that **exists but can't be read** (`IOException`, `UnauthorizedAccessException`) is not the same as a missing
 file: the data may be intact. The chunk starts with defaults but is **read-only for the session**: `SaveAsync` and
-`Save` skip it (with a warning), so the next start can still read the stored data.
+`Save` skip it (one warning per chunk), so the next start can still read the stored data. Restoring from the backup
+does not lift this, and reset progress is not persisted for such a chunk either.
 
 ## Migrations
 
@@ -69,7 +74,8 @@ file: the data may be intact. The chunk starts with defaults but is **read-only 
 - **Single-file profile (builds before EVG-12):** when no chunk file exists, `profile.json` is read and every chunk
   takes its own fields from it (chunk field names match the old ones). The chunks are written immediately and
   `profile.json` is deleted only after all of them were written. A chunk whose fields can't be converted (wrong type)
-  starts with defaults and the others are migrated as usual; `profile.json` is then kept for investigation. If
+  starts with defaults and the others are migrated as usual; `profile.json` is then moved aside (`profile.corrupt_<time>.json`) for investigation, so it can't refill a chunk that
+  goes missing later. A chunk that is read-only for the session starts with defaults instead of old data. If
   `profile.json` itself can't be read, the chunks are read-only for the session, like any unreadable file.
 
 ## Adding a chunk

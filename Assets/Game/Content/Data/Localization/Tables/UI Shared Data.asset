@@ -743,6 +743,22 @@ MonoBehaviour:
     m_Key: flow.error_retry
     m_Metadata:
       m_Items: []
+  - m_Id: 822792376
+    m_Key: home.album_badge_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792377
+    m_Key: gameplay.load_failed_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792378
+    m_Key: gameplay.load_failed_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792379
+    m_Key: gameplay.load_failed_retry
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
