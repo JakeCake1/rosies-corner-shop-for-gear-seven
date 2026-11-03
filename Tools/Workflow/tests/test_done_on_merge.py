@@ -48,4 +48,11 @@ try:
     raise AssertionError("a missing secret on a same-repo PR must fail")
 except SystemExit as e:
     assert "LINEAR_API_KEY" in str(e)
+ids = m.issue_ids
+assert ids("pirit699/evg-12-rework-savemanager", "EVG-12: Rework") == ["EVG-12"]
+assert ids("pirit699/evg-23-re-review-of-evg-1922-save", "EVG-23: Re-review of EVG-19—22") == ["EVG-23"]
+assert ids("evg-5-x", "no id here") == ["EVG-5"]
+assert ids("feature/part-2-utf-8", "Fix UTF-8 and PART-2") == []
+assert ids("pirit699/evg-30", "Mentions EVG-19 later") == ["EVG-30"]
+assert ids("pirit699/evg-1922-x", "") == ["EVG-1922"]
 print("DONE-ON-MERGE TESTS PASSED")
