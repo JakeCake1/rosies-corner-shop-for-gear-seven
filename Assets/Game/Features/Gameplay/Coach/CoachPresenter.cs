@@ -6,7 +6,6 @@ using Game.Features.Gameplay.Model;
 using Game.Features.Gameplay.Session;
 using Game.Services.Album;
 using Game.Services.Onboarding;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Game.Features.Gameplay.Coach
@@ -28,9 +27,10 @@ namespace Game.Features.Gameplay.Coach
         private const float BasketTipSeconds = 6f;
 
         private readonly GameplayContext _context;
-        private readonly Queue<(string Text, VisualElement Anchor, bool IsAbove)> _tipQueue =
-            new Queue<(string, VisualElement, bool)>();
-        private float _tipBusyUntil;
+        private readonly Queue<(string Id, string Text, VisualElement Anchor, bool IsAbove)> _tipQueue =
+            new Queue<(string, string, VisualElement, bool)>();
+        private int _tipGeneration;
+        private bool _isTipLoopRunning;
         private bool _isTutorialShown;
 
         /// <summary>
@@ -49,7 +49,8 @@ namespace Game.Features.Gameplay.Coach
         {
             _context.Services.Overlay.ClearCoach();
             _tipQueue.Clear();
-            _tipBusyUntil = 0f;
+            _tipGeneration++;
+            _isTipLoopRunning = false;
             _isTutorialShown = false;
         }
 
@@ -122,24 +123,42 @@ namespace Game.Features.Gameplay.Coach
                 return;
             }
 
-            onboarding.MarkTipSeen(tipId);
-            _tipQueue.Enqueue((_context.Services.Texts.Get(textKey), anchor, isAbove));
-            if (Time.unscaledTime >= _tipBusyUntil)
+            if (_tipQueue.Any(tip => tip.Id == tipId))
             {
-                ShowNextTipAsync().Forget();
+                return;
+            }
+
+            _tipQueue.Enqueue((tipId, _context.Services.Texts.Get(textKey), anchor, isAbove));
+            if (!_isTipLoopRunning)
+            {
+                _isTipLoopRunning = true;
+                ShowNextTipAsync(_tipGeneration).Forget();
             }
         }
 
-        private async UniTaskVoid ShowNextTipAsync()
+        // One loop at a time: the running flag is set synchronously by the caller, so two notices of one tap
+        // (counter + stock) queue behind each other instead of starting two loops that overwrite each other's tip.
+        // The generation keeps a loop cancelled by Reset from clearing the flag of the next level's loop.
+        private async UniTaskVoid ShowNextTipAsync(int generation)
         {
             var ct = _context.LevelToken;
-            while (_tipQueue.Count > 0)
+            try
             {
-                await UniTask.WaitUntil(() => !_context.Services.UI.IsPopupOpen, cancellationToken: ct);
-                var (text, anchor, isAbove) = _tipQueue.Dequeue();
-                _context.Services.Overlay.Coach(text, anchor, isAbove, TipSeconds);
-                _tipBusyUntil = Time.unscaledTime + TipSeconds + TipGapSeconds;
-                await UniTask.Delay(TimeSpan.FromSeconds(TipSeconds + TipGapSeconds), cancellationToken: ct);
+                while (_tipQueue.Count > 0)
+                {
+                    await UniTask.WaitUntil(() => !_context.Services.UI.IsPopupOpen, cancellationToken: ct);
+                    var (id, text, anchor, isAbove) = _tipQueue.Dequeue();
+                    _context.Services.Onboarding.MarkTipSeen(id);
+                    _context.Services.Overlay.Coach(text, anchor, isAbove, TipSeconds);
+                    await UniTask.Delay(TimeSpan.FromSeconds(TipSeconds + TipGapSeconds), cancellationToken: ct);
+                }
+            }
+            finally
+            {
+                if (generation == _tipGeneration)
+                {
+                    _isTipLoopRunning = false;
+                }
             }
         }
 

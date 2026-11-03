@@ -29,11 +29,12 @@ namespace Game.Services.UI
         private readonly Dictionary<UILayer, List<OpenWindow>> _stacks = new Dictionary<UILayer, List<OpenWindow>>();
         private readonly CancellationTokenSource _lifetime = new CancellationTokenSource();
         private readonly EventCallback<ClickEvent> _onBlockerClicked;
+        private int _pendingPopups;
         // Cached: reading Token from the disposed source throws, and windows still close after Dispose at shutdown.
         private readonly CancellationToken _lifetimeToken;
 
         /// <inheritdoc/>
-        public bool IsPopupOpen => _stacks[UILayer.Popups].Count > 0;
+        public bool IsPopupOpen => _pendingPopups > 0 || _stacks[UILayer.Popups].Count > 0;
 
         /// <summary>
         /// Creates the service.
@@ -69,6 +70,15 @@ namespace Game.Services.UI
                 _openGates.Add(type, gate);
             }
 
+            // The window is created up front so its layer is known while the layout still loads: a popup that is
+            // loading already counts in IsPopupOpen, otherwise a second dialog opened in that gap would replace it.
+            var window = new TWindow();
+            var isPendingPopup = window.Layer == UILayer.Popups;
+            if (isPendingPopup)
+            {
+                _pendingPopups++;
+            }
+
             // The view model belongs to the UI service from the call on: it is disposed here while no window entry
             // owns it (cancelled or failed open), and by the window's close once the entry is on the stack.
             OpenWindow entry = null;
@@ -87,12 +97,12 @@ namespace Game.Services.UI
                 element.pickingMode = PickingMode.Ignore;
                 element.Stretch();
 
-                var window = new TWindow();
                 _resolver.Inject(window);
                 window.Attach(element);
                 _root.GetLayer(window.Layer).Add(element);
 
                 entry = new OpenWindow(window, viewModel);
+                EndPendingPopup(ref isPendingPopup);
                 entry.CloseSubscription = window.CloseRequested.Subscribe(w => CloseAsync(w).Forget());
                 _stacks[window.Layer].Add(entry);
                 try
@@ -135,6 +145,7 @@ namespace Game.Services.UI
             }
             finally
             {
+                EndPendingPopup(ref isPendingPopup);
                 if (isGateHeld)
                 {
                     gate.Release();
@@ -237,6 +248,17 @@ namespace Game.Services.UI
             {
                 _root.Blocker.UnregisterCallback(_onBlockerClicked);
             }
+        }
+
+        private void EndPendingPopup(ref bool isPendingPopup)
+        {
+            if (!isPendingPopup)
+            {
+                return;
+            }
+
+            isPendingPopup = false;
+            _pendingPopups--;
         }
 
         private void Discard(OpenWindow entry)

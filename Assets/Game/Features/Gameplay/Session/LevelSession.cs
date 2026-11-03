@@ -48,6 +48,7 @@ namespace Game.Features.Gameplay.Session
         private readonly IAudioService _audio;
         private readonly IHapticsService _haptics;
         private readonly GameBalanceConfig _balance;
+        private readonly IShuffleSeedSource _shuffleSeeds;
         private readonly Subject<BoardChange> _changed = new Subject<BoardChange>();
         private readonly Subject<int> _refused = new Subject<int>();
         private readonly Subject<ShipNotice> _shipping = new Subject<ShipNotice>();
@@ -127,9 +128,10 @@ namespace Game.Features.Gameplay.Session
         /// <param name="audio">Sound effects.</param>
         /// <param name="haptics">Vibration.</param>
         /// <param name="balance">Free undos, extended capacity, booster unlock levels and coin rewards.</param>
+        /// <param name="shuffleSeeds">Seed of every Shuffle use.</param>
         public LevelSession(ILevelCurveService curves, IContentService content, IWalletService wallet,
             IBoosterInventory boosters, IAlbumService album, ILevelProgressService levels, IAudioService audio,
-            IHapticsService haptics, GameBalanceConfig balance)
+            IHapticsService haptics, GameBalanceConfig balance, IShuffleSeedSource shuffleSeeds)
         {
             _curves = curves;
             _content = content;
@@ -140,6 +142,7 @@ namespace Game.Features.Gameplay.Session
             _audio = audio;
             _haptics = haptics;
             _balance = balance;
+            _shuffleSeeds = shuffleSeeds;
         }
 
         /// <summary>
@@ -379,8 +382,7 @@ namespace Game.Features.Gameplay.Session
             }
 
             var snapshot = State.Clone();
-            var seed = (uint)(DateTime.UtcNow.Ticks % 100000);
-            if (!LevelRules.Shuffle(State, new Mulberry32(seed)))
+            if (!LevelRules.Shuffle(State, new Mulberry32(_shuffleSeeds.NextSeed())))
             {
                 return false;
             }

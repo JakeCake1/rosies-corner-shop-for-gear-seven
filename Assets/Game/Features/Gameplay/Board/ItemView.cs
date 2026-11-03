@@ -33,6 +33,12 @@ namespace Game.Features.Gameplay.Board
         public VisualElement Destination { get; set; }
 
         /// <summary>
+        /// False while the item is still flying toward <see cref="Destination"/> (it sits in the flight layer until
+        /// the landing snaps it into the cell). Shipped baskets wait for it before leaving.
+        /// </summary>
+        public bool HasLanded => Destination == null || Root.hierarchy.parent == Destination;
+
+        /// <summary>
         /// Creates a pooled item view.
         /// </summary>
         /// <returns>New view.</returns>

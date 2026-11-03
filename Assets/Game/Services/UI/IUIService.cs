@@ -8,7 +8,7 @@ namespace Game.Services.UI
     /// </summary>
     public interface IUIService
     {
-        /// <summary>Whether a popup is open.</summary>
+        /// <summary>Whether a popup is open or still loading; callers use it to avoid opening a second dialog over it.</summary>
         bool IsPopupOpen { get; }
 
         /// <summary>

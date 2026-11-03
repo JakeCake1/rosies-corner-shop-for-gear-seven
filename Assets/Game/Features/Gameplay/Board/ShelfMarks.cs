@@ -36,6 +36,8 @@ namespace Game.Features.Gameplay.Board
         private readonly VisualElement _ice;
         private readonly Label _iceText;
         private readonly VisualElement _boardLayer;
+        private Tween _knockOff;
+        private bool _isKnockingOff;
 
         /// <summary>
         /// Finds the marks in a shelf.
@@ -71,7 +73,9 @@ namespace Game.Features.Gameplay.Board
                 _iceText.text = frozen.ToString();
             }
 
-            _boardLayer.SetVisible(isBoarded);
+            // The boards stay up while they fly off: the render that follows the rule event already reports the block as
+            // unboarded, and hiding the layer then would cut the animation in the same frame.
+            _boardLayer.SetVisible(isBoarded || _isKnockingOff);
             _content.style.opacity = isLocked ? LockedOpacity : 1f;
             _cellLayer.SetVisible(!isBoarded);
             _backMarkLayer.SetVisible(!isBoarded);
@@ -84,7 +88,13 @@ namespace Game.Features.Gameplay.Board
         /// <returns>The animation.</returns>
         public Tween KnockBoardsOff(object tweenId)
         {
-            var seq = DOTween.Sequence().SetId(tweenId);
+            _knockOff?.Kill();
+            _isKnockingOff = true;
+            var seq = DOTween.Sequence().SetId(tweenId).OnKill(() =>
+            {
+                _isKnockingOff = false;
+                _boardLayer.SetVisible(false);
+            });
             for (var i = 0; i < _boards.Count; i++)
             {
                 var board = _boards[i];
@@ -94,6 +104,7 @@ namespace Game.Features.Gameplay.Board
                 seq.Join(board.DOFade(0f, BoardSeconds));
             }
 
+            _knockOff = seq;
             return seq;
         }
 
@@ -108,6 +119,9 @@ namespace Game.Features.Gameplay.Board
         /// </summary>
         public void Reset()
         {
+            _knockOff?.Kill();
+            _knockOff = null;
+            _isKnockingOff = false;
             Set(false, false, 0, false);
             foreach (var board in _boards)
             {

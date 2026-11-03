@@ -28,6 +28,7 @@ namespace Game.Bootstrap.Composition
             builder.RegisterInstance(_art);
             builder.RegisterInstance(new GameplayLayouts(_screenLayout, _shelfLayout, _basketLayout, _boosterLayout, _bannerLayout));
             builder.Register<GameplayScreen>(Lifetime.Singleton);
+            builder.Register<ClockShuffleSeedSource>(Lifetime.Singleton).As<IShuffleSeedSource>();
             builder.Register<LevelSession>(Lifetime.Singleton);
             builder.Register<GameplayServices>(Lifetime.Singleton);
             builder.RegisterEntryPoint<GameplayPresenter>();

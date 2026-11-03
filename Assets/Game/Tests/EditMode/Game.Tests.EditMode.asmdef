@@ -4,6 +4,7 @@
     "references": [
         "Game.Services",
         "Game.Features",
+        "Game.Flow",
         "UniTask",
         "UniRx",
         "VContainer",
