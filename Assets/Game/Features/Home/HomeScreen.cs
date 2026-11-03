@@ -163,11 +163,7 @@ namespace Game.Features.Home
                 return;
             }
 
-            var levels = _progress.Levels;
-            var onboarding = _progress.Onboarding;
-            var album = levels.IsCompleted(_balance.AlbumFromLevel) && !onboarding.HasFlag(Flags.AlbumIntro);
-            var name = levels.IsCompleted(_balance.NameShopAfterLevel) && !onboarding.HasFlag(Flags.NameAsked);
-            if (!album && !name)
+            if (!IsAlbumDue() && !IsNameDue())
             {
                 return;
             }
@@ -178,14 +174,21 @@ namespace Game.Features.Home
                 return;
             }
 
-            if (album)
+            // Decided again after the delay: the profile can be reset while the home screen opens.
+            if (IsAlbumDue())
             {
                 await _album.IntroAsync(ct);
             }
-            else
+            else if (IsNameDue())
             {
                 await _namePrompt.AskAsync(ct);
             }
         }
+
+        private bool IsAlbumDue() =>
+            _progress.Levels.IsCompleted(_balance.AlbumFromLevel) && !_progress.Onboarding.HasFlag(Flags.AlbumIntro);
+
+        private bool IsNameDue() =>
+            _progress.Levels.IsCompleted(_balance.NameShopAfterLevel) && !_progress.Onboarding.HasFlag(Flags.NameAsked);
     }
 }
