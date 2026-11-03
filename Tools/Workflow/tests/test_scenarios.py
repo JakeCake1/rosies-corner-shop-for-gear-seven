@@ -275,8 +275,14 @@ def main():
     assert "draft marked ready for review" in out and Fake.state["issue_state"] == "s-rev", out
     assert not json.load(open(env["FAKE_GH_DB"]))[0]["isDraft"]
     assert "queued" in out, out
+    assert out.strip().splitlines()[-1] == "HANDOFF DONE", out
     assert os.path.exists(os.path.join(repo, ".agent-workflow/outbox", attempt1 + ".json"))
     assert not os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
+    # a pointer that survives for a closed attempt is dropped, not reported as an active attempt
+    active_path = os.path.join(repo, ".agent-workflow/active.json")
+    json.dump({"attempt_id": attempt1, "issue": "EVG-12"}, open(active_path, "w"))
+    assert "No active implementation attempt" in hook("session-start", t1, "sess1")
+    assert not os.path.exists(active_path)
     # usage after handoff does not belong to the closed attempt
     with open(t2, "a") as f:
         f.write(reply_line("late", now(), out=999))
@@ -315,6 +321,7 @@ def main():
     real_db = env["FAKE_GH_DB"]
     env["FAKE_GH_DB"] = "/nonexistent/dir/prs.json"
     out = wf("handoff", ok=False)
+    assert "HANDOFF NOT FINISHED at step pr" in out, out
     assert Fake.state["issue_state"] == "s-prog", "status must not change when the PR step fails"
     env["FAKE_GH_DB"] = real_db
     out = wf("handoff")

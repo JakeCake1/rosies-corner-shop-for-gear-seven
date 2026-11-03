@@ -181,16 +181,26 @@ def load_env():
     return env
 
 
+NETWORK_TIMEOUT = 180  # push, fetch and gh calls: a stuck credential prompt or network must not hang a handoff
+
+
 def run(cmd, check=True, cwd=None, timeout=600):
-    proc = subprocess.run(cmd, cwd=cwd or ROOT, capture_output=True, text=True, encoding="utf-8",
-                          errors="replace", timeout=timeout)
+    # stdin is closed and prompts are off: a child waiting for a password would block the command forever.
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0", "GH_PROMPT_DISABLED": "1"}
+    try:
+        proc = subprocess.run(cmd, cwd=cwd or ROOT, capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=timeout, stdin=subprocess.DEVNULL, env=env)
+    except subprocess.TimeoutExpired:
+        if check:
+            raise WorkflowError(f"{' '.join(cmd)} timed out after {timeout}s")
+        return subprocess.CompletedProcess(cmd, 124, "", f"timed out after {timeout}s")
     if check and proc.returncode != 0:
         raise WorkflowError(f"{' '.join(cmd)} failed ({proc.returncode}): {(proc.stderr or proc.stdout).strip()}")
     return proc
 
 
-def git(*args, check=True):
-    return run(["git", *args], check=check).stdout.strip()
+def git(*args, check=True, timeout=600):
+    return run(["git", *args], check=check, timeout=timeout).stdout.strip()
 
 
 def http_json(url, payload, headers, timeout=20):
@@ -212,7 +222,16 @@ def active_attempt():
     active = read_json(ACTIVE_FILE)
     if not active:
         return None
-    return read_json(attempt_path(active["attempt_id"]))
+    attempt = read_json(attempt_path(active["attempt_id"]))
+    if attempt and attempt.get("ended_at"):
+        # Closed by a handoff or abandon but the pointer survived (interrupted command, other checkout): drop it.
+        try:
+            os.remove(ACTIVE_FILE)
+        except OSError:
+            pass
+        log(f"removed stale active.json for closed attempt {active['attempt_id']}")
+        return None
+    return attempt
 
 
 def save_attempt(attempt):
@@ -294,7 +313,7 @@ def resolve_states(issue, cfg):
 def gh(*args, check=True):
     try:
         # which() honours PATHEXT, so a gh.cmd shim is found on Windows as well
-        return run([shutil.which("gh") or "gh", *args], check=check)
+        return run([shutil.which("gh") or "gh", *args], check=check, timeout=NETWORK_TIMEOUT)
     except FileNotFoundError:
         raise WorkflowError("GitHub CLI 'gh' is not installed or not on PATH")
 
@@ -696,10 +715,23 @@ def step(attempt, name, status, detail=""):
     attempt["handoff"][name] = {"status": status, "detail": detail, "at": now_iso()}
     with Lock():
         save_attempt(attempt)
-    print(f"[{status:>7}] {name}" + (f": {detail}" if detail else ""))
+    print(f"[{status:>7}] {name}" + (f": {detail}" if detail else ""), flush=True)
 
 
 def cmd_handoff(args):
+    """Runs the handoff and always ends with one clear final line: done, or which step is unfinished."""
+    try:
+        _handoff(args)
+    except WorkflowError as e:
+        unfinished = [n for n in ("checks", "commits", "push", "pr", "linear", "langfuse")
+                      if (((active_attempt() or {}).get("handoff") or {}).get(n) or {}).get("status") == "failed"]
+        print(f"HANDOFF NOT FINISHED{' at step ' + unfinished[0] if unfinished else ''}: {e} "
+              f"Run /handoff again.", flush=True)
+        raise
+    print("HANDOFF DONE", flush=True)
+
+
+def _handoff(args):
     cfg, env = load_config(), load_env()
     attempt = active_attempt()
     if not attempt:
@@ -732,7 +764,7 @@ def cmd_handoff(args):
     if git("status", "--porcelain", "--untracked-files=no"):
         step(attempt, "commits", "failed", "uncommitted changes")
         raise WorkflowError("commit (or stash) your changes before handoff")
-    run(["git", "fetch", remote, base], check=False)
+    run(["git", "fetch", remote, base], check=False, timeout=NETWORK_TIMEOUT)
     ahead = git("rev-list", "--count", f"{remote}/{base}..HEAD", check=False) or "0"
     if ahead == "0":
         step(attempt, "commits", "failed", f"no commits ahead of {remote}/{base}")
@@ -740,7 +772,7 @@ def cmd_handoff(args):
     step(attempt, "commits", "ok", f"{ahead} commit(s) ahead of {remote}/{base}")
 
     try:
-        git("push", "-u", remote, branch)
+        git("push", "-u", remote, branch, timeout=NETWORK_TIMEOUT)
         step(attempt, "push", "ok")
     except WorkflowError as e:
         step(attempt, "push", "failed", str(e))
