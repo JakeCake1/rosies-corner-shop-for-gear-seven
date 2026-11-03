@@ -20,8 +20,8 @@ namespace Game.Bootstrap.Editor.Agent
     /// compile errors) while the rest of the project is broken or packages are still installing.
     /// The agent writes <c>AgentBridge/command.txt</c>; the Editor runs it, deletes the file and appends the outcome
     /// to <c>AgentBridge/result.log</c>. Compiler messages of every compilation go to <c>AgentBridge/compile.log</c>.
-    /// Commands (one per line): <c>refresh</c>, <c>packages</c>, <c>defines</c>, <c>invoke Namespace.Type.Method</c>,
-    /// <c>status</c>.
+    /// Commands (one per line): <c>refresh</c>, <c>packages</c>, <c>defines</c>, <c>invoke Namespace.Type.Method</c>
+    /// (public static parameterless methods of <c>Game.*</c> types only), <c>status</c>.
     /// </remarks>
     [InitializeOnLoad]
     public static class AgentBridge
@@ -32,6 +32,7 @@ namespace Game.Bootstrap.Editor.Agent
         public const string RequiredDefines = "UNITASK_DOTWEEN_SUPPORT";
 
         private const string BridgeFolder = "AgentBridge";
+        private const string InvokableNamespacePrefix = "Game.";
         private const double PollIntervalSeconds = 1.0;
 
         /// <summary>
@@ -131,9 +132,6 @@ namespace Game.Bootstrap.Editor.Agent
                     case "invoke":
                         Invoke(parts[1].Trim());
                         break;
-                    case "dotween":
-                        InstallDOTween(parts[1].Trim());
-                        break;
                     case "status":
                         Log("compiling=" + EditorApplication.isCompiling + " playing=" + EditorApplication.isPlaying +
                             " assemblies=" + string.Join(", ", LoadedGameAssemblies()));
@@ -151,6 +149,13 @@ namespace Game.Bootstrap.Editor.Agent
 
         private static void Invoke(string fullName)
         {
+            // Only the project's own code may be driven from a file: a command file must not reach framework or
+            // package methods (File.Delete, Process.Start, ...).
+            if (!fullName.StartsWith(InvokableNamespacePrefix, StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException("invoke is limited to " + InvokableNamespacePrefix + "* types");
+            }
+
             var dot = fullName.LastIndexOf('.');
             var typeName = fullName.Substring(0, dot);
             var methodName = fullName.Substring(dot + 1);
@@ -162,7 +167,7 @@ namespace Game.Bootstrap.Editor.Agent
                 throw new InvalidOperationException("type not found: " + typeName);
             }
 
-            var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
             if (method == null)
             {
                 throw new InvalidOperationException("method not found: " + fullName);
@@ -170,63 +175,6 @@ namespace Game.Bootstrap.Editor.Agent
 
             var result = method.Invoke(null, null);
             Log("ok " + fullName + (result != null ? " -> " + result : string.Empty));
-        }
-
-        /// <summary>
-        /// Downloads the official DOTween zip, unpacks <c>Demigiant/</c> into <c>Assets/Plugins/</c> and adds the
-        /// <c>DOTween.Modules</c> assembly definition that the stack rules reference.
-        /// </summary>
-        /// <param name="url">Direct link to the DOTween zip on dotween.demigiant.com.</param>
-        private static void InstallDOTween(string url)
-        {
-            var zipPath = Path.Combine("Temp", "dotween.zip");
-            using (var request = UnityEngine.Networking.UnityWebRequest.Get(url))
-            {
-                var op = request.SendWebRequest();
-                while (!op.isDone)
-                {
-                    System.Threading.Thread.Sleep(50);
-                }
-
-                if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
-                {
-                    throw new InvalidOperationException("download failed: " + request.error);
-                }
-
-                File.WriteAllBytes(zipPath, request.downloadHandler.data);
-                Log("dotween: downloaded " + request.downloadHandler.data.Length + " bytes");
-            }
-
-            var extract = Path.Combine("Temp", "dotween");
-            if (Directory.Exists(extract))
-            {
-                Directory.Delete(extract, true);
-            }
-            System.IO.Compression.ZipFile.ExtractToDirectory(zipPath, extract);
-            var source = Directory.GetDirectories(extract, "Demigiant", SearchOption.AllDirectories).FirstOrDefault();
-            if (source == null)
-            {
-                throw new InvalidOperationException("no Demigiant folder in the zip");
-            }
-
-            var target = Path.Combine("Assets", "Plugins", "Demigiant");
-            Directory.CreateDirectory(Path.Combine("Assets", "Plugins"));
-            if (Directory.Exists(target))
-            {
-                Directory.Delete(target, true);
-            }
-            Directory.Move(source, target);
-
-            var modules = Directory.GetDirectories(target, "Modules", SearchOption.AllDirectories).FirstOrDefault();
-            if (modules != null)
-            {
-                File.WriteAllText(Path.Combine(modules, "DOTween.Modules.asmdef"),
-                    "{\n    \"name\": \"DOTween.Modules\",\n    \"references\": [\"UnityEngine.UI\"],\n" +
-                    "    \"autoReferenced\": true\n}\n");
-            }
-
-            Log("dotween: installed to " + target + (modules != null ? ", modules asmdef at " + modules : ""));
-            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
         }
 
         private static void ApplyDefines()
