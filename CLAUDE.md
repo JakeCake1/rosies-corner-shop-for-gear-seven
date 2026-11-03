@@ -62,7 +62,9 @@ was cache reads, and replies above 200k tokens of context took over half of it).
 - Keep the context under ~150k tokens. Run `/compact` or `/clear` at phase boundaries (plan → implement → verify →
   handoff) and when the Stop hook warns (`context_warning_tokens` in `Tools/Workflow/config.json`).
 - Send exploration to subagents: broad searches, reading `Docs/Code Rules/`, logs, audits and reviews go to the
-  `Explore` or `codebase-memory*` agents, so only their conclusions land in the main context.
+  `Explore` or `general-purpose` agents, so only their conclusions land in the main context. Questions about code
+  structure (callers, implementations, registrations, impact of a change) go to `codebase-memory-scout`, or to
+  `codebase-memory` for deeper work, not to `Explore` / `general-purpose`.
 - Fewer round trips: batch independent tool calls in one message, combine shell commands, and edit every site of a
   change in one pass instead of read → edit → check per site.
 - Match the model to the task: review fixes and small visual changes (under ~300 changed lines) run on Sonnet or at

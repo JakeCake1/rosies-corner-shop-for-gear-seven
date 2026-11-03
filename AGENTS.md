@@ -67,9 +67,19 @@ Reference skeletons in the topic files show structure only. When writing real co
 - **Spec:** Linear EVG-7 attachment `Rosies_Corner_Shop_behavior.md`; the original HTML prototype is the reference
   for every rule. The level model (`Features/Gameplay/Model`) is a 1:1 port and is checked step by step against the
   prototype by `PrototypeParityTests` (fixture recorded in Node from the prototype's own functions).
-- **Code index:** use the `codebase-memory-mcp` MCP server (configured in `.mcp.json`) to find symbols, callers and
-  package APIs before reading files. Re-index after large changes: `codebase-memory-mcp cli index_repository --repo-path <project root>
-  --name rosies-corner-shop --persistence true`; the graph is stored in `.codebase-memory/graph.db.zst`.
+- **Code index:** the `codebase-memory-mcp` MCP server (configured in `.mcp.json`) holds the code graph; it is
+  refreshed automatically after commits and at session start (`Docs/agent-workflow.md`), never by hand. Before the
+  first symbol search of a session, load its tools with a single `ToolSearch` call:
+  `select:mcp__codebase-memory-mcp__search_graph,mcp__codebase-memory-mcp__trace_path,mcp__codebase-memory-mcp__get_code_snippet,mcp__codebase-memory-mcp__search_code,mcp__codebase-memory-mcp__detect_changes`.
+
+  | WHEN | DO |
+  |---|---|
+  | Who calls or uses a method, class or interface | `trace_path` / `search_graph` |
+  | Where something is registered in VContainer, who implements an interface | `search_graph` on relations |
+  | Impact of a signature change | `trace_path` + `detect_changes` |
+  | Find a symbol by name, path unknown | `search_graph`, then `get_code_snippet` instead of reading the whole file |
+  | Package API (UniRx, VContainer, DOTween) | `search_code` on the index |
+  | Text, USS/UXML, localization keys, assets | `grep` (not in the graph) |
 - **UI and scenes are authored assets** (EVG-8): every non-code asset is under `Assets/Game/Content` (EVG-10):
   scenes in `Content/Scenes`, UXML/USS in `Content/Screens/<Feature>` and `Content/Screens/Shared`, configs and JSON in
   `Content/Data/<Service or Feature>`, sprites and fonts in `Content/Visual`, sounds in `Content/Sounds`, prefabs in

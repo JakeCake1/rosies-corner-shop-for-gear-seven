@@ -121,7 +121,7 @@ def main():
     if os.name == "nt":  # Windows can't run an extensionless script; a .cmd shim is found through PATHEXT
         with open(os.path.join(bindir, "gh.cmd"), "w") as f:
             f.write(f'@"{sys.executable}" "%~dp0gh" %*\n')
-    env = dict(os.environ, PATH=bindir + os.pathsep + os.environ["PATH"], CLAUDE_WORKFLOW_ROOT=repo,
+    env = dict(os.environ, PATH=bindir + os.pathsep + os.environ["PATH"], CLAUDE_WORKFLOW_NO_INDEX="1", CLAUDE_WORKFLOW_ROOT=repo,
                FAKE_GH_DB=os.path.join(tmp, "prs.json"), LINEAR_API_KEY="lin_test", LINEAR_API_URL=base + "/graphql",
                LANGFUSE_PUBLIC_KEY="pk", LANGFUSE_SECRET_KEY="sk", LANGFUSE_HOST=base,
                GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@t")
