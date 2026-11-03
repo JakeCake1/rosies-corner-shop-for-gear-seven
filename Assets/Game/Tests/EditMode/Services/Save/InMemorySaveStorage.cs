@@ -14,6 +14,7 @@ namespace Game.Tests.EditMode.Services.Save
         public readonly List<string> Quarantined = new List<string>();
         public readonly List<string> Deleted = new List<string>();
         public bool IsFull;
+        public bool IsDenied;
         public bool HasReadFailure;
         public bool HasQuarantineFailure;
 
@@ -30,6 +31,11 @@ namespace Game.Tests.EditMode.Services.Save
 
         public void Write(string key, string content)
         {
+            if (IsDenied)
+            {
+                throw new System.UnauthorizedAccessException("Access denied");
+            }
+
             if (IsFull)
             {
                 throw new IOException("Disk full");

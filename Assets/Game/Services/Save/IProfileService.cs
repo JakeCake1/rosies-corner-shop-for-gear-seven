@@ -21,7 +21,8 @@ namespace Game.Services.Save
         void Load();
 
         /// <summary>
-        /// Requests a save of every chunk (app paused or losing focus).
+        /// Writes every chunk before returning (app paused, losing focus or quitting); the OS may kill the process
+        /// right after, so nothing is left to a background write.
         /// </summary>
         /// <remarks>Does nothing before <see cref="Load"/>: chunk changes before loading aren't saved either, so
         /// a new player's defaults never overwrite the stored profile.</remarks>

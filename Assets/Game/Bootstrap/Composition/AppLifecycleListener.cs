@@ -49,5 +49,10 @@ namespace Game.Bootstrap.Composition
 
             _profile.SaveAll();
         }
+
+        private void OnApplicationQuit()
+        {
+            _profile?.SaveAll();
+        }
     }
 }
