@@ -9,11 +9,18 @@ namespace Game.Tests.EditMode.Features.Gameplay.Session
 
         public IReadOnlyReactiveProperty<int> Coins => _coins;
 
-        public void Add(int amount) => _coins.Value += amount;
+        public void Add(int amount)
+        {
+            // Like WalletService: only positive amounts, saturating.
+            if (amount > 0)
+            {
+                _coins.Value = (int)System.Math.Min((long)_coins.Value + amount, int.MaxValue);
+            }
+        }
 
         public bool TrySpend(int amount)
         {
-            if (amount > _coins.Value)
+            if (amount < 0 || amount > _coins.Value)
             {
                 return false;
             }
