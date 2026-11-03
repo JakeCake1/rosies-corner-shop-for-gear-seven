@@ -19,7 +19,22 @@ import sys
 import urllib.parse
 import urllib.request
 
-ISSUE_RE = re.compile(r"\b([A-Za-z][A-Za-z0-9]{0,9}-\d+)\b")
+
+
+def _team_key():
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json"), encoding="utf-8") as f:
+            return (json.load(f).get("linear") or {}).get("team_key")
+    except (OSError, ValueError):
+        return None
+
+
+# only the configured team's ids count: `PART-2` and `UTF-8` in a branch or title are not issues
+_KEY = os.environ.get("LINEAR_TEAM_KEY") or _team_key()
+if _KEY:
+    ISSUE_RE = re.compile(rf"(?<![A-Za-z0-9])({re.escape(_KEY)}-\d+)(?![A-Za-z0-9])", re.I)
+else:
+    ISSUE_RE = re.compile(r"(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]{0,9}-\d+)(?![A-Za-z0-9])")
 
 
 def post(url, payload, headers):
@@ -54,6 +69,10 @@ def main():
         print("PR closed without merge: nothing to do")
         return
     key, token, repo = os.environ.get("LINEAR_API_KEY"), os.environ["GITHUB_TOKEN"], os.environ["GITHUB_REPOSITORY"]
+    head_repo = ((pr.get("head") or {}).get("repo") or {}).get("full_name")
+    if not key and head_repo and head_repo != repo:
+        print("PR from a fork: repository secrets are not available, nothing to do")
+        return
     if not key:
         sys.exit("LINEAR_API_KEY secret is not set")
     done_name = os.environ.get("LINEAR_DONE_STATUS", "Done")

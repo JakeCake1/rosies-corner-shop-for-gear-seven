@@ -29,3 +29,13 @@ __pycache__/
 /Tools/Langfuse/ledger.jsonl
 /Tools/Langfuse/otel/
 /Tools/Langfuse/usage_summary.json
+
+# IDE and Unity standard entries
+.idea/
+.vscode/
+*.apk
+*.aab
+*.unitypackage
+/MemoryCaptures/
+/Recordings/
+/[Mm]emoryCaptures/
