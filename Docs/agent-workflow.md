@@ -65,8 +65,9 @@ Each reply re-reads the whole context, so cost follows context size (rules for a
 The official Langfuse Claude Code plugin was not used: it sends prompts, replies and tool inputs/outputs and has no
 switch to turn content off (only truncation).
 
-The older `Tools/Langfuse` per-phase report keeps working (its PreCompact hook is unchanged); it is independent of
-this workflow.
+The older `Tools/Langfuse` per-phase report is independent of this workflow. Its PreCompact hook is no longer
+installed and its generated files (`ledger.jsonl`, `otel/`, `usage_summary.json`) are not tracked in git; run
+`usage_report.py` by hand if you need them.
 
 ## Install
 

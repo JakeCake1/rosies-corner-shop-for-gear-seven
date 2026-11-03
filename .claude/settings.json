@@ -1,24 +1,5 @@
 {
   "hooks": {
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook || python \"$CLAUDE_PROJECT_DIR/Tools/Langfuse/usage_report.py\" snapshot --hook"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
-            "timeout": 30
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [
@@ -32,7 +13,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|mcp__unityMCP__(create_script|delete_script|apply_text_edits|script_apply_edits|manage_script)",
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash|PowerShell|mcp__[uU]nityMCP__(create_script|delete_script|apply_text_edits|script_apply_edits|manage_script|manage_asset|manage_scene|manage_prefabs|execute_code)",
         "hooks": [
           {
             "type": "command",
@@ -48,12 +29,23 @@
           {
             "type": "command",
             "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
-            "timeout": 30
+            "timeout": 120
           }
         ]
       }
     ],
     "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/Tools/Workflow/wf.sh\" hook collect",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
       {
         "hooks": [
           {

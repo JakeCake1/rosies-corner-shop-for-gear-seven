@@ -1,5 +1,6 @@
 {
   "linear": {
+    "team_key": "EVG",
     "statuses": { "in_progress": "In Progress", "in_review": "In Review", "done": "Done" }
   },
   "git": { "base": "main", "remote": "origin" },

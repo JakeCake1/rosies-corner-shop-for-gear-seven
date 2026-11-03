@@ -55,7 +55,7 @@ CONFIG_FILE = os.path.join(HERE, "config.json")
 TEMPLATES = os.path.join(HERE, "templates")
 HOOK_MARK = "Tools/Workflow/wf.sh"
 NAMESPACE = uuid.UUID("3b1f4f5e-8c3e-4d1e-9a0e-5f2b7c9d1e60")
-ISSUE_RE = re.compile(r"\b([A-Za-z][A-Za-z0-9]{0,9}-\d+)\b")
+ISSUE_RE = re.compile(r"(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]{0,9}-\d+)(?![A-Za-z0-9])")  # fallback, see team_key_re()
 SECRET_PATTERNS = [
     re.compile(r"sk-lf-[A-Za-z0-9-]{8,}"),
     re.compile(r"pk-lf-[A-Za-z0-9-]{8,}"),
@@ -112,11 +112,12 @@ class Lock:
         while True:
             try:
                 self.fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-                os.write(self.fd, str(os.getpid()).encode())
+                self.token = f"{os.getpid()}-{uuid.uuid4().hex}"
+                os.write(self.fd, self.token.encode())
                 return self
             except FileExistsError:
                 try:
-                    if time.time() - os.path.getmtime(self.path) > 120:  # stale lock from a killed process
+                    if time.time() - os.path.getmtime(self.path) > 300:  # stale lock from a killed process
                         os.remove(self.path)
                         continue
                 except OSError:
@@ -128,7 +129,10 @@ class Lock:
     def __exit__(self, *exc):
         os.close(self.fd)
         try:
-            os.remove(self.path)
+            with open(self.path, encoding="utf-8") as f:
+                mine = f.read() == self.token
+            if mine:  # never delete a lock another process took over after ours went stale
+                os.remove(self.path)
         except OSError:
             pass
 
@@ -137,6 +141,14 @@ def log(message):
     os.makedirs(STATE, exist_ok=True)
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(f"{now_iso()} {message}\n")
+
+
+def team_key_re(cfg=None):
+    """Matches issue ids of the configured Linear team only (`PART-2`, `UTF-8` are not issues)."""
+    key = ((cfg or load_config()).get("linear") or {}).get("team_key")
+    if not key:
+        return ISSUE_RE
+    return re.compile(rf"(?<![A-Za-z0-9])({re.escape(key)}-\d+)(?![A-Za-z0-9])", re.I)
 
 
 def load_config():
@@ -204,6 +216,14 @@ def active_attempt():
 
 
 def save_attempt(attempt):
+    """Writes the attempt; transcripts registered meanwhile by another hook (Stop, SubagentStop) are kept."""
+    try:
+        disk = read_json(attempt_path(attempt["attempt_id"]), {}) or {}
+    except (OSError, ValueError):
+        disk = {}
+    known = attempt.setdefault("transcripts", [])
+    have = {t["path"] for t in known}
+    known.extend(t for t in disk.get("transcripts", []) if t["path"] not in have)
     write_json(attempt_path(attempt["attempt_id"]), attempt)
 
 
@@ -531,7 +551,13 @@ def send_outbox(env, only=None, timeout=20):
     url = env.get("LANGFUSE_HOST", "https://cloud.langfuse.com").rstrip("/") + "/api/public/otel/v1/traces"
     auth = "Basic " + base64.b64encode(f"{pk}:{sk}".encode()).decode()
     for path in files:
-        item = read_json(path)
+        try:
+            item = read_json(path)
+            if not isinstance(item, dict) or "chunks" not in item:
+                raise ValueError("unexpected payload")
+        except (OSError, ValueError) as e:
+            results.append((os.path.basename(path)[:-5], False, f"unreadable outbox file {path}: {e}"))
+            continue
         try:
             for chunk in item["chunks"]:
                 status, body = http_json(url, chunk, {"Authorization": auth, "x-langfuse-ingestion-version": "4"},
@@ -648,7 +674,10 @@ def run_checks(cfg, reported):
             results.append({"name": name, "status": "failed", "detail": f"could not run: {e}"})
     for text in reported or []:
         name, _, detail = text.partition(":")
-        status = "failed" if re.search(r"\bfail", detail, re.I) else "reported"
+        # "0 failed" / "failures: 0" are passing summaries; only a non-zero count or a bare "fail" word is a failure
+        cleaned = re.sub(r"\b0+\s+(?:failed|failures?|errors?)\b|\b(?:failed|failures?|errors?)\s*[:=]\s*0+\b",
+                         "", detail, flags=re.I)
+        status = "failed" if re.search(r"\bfail", cleaned, re.I) else "reported"
         results.append({"name": name.strip(), "status": status, "detail": detail.strip() + " (reported by agent)"})
     return results
 
@@ -665,7 +694,8 @@ def pr_body(attempt, checks):
 
 def step(attempt, name, status, detail=""):
     attempt["handoff"][name] = {"status": status, "detail": detail, "at": now_iso()}
-    save_attempt(attempt)
+    with Lock():
+        save_attempt(attempt)
     print(f"[{status:>7}] {name}" + (f": {detail}" if detail else ""))
 
 
@@ -681,7 +711,8 @@ def cmd_handoff(args):
         return
     if args.transcript:
         register_transcript(attempt, args.transcript, None)
-        save_attempt(attempt)
+        with Lock():
+            save_attempt(attempt)
     remote, base = cfg["git"]["remote"], cfg["git"]["base"]
     branch = git("rev-parse", "--abbrev-ref", "HEAD")
     if branch != attempt["branch"]:
@@ -693,7 +724,8 @@ def cmd_handoff(args):
     step(attempt, "checks", "failed" if failed else "ok",
          "; ".join(f"{c['name']}={c['status']}" for c in checks) or "none configured or reported")
     attempt["checks"] = checks
-    save_attempt(attempt)
+    with Lock():
+        save_attempt(attempt)
     if failed and not args.allow_failed_checks:
         raise WorkflowError("checks failed; fix them or pass --allow-failed-checks. Issue stays In Progress.")
 
@@ -911,8 +943,8 @@ def auto_draft_pr(attempt):
         head = git("rev-parse", "HEAD")
         pushed = run(["git", "rev-parse", "--verify", "--quiet", f"{remote}/{branch}"], check=False).stdout.strip()
         known_pr = (attempt.get("pr") or {}).get("url")
-        if head == pushed and known_pr:
-            return  # already pushed and a PR is known: nothing new
+        if head == pushed and known_pr and open_pr_for_branch(branch):
+            return  # already pushed and its PR is still open: nothing new
         if head != pushed:
             git("push", "-u", remote, branch)
             result["pushed"] = head[:10]
@@ -955,7 +987,7 @@ def hook_guard(data):
     cfg = load_config()
     tool = data.get("tool_name", "")
     tin = data.get("tool_input") or {}
-    if tool == "Bash":
+    if tool in ("Bash", "PowerShell"):
         cmd = tin.get("command", "")
         if re.search(r"\bgh\s+pr\s+merge\b", cmd) or re.search(r"\bgh\s+api\b.*\/merge\b", cmd):
             return deny("Merging is never automatic in this workflow; the user merges PRs on GitHub.")
@@ -963,7 +995,7 @@ def hook_guard(data):
             return deny(f"Force-pushing {cfg['git']['base']} is not allowed.")
         return
     path = tin.get("file_path") or tin.get("notebook_path") or tin.get("path") or ""
-    rel = "Assets/" if tool.startswith("mcp__") else rel_path(path)  # Unity MCP script tools edit Assets/
+    rel = "Assets/" if tool.lower().startswith("mcp__unitymcp__") else rel_path(path)  # Unity MCP script tools edit Assets/
     if any(rel.startswith(p) for p in cfg["guarded_paths"]) and not active_attempt():
         deny(f"No active implementation attempt. Changes to {rel} are implementation work: identify the Linear "
              f"issue and run /impl-start <ISSUE-ID> first (discussion and planning need no attempt).")
@@ -976,11 +1008,12 @@ def hook_commit_msg(path):
     attempt = active_attempt()
     staged = git("diff", "--cached", "--name-only", check=False).splitlines()
     if attempt:
-        if attempt["issue"].lower() not in text.lower():
+        merge = text.startswith("Merge ")
+        if not merge and not re.search(rf"(?<![A-Za-z0-9]){re.escape(attempt['issue'])}(?![A-Za-z0-9])", text, re.I):
             sys.stderr.write(f"workflow: commit message must contain {attempt['issue']} (active attempt)\n")
             sys.exit(1)
     elif any(any(s.startswith(p) for p in cfg["guarded_paths"]) for s in staged):
-        if not ISSUE_RE.search(text):
+        if not text.startswith("Merge ") and not team_key_re(cfg).search(text):
             sys.stderr.write("workflow: project code is staged but there is no active attempt and no issue id in "
                              "the message; run start ISSUE first\n")
             sys.exit(1)
