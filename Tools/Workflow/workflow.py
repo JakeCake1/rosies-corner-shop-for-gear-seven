@@ -55,7 +55,7 @@ CONFIG_FILE = os.path.join(HERE, "config.json")
 TEMPLATES = os.path.join(HERE, "templates")
 HOOK_MARK = "Tools/Workflow/wf.sh"
 NAMESPACE = uuid.UUID("3b1f4f5e-8c3e-4d1e-9a0e-5f2b7c9d1e60")
-ISSUE_RE = re.compile(r"(?<![A-Za-z0-9])([A-Za-z][A-Za-z0-9]{0,9}-\d+)(?![A-Za-z0-9])")  # fallback, see team_key_re()
+ISSUE_RE = re.compile(r"(?<![A-Za-z0-9])(?!(?:UTF|ISO|SHA|MD|CVE|PART)-)([A-Za-z][A-Za-z0-9]{0,9}-\d+)(?![A-Za-z0-9])")  # fallback, see team_key_re()
 SECRET_PATTERNS = [
     re.compile(r"sk-lf-[A-Za-z0-9-]{8,}"),
     re.compile(r"pk-lf-[A-Za-z0-9-]{8,}"),
@@ -560,6 +560,16 @@ def queue_payload(attempt, ledger, cfg):
                 "chunks": build_payload(attempt, ledger, cfg)})
 
 
+def quarantine_outbox_file(path):
+    """A malformed payload can never be sent: move it aside so it is not retried (and reported) forever."""
+    try:
+        bad = os.path.join(STATE, "bad")
+        os.makedirs(bad, exist_ok=True)
+        os.replace(path, os.path.join(bad, os.path.basename(path)))
+    except OSError:
+        pass
+
+
 def send_outbox(env, only=None, timeout=20):
     """Sends queued payloads; a payload is removed only after Langfuse accepted every chunk."""
     results = []
@@ -576,10 +586,12 @@ def send_outbox(env, only=None, timeout=20):
     for path in files:
         try:
             item = read_json(path)
-            if not isinstance(item, dict) or "chunks" not in item:
+            if (not isinstance(item, dict) or not item.get("attempt_id") or not isinstance(item.get("chunks"), list)
+                    or not all(isinstance(c, dict) for c in item["chunks"])):
                 raise ValueError("unexpected payload")
         except (OSError, ValueError) as e:
             results.append((os.path.basename(path)[:-5], False, f"unreadable outbox file {path}: {e}"))
+            quarantine_outbox_file(path)
             continue
         try:
             for chunk in item["chunks"]:
@@ -697,12 +709,20 @@ def run_checks(cfg, reported):
             results.append({"name": name, "status": "failed", "detail": f"could not run: {e}"})
     for text in reported or []:
         name, _, detail = text.partition(":")
-        # "0 failed" / "failures: 0" are passing summaries; only a non-zero count or a bare "fail" word is a failure
-        cleaned = re.sub(r"\b0+\s+(?:failed|failures?|errors?)\b|\b(?:failed|failures?|errors?)\s*[:=]\s*0+\b",
-                         "", detail, flags=re.I)
-        status = "failed" if re.search(r"\bfail", cleaned, re.I) else "reported"
+        status = "failed" if reported_failed(detail) else "reported"
         results.append({"name": name.strip(), "status": status, "detail": detail.strip() + " (reported by agent)"})
     return results
+
+
+_ZERO = (r"\b0+\s+(?:\w+\s+)?(?:failed|failures?|errors?)\b"  # "0 failed", "0 tests failed", "0 errors"
+         r"|\b(?:failed|failures?|errors?)\s*[:=]?\s*0+\b"      # "Failed 0", "failures: 0"
+         r"|\bno\s+(?:\w+\s+)?(?:failed|failures?|errors?)\b")  # "no failures"
+
+
+def reported_failed(detail):
+    """A reported check text counts as failed when a failure/error word remains after zero-count summaries
+    ("Passed 120, Failed 0", "0 tests failed", "no errors") are removed; "3 errors" is a failure."""
+    return bool(re.search(r"\b(?:fail|error)", re.sub(_ZERO, "", detail or "", flags=re.I), re.I))
 
 
 def pr_body(attempt, checks):
@@ -979,13 +999,16 @@ def auto_draft_pr(attempt):
         head = git("rev-parse", "HEAD")
         pushed = run(["git", "rev-parse", "--verify", "--quiet", f"{remote}/{branch}"], check=False).stdout.strip()
         known_pr = (attempt.get("pr") or {}).get("url")
-        if head == pushed and known_pr and open_pr_for_branch(branch):
-            return  # already pushed and its PR is still open: nothing new
+        if head == pushed and known_pr:
+            return  # already pushed and the attempt has its PR: no GitHub query on every reply
         if head != pushed:
             git("push", "-u", remote, branch)
             result["pushed"] = head[:10]
-        pr = open_pr_for_branch(branch)
-        if pr:
+        # A PR this attempt already has is never recreated: a draft closed by hand stays closed (handoff decides).
+        pr = attempt.get("pr") if known_pr else open_pr_for_branch(branch)
+        if known_pr:
+            result.update(status="ok", detail=f"pushed to PR {known_pr}")
+        elif pr:
             result.update(status="ok", detail=f"pushed to open PR {pr['url']}")
         else:
             body = ("Draft: implementation in progress, created automatically after an agent reply. It becomes ready "
@@ -1046,9 +1069,10 @@ def hook_guard(data):
     tin = data.get("tool_input") or {}
     if tool in ("Bash", "PowerShell"):
         cmd = tin.get("command", "")
-        if re.search(r"\bgh\s+pr\s+merge\b", cmd) or re.search(r"\bgh\s+api\b.*\/merge\b", cmd):
+        if re.search(r"\bgh(?:\.exe)?\s+(?:[^|;&\n]*\s)?pr\s+merge\b", cmd) or \
+                re.search(r"\bgh(?:\.exe)?\s+api\b.*\/merge\b", cmd):
             return deny("Merging is never automatic in this workflow; the user merges PRs on GitHub.")
-        if re.search(r"\bgit\s+push\b.*(--force\b|\s-f\b)", cmd) and re.search(rf"\b{cfg['git']['base']}\b", cmd):
+        if re.search(r"\bgit\s+push\b.*(--force\b|--force-with-lease\b|\s-f\b|\s\+\S)", cmd) and re.search(rf"\b{cfg['git']['base']}\b", cmd):
             return deny(f"Force-pushing {cfg['git']['base']} is not allowed.")
         return
     path = tin.get("file_path") or tin.get("notebook_path") or tin.get("path") or ""
@@ -1063,6 +1087,15 @@ def hook_guard(data):
              f"issue and run /impl-start <ISSUE-ID> first (discussion and planning need no attempt).")
 
 
+def is_merge_commit(text):
+    """A real merge in progress (MERGE_HEAD exists) with git's own message; a plain message that merely starts
+    with "Merge " is not exempt."""
+    if not text.startswith("Merge "):
+        return False
+    head = git("rev-parse", "--git-path", "MERGE_HEAD", check=False)
+    return bool(head) and os.path.exists(head if os.path.isabs(head) else os.path.join(ROOT, head))
+
+
 def hook_commit_msg(path):
     cfg = load_config()
     with open(path, encoding="utf-8", errors="replace") as f:
@@ -1070,12 +1103,12 @@ def hook_commit_msg(path):
     attempt = active_attempt()
     staged = git("diff", "--cached", "--name-only", check=False).splitlines()
     if attempt:
-        merge = text.startswith("Merge ")
+        merge = is_merge_commit(text)
         if not merge and not re.search(rf"(?<![A-Za-z0-9]){re.escape(attempt['issue'])}(?![A-Za-z0-9])", text, re.I):
             sys.stderr.write(f"workflow: commit message must contain {attempt['issue']} (active attempt)\n")
             sys.exit(1)
     elif any(any(s.startswith(p) for p in cfg["guarded_paths"]) for s in staged):
-        if not text.startswith("Merge ") and not team_key_re(cfg).search(text):
+        if not is_merge_commit(text) and not team_key_re(cfg).search(text):
             sys.stderr.write("workflow: project code is staged but there is no active attempt and no issue id in "
                              "the message; run start ISSUE first\n")
             sys.exit(1)
