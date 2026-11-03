@@ -105,14 +105,16 @@ namespace Game.Features.Gameplay.Board
         public bool TryGet(int jarId, out ItemView view) => _items.TryGetValue(jarId, out view);
 
         /// <summary>
-        /// Takes the items inside a leaving basket off the board's books; they keep riding the basket until
-        /// <see cref="Release"/>.
+        /// Takes the items inside a leaving basket, and those still flying into it, off the board's books; they keep
+        /// riding the basket until <see cref="Release"/>.
         /// </summary>
         /// <param name="container">The leaving basket's root.</param>
         /// <returns>The items to release when the basket is gone.</returns>
         public List<ItemView> ForgetItemsInside(VisualElement container)
         {
-            var inside = _items.Values.Where(i => container.Contains(i.Root)).ToList();
+            var inside = _items.Values
+                .Where(i => container.Contains(i.Root) || (i.Destination != null && container.Contains(i.Destination)))
+                .ToList();
             foreach (var item in inside)
             {
                 _items.Remove(item.JarId);

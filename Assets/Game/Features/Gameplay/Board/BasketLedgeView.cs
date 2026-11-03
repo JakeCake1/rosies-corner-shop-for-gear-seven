@@ -24,6 +24,7 @@ namespace Game.Features.Gameplay.Board
         private const int PoolCapacity = 4;
         private const int PoolMaxSize = 8;
         private const float EnterSeconds = 0.52f;
+        private const float LandingWaitSeconds = 1.5f;
         private const int ShipSparksBase = 20;
         private const int ShipSparksPerCombo = 6;
         private const float PraiseAbove = 30f;
@@ -200,13 +201,36 @@ namespace Game.Features.Gameplay.Board
             }
 
             _leaving.Add(view);
-            view.Leave(_progressTarget.worldBound.center).OnComplete(() =>
+            WhenLanded(view, inside, () => view.Leave(_progressTarget.worldBound.center).OnComplete(() =>
             {
                 PunchProgress();
                 _items.Release(inside);
                 _leaving.Remove(view);
                 _pool.Release(view);
+            }));
+        }
+
+        // The last items of a basket may still be flying in when it ships (they wait for the basket to settle and
+        // then fly ~0.4 s), so the basket would leave empty and the items would land under the shelf. The wait is
+        // capped so a lost landing can't hold the basket forever.
+        private static void WhenLanded(BasketView view, List<ItemView> inside, Action leave)
+        {
+            if (inside.TrueForAll(item => item.HasLanded))
+            {
+                leave();
+                return;
+            }
+
+            var wait = DOTween.To(() => 0f, _ => { }, 1f, LandingWaitSeconds).SetId(view).SetTarget(view.Root);
+            wait.OnUpdate(() =>
+            {
+                if (inside.TrueForAll(item => item.HasLanded))
+                {
+                    wait.Kill();
+                    leave();
+                }
             });
+            wait.OnComplete(() => leave());
         }
 
         private void PunchProgress()
