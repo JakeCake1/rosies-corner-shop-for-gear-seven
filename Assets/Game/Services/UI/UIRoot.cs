@@ -8,7 +8,7 @@ namespace Game.Services.UI
     /// are opened by <see cref="UIService"/>, overlays are driven by <see cref="OverlayService"/>.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
-    public sealed class UIRoot : MonoBehaviour
+    public class UIRoot : MonoBehaviour
     {
         private const string BackgroundName = "background";
         private const string SafeName = "safe";
@@ -38,7 +38,7 @@ namespace Game.Services.UI
         private Vector2 _appliedPanelSize;
 
         /// <summary>Dimmed full-screen blocker kept right behind the top popup.</summary>
-        public VisualElement Blocker
+        public virtual VisualElement Blocker
         {
             get
             {
@@ -92,7 +92,7 @@ namespace Game.Services.UI
         /// </summary>
         /// <param name="layer">Layer.</param>
         /// <returns>The layer element.</returns>
-        public VisualElement GetLayer(UILayer layer)
+        public virtual VisualElement GetLayer(UILayer layer)
         {
             EnsureReady();
             switch (layer)

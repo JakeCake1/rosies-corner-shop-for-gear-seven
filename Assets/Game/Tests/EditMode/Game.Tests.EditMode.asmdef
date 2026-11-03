@@ -8,6 +8,7 @@
         "UniRx",
         "VContainer",
         "Unity.Addressables",
+        "Unity.ResourceManager",
         "Unity.Localization",
         "Unity.Localization.Editor",
         "UnityEngine.TestRunner",

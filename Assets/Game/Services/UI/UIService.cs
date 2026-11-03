@@ -69,9 +69,14 @@ namespace Game.Services.UI
                 _openGates.Add(type, gate);
             }
 
-            await gate.WaitAsync(ct);
+            // The view model belongs to the UI service from the call on: it is disposed here while no window entry
+            // owns it (cancelled or failed open), and by the window's close once the entry is on the stack.
+            OpenWindow entry = null;
+            var isGateHeld = false;
             try
             {
+                await gate.WaitAsync(ct);
+                isGateHeld = true;
                 var layout = await _assets.LoadAsync<VisualTreeAsset>(AddressPrefix + typeof(TWindow).Name, ct);
                 // Closed after the load, not before: two opens racing through the load (a double tap) would otherwise
                 // both find no window to replace and stack two copies.
@@ -87,22 +92,53 @@ namespace Game.Services.UI
                 window.Attach(element);
                 _root.GetLayer(window.Layer).Add(element);
 
-                var entry = new OpenWindow(window, viewModel);
+                entry = new OpenWindow(window, viewModel);
                 entry.CloseSubscription = window.CloseRequested.Subscribe(w => CloseAsync(w).Forget());
                 _stacks[window.Layer].Add(entry);
-                window.Bind(viewModel);
+                try
+                {
+                    window.Bind(viewModel);
+                }
+                catch
+                {
+                    // A half-bound window must not stay on the stack: it would keep the popup blocker up for good.
+                    Discard(entry);
+                    entry = null;
+                    throw;
+                }
+
                 UpdateBlocker();
                 // The window lives no longer than its opener: a dialog of an unloaded scene or a hidden screen must not
                 // stay on top of the next one (an open popup blocks input everywhere through IsPopupOpen).
                 entry.OpenerRegistration = ct.Register(() => CloseAsync(window).Forget());
-                await window.ShowAsync(_lifetimeToken);
-                // Tween cancellation completes the transition instead of throwing, so report it here.
-                ct.ThrowIfCancellationRequested();
+                try
+                {
+                    await window.ShowAsync(_lifetimeToken);
+                    // Tween cancellation completes the transition instead of throwing, so report it here.
+                    ct.ThrowIfCancellationRequested();
+                }
+                catch
+                {
+                    CloseAsync(window).Forget();
+                    throw;
+                }
+
                 return window;
+            }
+            catch
+            {
+                if (entry == null)
+                {
+                    viewModel.Dispose();
+                }
+                throw;
             }
             finally
             {
-                gate.Release();
+                if (isGateHeld)
+                {
+                    gate.Release();
+                }
             }
         }
 
@@ -201,6 +237,16 @@ namespace Game.Services.UI
             {
                 _root.Blocker.UnregisterCallback(_onBlockerClicked);
             }
+        }
+
+        private void Discard(OpenWindow entry)
+        {
+            _stacks[entry.Window.Layer].Remove(entry);
+            entry.CloseSubscription?.Dispose();
+            entry.Window.Root.RemoveFromHierarchy();
+            entry.Window.Release();
+            entry.ViewModel.Dispose();
+            UpdateBlocker();
         }
 
         private void UpdateBlocker()
