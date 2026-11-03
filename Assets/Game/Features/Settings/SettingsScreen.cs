@@ -117,8 +117,17 @@ namespace Game.Features.Settings
             // On the home screen the reset comes first so the reloaded home shows the fresh profile.
             if (isInLevel)
             {
-                await _flow.GoHomeAsync();
-                _profile.ResetProgress();
+                try
+                {
+                    await _flow.GoHomeAsync();
+                }
+                finally
+                {
+                    // The player confirmed the reset: it happens even if the way home fails or is cancelled. The home
+                    // screen decides its milestones after a delay, so it sees the fresh profile.
+                    _profile.ResetProgress();
+                }
+
                 return;
             }
 

@@ -180,6 +180,14 @@ def main():
     assert out.strip() == "", out
     out = wf("hook", "guard", inp=json.dumps({"tool_name": "Bash", "tool_input": {"command": "gh pr merge 3 --squash"}}))
     assert '"deny"' in out
+    # Unity MCP: read-only calls pass without an attempt, edits are denied
+    for tool, tin, denied in [("mcp__UnityMCP__read_console", {"action": "get"}, False),
+                              ("mcp__UnityMCP__manage_scene", {"action": "get_hierarchy"}, False),
+                              ("mcp__UnityMCP__manage_asset", {"action": "search"}, False),
+                              ("mcp__UnityMCP__manage_scene", {"action": "save"}, True),
+                              ("mcp__UnityMCP__create_script", {"path": "A.cs"}, True)]:
+        out = wf("hook", "guard", inp=json.dumps({"tool_name": tool, "tool_input": tin}))
+        assert ('"deny"' in out) == denied, (tool, tin, out)
     hook("session-start", t1, "sess1")  # session start alone changes nothing
     assert Fake.state["transitions"] == [] and not os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
 
@@ -267,8 +275,14 @@ def main():
     assert "draft marked ready for review" in out and Fake.state["issue_state"] == "s-rev", out
     assert not json.load(open(env["FAKE_GH_DB"]))[0]["isDraft"]
     assert "queued" in out, out
+    assert out.strip().splitlines()[-1] == "HANDOFF DONE", out
     assert os.path.exists(os.path.join(repo, ".agent-workflow/outbox", attempt1 + ".json"))
     assert not os.path.exists(os.path.join(repo, ".agent-workflow/active.json"))
+    # a pointer that survives for a closed attempt is dropped, not reported as an active attempt
+    active_path = os.path.join(repo, ".agent-workflow/active.json")
+    json.dump({"attempt_id": attempt1, "issue": "EVG-12"}, open(active_path, "w"))
+    assert "No active implementation attempt" in hook("session-start", t1, "sess1")
+    assert not os.path.exists(active_path)
     # usage after handoff does not belong to the closed attempt
     with open(t2, "a") as f:
         f.write(reply_line("late", now(), out=999))
@@ -307,6 +321,7 @@ def main():
     real_db = env["FAKE_GH_DB"]
     env["FAKE_GH_DB"] = "/nonexistent/dir/prs.json"
     out = wf("handoff", ok=False)
+    assert "HANDOFF NOT FINISHED at step pr" in out, out
     assert Fake.state["issue_state"] == "s-prog", "status must not change when the PR step fails"
     env["FAKE_GH_DB"] = real_db
     out = wf("handoff")

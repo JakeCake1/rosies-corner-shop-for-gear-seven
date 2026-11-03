@@ -87,6 +87,11 @@ installed and its generated files (`ledger.jsonl`, `otel/`, `usage_summary.json`
    `Tools/Workflow/templates/`.
 5. **Merge → Done automation**: GitHub → repository → Settings → Secrets and variables → Actions → new secret
    `LINEAR_API_KEY`. The action works once the workflow file is on `main`. Optional variable for a different Done name: set `LINEAR_DONE_STATUS` in the workflow file.
+   The secret is per repository: if the repository is recreated, renamed or transferred, add it again, otherwise
+   every merged PR from the repository itself fails the `Linear - Done on merge` job with
+   `LINEAR_API_KEY secret is not set; the issue was NOT moved to Done` (a red job, not a silent skip). Only PRs
+   from forks, which never get secrets, are skipped. After adding the secret, re-run the failed jobs under
+   Actions, or move the issues to Done by hand.
    If Linear's own GitHub integration is also enabled, both are fine together: the action skips issues that are
    already Done.
 6. Optional, for batch-mode tests in `/handoff`: set `UNITY_EDITOR` to the Unity 6000.3.25f1 executable. While the
