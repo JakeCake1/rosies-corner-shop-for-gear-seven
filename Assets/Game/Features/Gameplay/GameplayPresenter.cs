@@ -108,6 +108,8 @@ namespace Game.Features.Gameplay
         private async UniTaskVoid StartLevelAsync(int level, StartBoosters startBoosters)
         {
             _lifetime.Reset();
+            // Together with the level token: a tip queued during the sprite load must not start a loop of its own.
+            _coach.Reset();
             var token = _lifetime.LevelToken;
             _context.Services.Dialogs.CloseAllAsync().Forget();
             var prepared = _context.Session.Prepare(level);
@@ -119,7 +121,6 @@ namespace Game.Features.Gameplay
                 return;
             }
 
-            _coach.Reset();
             _idle.Touch();
             _context.Session.Start(startBoosters);
             _context.Services.Overlay.SetBackground(_context.Session.IsTricky, false);

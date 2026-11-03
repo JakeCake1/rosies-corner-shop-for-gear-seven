@@ -24,7 +24,8 @@ namespace Game.Features.Gameplay.Session
     /// </summary>
     /// <remarks>
     /// Scene-scoped (gameplay scope). Delays run on UniTask with a token that is cancelled on restart, undo and
-    /// dispose, so a stale shipment never touches a new state (the prototype's <c>epoch</c>).
+    /// dispose, and on <see cref="Prepare"/> and <see cref="Start"/> (the sprite load between them), so a stale
+    /// shipment never touches a new state (the prototype's <c>epoch</c>).
     /// </remarks>
     public sealed class LevelSession : IDisposable
     {
@@ -147,16 +148,17 @@ namespace Game.Features.Gameplay.Session
         }
 
         /// <summary>
-        /// Generates a level without showing it; the level in play is not touched. Call <see cref="Start"/> next,
-        /// after the sprites of <see cref="LevelItemTypes.Of"/> the returned state are loaded.
+        /// Generates a level without showing it and retires the level in play: its pending shipments and loss delay
+        /// are cancelled and it ignores taps (<see cref="IsOver"/>), so nothing of it can pay a win or block a basket
+        /// while the sprites load. Call <see cref="Start"/> next, after the sprites of
+        /// <see cref="LevelItemTypes.Of"/> the returned state are loaded.
         /// </summary>
         /// <param name="level">1-based level number in the active curve.</param>
         /// <returns>The generated level.</returns>
         public LevelState Prepare(int level)
         {
-            // The old level is replaced from here on: its pending shipments and loss delay must not outlive the
-            // (possibly long) sprite loading that sits between Prepare and Start.
             ResetEpoch();
+            IsOver = true;
             _preparedDefinition = _curves.Get(level);
             var generator = new LevelGenerator(_content.Catalog.Items, _content.Catalog.Families);
             _prepared = generator.Generate(level, _preparedDefinition, new HashSet<int>(_album.Found));
@@ -175,6 +177,9 @@ namespace Game.Features.Gameplay.Session
                 throw new InvalidOperationException($"Call {nameof(Prepare)} before {nameof(Start)}.");
             }
 
+            // Anything scheduled since Prepare (a Tidy Up or extra basket used during the load) belongs to the old
+            // level; basket ids restart at 1 every level, so a leftover id would block the new level's basket.
+            ResetEpoch();
             _hasGrantedWinReward = false;
             Definition = _preparedDefinition;
             State = _prepared;
@@ -515,6 +520,7 @@ namespace Game.Features.Gameplay.Session
                 if (basket == null || basket.Id != basketId)
                 {
                     _pendingShips--;
+                    CheckEnd();
                     return;
                 }
 

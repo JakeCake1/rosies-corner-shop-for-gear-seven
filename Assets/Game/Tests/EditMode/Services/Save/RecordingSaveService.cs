@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -32,6 +33,17 @@ namespace Game.Tests.EditMode.Services.Save
             return UniTask.CompletedTask;
         }
 
-        public void Save(IProfileChunk chunk) => Saved.Add(chunk.Key);
+        /// <summary>Key of a chunk whose synchronous save throws; null for none.</summary>
+        public string ThrowingKey;
+
+        public void Save(IProfileChunk chunk)
+        {
+            if (chunk.Key == ThrowingKey)
+            {
+                throw new InvalidOperationException($"Cannot serialize '{chunk.Key}'.");
+            }
+
+            Saved.Add(chunk.Key);
+        }
     }
 }

@@ -144,9 +144,14 @@ namespace Game.Features.Gameplay.Coach
             var ct = _context.LevelToken;
             try
             {
-                while (_tipQueue.Count > 0)
+                while (generation == _tipGeneration && _tipQueue.Count > 0)
                 {
                     await UniTask.WaitUntil(() => !_context.Services.UI.IsPopupOpen, cancellationToken: ct);
+                    if (generation != _tipGeneration || _tipQueue.Count == 0)
+                    {
+                        break;
+                    }
+
                     var (id, text, anchor, isAbove) = _tipQueue.Dequeue();
                     _context.Services.Onboarding.MarkTipSeen(id);
                     _context.Services.Overlay.Coach(text, anchor, isAbove, TipSeconds);

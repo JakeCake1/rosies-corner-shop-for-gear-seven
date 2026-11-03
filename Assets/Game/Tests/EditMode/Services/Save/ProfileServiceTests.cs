@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Game.Services.Experiments;
 using Game.Services.Save;
 using Game.Services.Settings;
 using Game.Services.Wallet;
 using NUnit.Framework;
 using UniRx;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Game.Tests.EditMode.Services.Save
 {
@@ -51,6 +54,19 @@ namespace Game.Tests.EditMode.Services.Save
             Assert.That(_settings.IsMusicOn, Is.False);
             Assert.That(_experiments.LossOffer, Is.EqualTo("slot"));
             Assert.That(_save.Storage.Deleted, Does.Contain(SaveService.LegacyKey));
+        }
+
+        [Test]
+        public void SaveAll_WhenOneChunkThrows_SavesTheOthers()
+        {
+            _profile.Load();
+            _save.Saved.Clear();
+            _save.ThrowingKey = _wallet.Key;
+            LogAssert.Expect(LogType.Error, new Regex($"Saving chunk '{_wallet.Key}' failed"));
+
+            Assert.DoesNotThrow(() => _profile.SaveAll());
+
+            Assert.That(_save.Saved, Is.EquivalentTo(new[] { _settings.Key, _experiments.Key }));
         }
 
         [Test]

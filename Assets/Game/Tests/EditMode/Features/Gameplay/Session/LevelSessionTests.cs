@@ -302,6 +302,31 @@ namespace Game.Tests.EditMode.Features.Gameplay.Session
             Assert.That(_session.Tap(FindWantedJar().Id), Is.False);
         }
 
+        [Test]
+        public void Tap_BetweenPrepareAndStart_IsIgnored()
+        {
+            StartLevel();
+            var wanted = FindWantedJar();
+
+            _session.Prepare(1);
+
+            Assert.That(_session.IsOver, Is.True);
+            Assert.That(_session.Tap(wanted.Id), Is.False);
+            Assert.That(_session.State.Moves, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Start_AfterPrepare_ReopensTheLevel()
+        {
+            StartLevel();
+            _session.Prepare(1);
+
+            _session.Start(null);
+
+            Assert.That(_session.IsOver, Is.False);
+            Assert.That(_session.Tap(FindWantedJar().Id), Is.True);
+        }
+
         [UnityTest]
         public IEnumerator Finish_WhenNoMoveCanHelp_LosesAndMarksLevelFailed() => UniTask.ToCoroutine(async () =>
         {

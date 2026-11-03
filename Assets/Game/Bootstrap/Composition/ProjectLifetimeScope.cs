@@ -82,6 +82,7 @@ namespace Game.Bootstrap.Composition
 
             builder.RegisterComponentOnNewGameObject<AppLifecycleListener>(Lifetime.Singleton, "[AppLifecycle]")
                 .DontDestroyOnLoad();
+            builder.RegisterEntryPoint<FlowFailureRecovery>();
             builder.RegisterEntryPoint<GameEntryPoint>();
         }
 

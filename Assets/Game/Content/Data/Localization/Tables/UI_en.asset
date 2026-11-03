@@ -749,6 +749,18 @@ MonoBehaviour:
     m_Localized: '+1'
     m_Metadata:
       m_Items: []
+  - m_Id: 822792373
+    m_Localized: 'Something went wrong'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792374
+    m_Localized: 'The game couldn''t load. Check your connection and try again.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792375
+    m_Localized: 'Try again'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

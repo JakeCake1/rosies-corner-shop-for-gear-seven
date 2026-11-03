@@ -731,6 +731,18 @@ MonoBehaviour:
     m_Key: gameplay.back_mark
     m_Metadata:
       m_Items: []
+  - m_Id: 822792373
+    m_Key: flow.error_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792374
+    m_Key: flow.error_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 822792375
+    m_Key: flow.error_retry
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

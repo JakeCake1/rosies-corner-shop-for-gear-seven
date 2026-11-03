@@ -214,6 +214,8 @@ namespace Game.Tests.EditMode.Features.Settings
             {
             }
 
+            public Vector2 PanelPoint(Vector2 fraction) => fraction;
+
             public void Burst(Vector2 panelPosition, EffectKind kind, int count, Color[] colors = null)
             {
             }

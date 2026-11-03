@@ -43,6 +43,14 @@ namespace Game.Services.UI
         void ClearCoach();
 
         /// <summary>
+        /// Converts a fraction of the screen to panel space, for effects that don't come from an element.
+        /// Screen pixels are not panel space: the panel scales with the screen size.
+        /// </summary>
+        /// <param name="fraction">(0,0) is the top left corner, (1,1) the bottom right.</param>
+        /// <returns>The point in panel space.</returns>
+        Vector2 PanelPoint(Vector2 fraction);
+
+        /// <summary>
         /// Bursts particles.
         /// </summary>
         /// <param name="panelPosition">Origin in panel space (<c>worldBound.center</c> of an element).</param>
