@@ -26,3 +26,6 @@
 /.agent-workflow/
 /.claude/settings.local.json
 __pycache__/
+/Tools/Langfuse/ledger.jsonl
+/Tools/Langfuse/otel/
+/Tools/Langfuse/usage_summary.json

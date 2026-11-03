@@ -648,7 +648,10 @@ def run_checks(cfg, reported):
             results.append({"name": name, "status": "failed", "detail": f"could not run: {e}"})
     for text in reported or []:
         name, _, detail = text.partition(":")
-        status = "failed" if re.search(r"\bfail", detail, re.I) else "reported"
+        # "0 failed" / "failures: 0" are passing summaries; only a non-zero count or a bare "fail" word is a failure
+        cleaned = re.sub(r"\b0+\s+(?:failed|failures?|errors?)\b|\b(?:failed|failures?|errors?)\s*[:=]\s*0+\b",
+                         "", detail, flags=re.I)
+        status = "failed" if re.search(r"\bfail", cleaned, re.I) else "reported"
         results.append({"name": name.strip(), "status": status, "detail": detail.strip() + " (reported by agent)"})
     return results
 
@@ -955,7 +958,7 @@ def hook_guard(data):
     cfg = load_config()
     tool = data.get("tool_name", "")
     tin = data.get("tool_input") or {}
-    if tool == "Bash":
+    if tool in ("Bash", "PowerShell"):
         cmd = tin.get("command", "")
         if re.search(r"\bgh\s+pr\s+merge\b", cmd) or re.search(r"\bgh\s+api\b.*\/merge\b", cmd):
             return deny("Merging is never automatic in this workflow; the user merges PRs on GitHub.")
@@ -963,7 +966,7 @@ def hook_guard(data):
             return deny(f"Force-pushing {cfg['git']['base']} is not allowed.")
         return
     path = tin.get("file_path") or tin.get("notebook_path") or tin.get("path") or ""
-    rel = "Assets/" if tool.startswith("mcp__") else rel_path(path)  # Unity MCP script tools edit Assets/
+    rel = "Assets/" if tool.lower().startswith("mcp__unitymcp__") else rel_path(path)  # Unity MCP script tools edit Assets/
     if any(rel.startswith(p) for p in cfg["guarded_paths"]) and not active_attempt():
         deny(f"No active implementation attempt. Changes to {rel} are implementation work: identify the Linear "
              f"issue and run /impl-start <ISSUE-ID> first (discussion and planning need no attempt).")
