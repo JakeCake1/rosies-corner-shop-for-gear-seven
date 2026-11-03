@@ -70,11 +70,16 @@ def main():
         return
     key, token, repo = os.environ.get("LINEAR_API_KEY"), os.environ["GITHUB_TOKEN"], os.environ["GITHUB_REPOSITORY"]
     head_repo = ((pr.get("head") or {}).get("repo") or {}).get("full_name")
-    if not key and head_repo and head_repo != repo:
-        print("PR from a fork: repository secrets are not available, nothing to do")
+    if not key and head_repo != repo:
+        # A fork PR (or one whose fork was deleted, head.repo is null) never gets repository secrets. A PR from
+        # this repository does, so a missing key there is a setup error and must fail loudly (see below).
+        print("PR from a fork or a deleted fork: repository secrets are not available, nothing to do")
         return
     if not key:
-        sys.exit("LINEAR_API_KEY secret is not set")
+        print(f"::error title=LINEAR_API_KEY is missing::This PR is from {repo} itself, so the secret should be "
+              f"available. Add the LINEAR_API_KEY repository secret (Settings > Secrets and variables > Actions; "
+              f"a renamed or recreated repository does not keep secrets) and re-run this job. Docs/agent-workflow.md.")
+        sys.exit("LINEAR_API_KEY secret is not set; the issue was NOT moved to Done")
     done_name = os.environ.get("LINEAR_DONE_STATUS", "Done")
     ids = issue_ids(pr["head"]["ref"], pr["title"])
     if not ids:
