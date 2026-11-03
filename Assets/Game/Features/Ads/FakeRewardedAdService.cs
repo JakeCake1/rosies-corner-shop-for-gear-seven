@@ -38,7 +38,12 @@ namespace Game.Features.Ads
                 ProgressCaption = _texts.Get(AdsTexts.Playing),
             };
             var shown = _dialogs.ShowAsync(card, ct);
-            await UniTask.Delay(AdMilliseconds, true, cancellationToken: ct);
+            var first = await UniTask.WhenAny(shown, UniTask.Delay(AdMilliseconds, true, cancellationToken: ct));
+            if (first == 0)
+            {
+                return false;
+            }
+
             card.Close();
             await shown;
             return true;

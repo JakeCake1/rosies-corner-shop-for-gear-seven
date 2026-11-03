@@ -50,7 +50,6 @@ namespace Game.Flow.States
             DOTween.Init(false, true).SetCapacity(TweenCapacity, SequenceCapacity);
             await _assets.InitializeAsync(ct);
             await UniTask.WhenAll(_content.LoadAsync(ct), _audio.LoadAsync(ct));
-            await _content.LoadAsync(ct);
             await _localization.InitializeAsync(ct);
             _states.Enter<LoadProgressState>(ct).Forget();
         }

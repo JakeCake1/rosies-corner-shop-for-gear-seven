@@ -15,9 +15,8 @@ namespace Game.Tests.EditMode.Features.Gameplay
     {
         public static readonly string[] Families = { "dairy", "bakery", "drink", "pantry", "sweet", "fresh", "home" };
 
-        private static List<ItemDefinition> _items;
-
-        public static List<ItemDefinition> Items => _items ?? (_items = LoadItems());
+        // A fresh list per access: tests may mutate it and must not share state.
+        public static List<ItemDefinition> Items => LoadItems();
 
         public static List<LevelDefinition> Curve(string file)
         {

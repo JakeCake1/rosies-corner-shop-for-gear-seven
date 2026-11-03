@@ -42,7 +42,7 @@ namespace Game.Tests.EditMode.Configs
         [Test]
         public void Configs_Exist()
         {
-            Assert.That(AssetDatabase.FindAssets("t:ItemCatalog"), Is.Not.Empty, "no ItemCatalog asset; run Tools/Rosie/Build Project");
+            Assert.That(AssetDatabase.FindAssets("t:ItemCatalog"), Is.Not.Empty, "no ItemCatalog asset in the project");
             Assert.That(AssetDatabase.FindAssets("t:LevelCurveConfig").Length, Is.EqualTo(2), "expected the New 20 and Original 10 curves");
             Assert.That(AssetDatabase.FindAssets("t:AudioLibrary").Length, Is.EqualTo(1), "expected one AudioLibrary at config/audio");
             Assert.That(AssetDatabase.FindAssets("t:GameBalanceConfig").Length, Is.EqualTo(1), "expected one GameBalanceConfig");

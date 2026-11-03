@@ -48,9 +48,11 @@ namespace Game.Flow
                 }
             }
 
-            _request.Level = level;
-            _request.StartBoosters = startBoosters ?? StartBoosters.None;
-            await _states.Enter<GameplayState>(_lifetimeToken);
+            await _states.Enter<GameplayState>(_lifetimeToken, () =>
+            {
+                _request.Level = level;
+                _request.StartBoosters = startBoosters ?? StartBoosters.None;
+            });
         }
 
         /// <inheritdoc/>

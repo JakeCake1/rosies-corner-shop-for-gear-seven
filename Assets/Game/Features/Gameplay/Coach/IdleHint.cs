@@ -13,6 +13,7 @@ namespace Game.Features.Gameplay.Coach
     {
         private readonly GameplayContext _context;
         private float _lastActionTime;
+        private bool _isHintShown;
 
         /// <summary>
         /// Creates the hint.
@@ -29,24 +30,33 @@ namespace Game.Features.Gameplay.Coach
         public void Touch()
         {
             _lastActionTime = Time.unscaledTime;
+            if (_isHintShown)
+            {
+                _isHintShown = false;
+                _context.Board.SetHint(0);
+            }
         }
 
         /// <summary>
-        /// Shows the best move once the player has been idle long enough; then waits another idle period.
+        /// Shows the best move once the player has been idle long enough; it stays lit until the next <see cref="Touch"/>.
         /// </summary>
         public void Tick()
         {
-            if (!IsAllowed() || Time.unscaledTime - _lastActionTime < _context.Services.Balance.HintIdleSeconds)
+            if (_isHintShown || !IsAllowed() || Time.unscaledTime - _lastActionTime < _context.Services.Balance.HintIdleSeconds)
             {
                 return;
             }
 
-            _lastActionTime = Time.unscaledTime;
             var hint = _context.Session.BestHint();
-            if (hint != null)
+            if (hint == null)
             {
-                _context.Board.SetHint(hint.Id);
+                // Nothing to show: wait another idle period before looking again.
+                _lastActionTime = Time.unscaledTime;
+                return;
             }
+
+            _isHintShown = true;
+            _context.Board.SetHint(hint.Id);
         }
 
         private bool IsAllowed()

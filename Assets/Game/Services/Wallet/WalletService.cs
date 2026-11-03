@@ -24,7 +24,8 @@ namespace Game.Services.Wallet
                 return;
             }
 
-            Data.Coins += amount;
+            // Saturates instead of wrapping into negative coins.
+            Data.Coins = (int)System.Math.Min((long)Data.Coins + amount, int.MaxValue);
             Commit();
         }
 
@@ -49,7 +50,12 @@ namespace Game.Services.Wallet
         }
 
         /// <inheritdoc/>
-        protected override void OnRestored() => _coins.Value = Data.Coins;
+        protected override void OnRestored()
+        {
+            // A hand-edited or corrupted save must not give the player negative coins.
+            Data.Coins = System.Math.Max(0, Data.Coins);
+            _coins.Value = Data.Coins;
+        }
 
         private void Commit()
         {
