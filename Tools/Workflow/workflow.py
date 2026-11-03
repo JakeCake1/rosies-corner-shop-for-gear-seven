@@ -225,11 +225,15 @@ def active_attempt():
     attempt = read_json(attempt_path(active["attempt_id"]))
     if attempt and attempt.get("ended_at"):
         # Closed by a handoff or abandon but the pointer survived (interrupted command, other checkout): drop it.
+        # Lock is not reentrant and callers may hold it, so re-read right before removing: a concurrent /impl-start
+        # that already replaced the pointer must keep its new one.
         try:
-            os.remove(ACTIVE_FILE)
-        except OSError:
+            current = read_json(ACTIVE_FILE)
+            if current and current.get("attempt_id") == active["attempt_id"]:
+                os.remove(ACTIVE_FILE)
+                log(f"removed stale active.json for closed attempt {active['attempt_id']}")
+        except (OSError, ValueError):
             pass
-        log(f"removed stale active.json for closed attempt {active['attempt_id']}")
         return None
     return attempt
 
@@ -1019,7 +1023,11 @@ UNITY_READONLY_TOOLS = {"read_console", "find_gameobjects", "find_in_file", "get
                         "get_test_job", "debug_request_context", "unity_docs", "unity_reflect",
                         "manage_script_capabilities"}
 UNITY_READONLY_ACTION = re.compile(r"^(get|list|find|read|search|query|inspect|describe|info|status|check|"
-                                   r"validate|stats|view|show|preview|screenshot|capture)(?![a-z])", re.I)
+                                   r"validate|stats|view|show|preview)(?![a-z])", re.I)
+# Any action that also names a write (`get_or_create`, `get_and_set`) or may write files (`screenshot`, `capture`)
+# is not read-only, whatever it starts with.
+UNITY_WRITEISH_ACTION = re.compile(r"(create|set|add|remove|delete|write|save|apply|modify|update|import|generate|"
+                                   r"execute|run|build|screenshot|capture|record|bake|or_)", re.I)
 
 
 def is_unity_mcp_readonly(tool, tin):
@@ -1028,7 +1036,8 @@ def is_unity_mcp_readonly(tool, tin):
     if name in UNITY_READONLY_TOOLS:
         return True
     action = str(tin.get("action") or "").strip()
-    return bool(action) and bool(UNITY_READONLY_ACTION.match(action))
+    return (bool(action) and bool(UNITY_READONLY_ACTION.match(action))
+            and not UNITY_WRITEISH_ACTION.search(action))
 
 
 def hook_guard(data):
