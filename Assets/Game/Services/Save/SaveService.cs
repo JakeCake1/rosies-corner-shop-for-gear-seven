@@ -83,6 +83,8 @@ namespace Game.Services.Save
             var backup = TryParse(chunk, ReadSafely(key, true), out var backupError);
             if (backup != null)
             {
+                // The data is in hand, so the chunk is safe to save again even if the main file was unreadable.
+                _readOnly.Remove(key);
                 chunk.Restore(backup);
                 return true;
             }
@@ -121,7 +123,8 @@ namespace Game.Services.Save
                 }
             }
 
-            if (TryWriteAll(chunks) && isComplete)
+            var isWritten = TryWriteAll(chunks, out var isSkipped);
+            if (isWritten && isComplete && !isSkipped)
             {
                 TryDeleteLegacy();
             }
@@ -332,15 +335,24 @@ namespace Game.Services.Save
             return null;
         }
 
-        private bool TryWriteAll(IReadOnlyList<IProfileChunk> chunks)
+        private bool TryWriteAll(IReadOnlyList<IProfileChunk> chunks, out bool isSkipped)
         {
+            isSkipped = false;
             // One-time migration at startup: written synchronously so the old file is deleted only after every
             // chunk is safely on disk.
             try
             {
                 foreach (var chunk in chunks)
                 {
-                    _storage.Write(StorageKey(chunk), Serialize(chunk));
+                    var key = StorageKey(chunk);
+                    if (_readOnly.Contains(key))
+                    {
+                        // Its stored file is unreadable, not missing: the old profile must not overwrite it.
+                        isSkipped = true;
+                        continue;
+                    }
+
+                    _storage.Write(key, Serialize(chunk));
                 }
 
                 return true;
@@ -360,7 +372,8 @@ namespace Game.Services.Save
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
-                // The chunk files exist now, so the old profile is never read again; only the clutter stays.
+                // Every chunk file exists now (or is skipped as unreadable); a chunk that later goes missing would be
+                // refilled from this file, so it stays a leftover to clean up.
                 Debug.LogError("The old profile could not be deleted: " + e.Message);
             }
         }

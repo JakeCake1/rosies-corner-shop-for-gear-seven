@@ -146,6 +146,39 @@ namespace Game.Tests.EditMode.Services.Save
         }
 
         [Test]
+        public void Save_WhenMainFileUnreadableButBackupLoads_IsSaved()
+        {
+            _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"from backup\"}";
+            _storage.HasReadFailure = true;
+            LogAssert.Expect(LogType.Error, new Regex("could not be read"));
+
+            var isLoaded = _service.TryLoad(_chunk);
+            _storage.HasReadFailure = false;
+            _chunk.Set("progress", 5);
+            _service.Save(_chunk);
+
+            Assert.That(isLoaded, Is.True);
+            Assert.That(_storage.Main[TestKey], Does.Contain("progress"));
+        }
+
+        [Test]
+        public void TryMigrateLegacy_WhenChunkIsReadOnly_DoesNotOverwriteItAndKeepsOldFile()
+        {
+            _storage.Main[SaveService.LegacyKey] = "{ \"version\": 1, \"name\": \"stale\" }";
+            _storage.HasReadFailure = true;
+            LogAssert.Expect(LogType.Error, new Regex("could not be read"));
+            _service.TryLoad(_chunk);
+            _storage.HasReadFailure = false;
+            _storage.Main[TestKey] = "{\"version\":2,\"name\":\"real progress\"}";
+
+            var isMigrated = _service.TryMigrateLegacy(new IProfileChunk[] { _chunk });
+
+            Assert.That(isMigrated, Is.True);
+            Assert.That(_storage.Main[TestKey], Does.Contain("real progress"));
+            Assert.That(_storage.Deleted, Is.Empty);
+        }
+
+        [Test]
         public void TryMigrateLegacy_WhenOldProfileIsNotJson_ReturnsFalse()
         {
             _storage.Main[SaveService.LegacyKey] = "{ broken";
