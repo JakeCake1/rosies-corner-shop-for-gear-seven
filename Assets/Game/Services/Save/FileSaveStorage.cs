@@ -53,11 +53,12 @@ namespace Game.Services.Save
                 {
                     // Some platforms lack File.Replace: keep the backup by hand, then move.
                     File.Copy(main, backup, true);
-                    File.Delete(main);
                 }
             }
 
-            File.Move(temp, main);
+            // Overwrite instead of delete-then-move: a crash in between leaves the previous main, not only the temp.
+            File.Copy(temp, main, true);
+            File.Delete(temp);
         }
 
         /// <inheritdoc/>

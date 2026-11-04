@@ -33,11 +33,12 @@ namespace Game.Bootstrap.Composition
                 return;
             }
 
+            // Audio first: a failing save must not leave the music playing in the background.
+            _audio.SetPaused(isPaused);
             if (isPaused)
             {
                 _profile.SaveAll();
             }
-            _audio.SetPaused(isPaused);
         }
 
         private void OnApplicationFocus(bool hasFocus)

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Game.Features.Gameplay.Coach;
 using Game.Features.Gameplay.Hud;
@@ -6,7 +7,9 @@ using Game.Features.Gameplay.Offers;
 using Game.Features.Gameplay.Results;
 using Game.Features.Gameplay.Session;
 using Game.Services.Flow;
+using Game.Services.UI.Dialogs;
 using UniRx;
+using UnityEngine;
 using VContainer.Unity;
 
 namespace Game.Features.Gameplay
@@ -108,18 +111,30 @@ namespace Game.Features.Gameplay
         private async UniTaskVoid StartLevelAsync(int level, StartBoosters startBoosters)
         {
             _lifetime.Reset();
+            // Together with the level token: a tip queued during the sprite load must not start a loop of its own.
+            _coach.Reset();
             var token = _lifetime.LevelToken;
             _context.Services.Dialogs.CloseAllAsync().Forget();
             var prepared = _context.Session.Prepare(level);
             // Item sprites live in per-level Addressables groups: load this level's before it is drawn.
-            await _context.Services.Content.LoadItemSpritesAsync(LevelItemTypes.Of(prepared), token);
+            try
+            {
+                await _context.Services.Content.LoadItemSpritesAsync(LevelItemTypes.Of(prepared), token);
+            }
+            catch (Exception e) when (!(e is OperationCanceledException))
+            {
+                // The old board is already retired by Prepare; without a way out the player would stare at it.
+                Debug.LogException(e);
+                OfferRetryAsync(level, startBoosters, token).Forget();
+                return;
+            }
+
             if (token.IsCancellationRequested)
             {
                 // A newer start (restart, next level) replaced this one while its sprites loaded.
                 return;
             }
 
-            _coach.Reset();
             _idle.Touch();
             _context.Session.Start(startBoosters);
             _context.Services.Overlay.SetBackground(_context.Session.IsTricky, false);
@@ -128,6 +143,18 @@ namespace Game.Features.Gameplay
             _banner.Show();
             _gifts.OnLevelStarted();
             _coach.OnLevelStarted();
+        }
+
+        private async UniTaskVoid OfferRetryAsync(int level, StartBoosters startBoosters, CancellationToken token)
+        {
+            var texts = _context.Services.Texts;
+            var dialog = new DialogViewModel(texts.Get(GameplayTexts.LoadFailedTitle), RibbonStyle.Berry)
+            {
+                Text = texts.Get(GameplayTexts.LoadFailedText),
+            };
+            dialog.Buttons.Add(new DialogButton(texts.Get(GameplayTexts.LoadFailedRetry), ButtonStyle.Green,
+                () => StartLevelAsync(level, startBoosters).Forget()));
+            await _context.Services.Dialogs.ShowAsync(dialog, token).SuppressCancellationThrow();
         }
 
         private void OnChanged(BoardChange change)
@@ -143,6 +170,7 @@ namespace Game.Features.Gameplay
             }
 
             _boosterBar.Refresh();
+            _idle.Refresh();
         }
 
         private void OnItemTapped(int jarId)

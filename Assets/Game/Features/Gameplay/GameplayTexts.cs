@@ -89,6 +89,15 @@ namespace Game.Features.Gameplay
         /// <summary>English: "The counter is full".</summary>
         internal const string CounterFull = "gameplay.counter_full";
 
+        /// <summary>English: "Something went wrong".</summary>
+        internal const string LoadFailedTitle = "gameplay.load_failed_title";
+
+        /// <summary>English: "The level couldn't load. Try again.".</summary>
+        internal const string LoadFailedText = "gameplay.load_failed_text";
+
+        /// <summary>English: "Try again".</summary>
+        internal const string LoadFailedRetry = "gameplay.load_failed_retry";
+
         /// <summary>English: "Only one spot left!".</summary>
         internal const string OneSpotLeft = "gameplay.one_spot_left";
 

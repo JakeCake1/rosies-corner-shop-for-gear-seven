@@ -221,7 +221,8 @@ namespace Game.Features.Gameplay.Board
                 return;
             }
 
-            var wait = DOTween.To(() => 0f, _ => { }, 1f, LandingWaitSeconds).SetId(view).SetTarget(view.Root);
+            var wait = DOTween.To(() => 0f, _ => { }, 1f, LandingWaitSeconds).SetId(view).SetTarget(view.Root)
+                .SetUpdate(true);
             wait.OnUpdate(() =>
             {
                 if (inside.TrueForAll(item => item.HasLanded))

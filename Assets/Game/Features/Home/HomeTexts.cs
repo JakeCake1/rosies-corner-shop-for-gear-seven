@@ -27,6 +27,9 @@ namespace Game.Features.Home
         /// <summary>English: "Level {0}". Arguments: {0} next level number.</summary>
         internal const string PlayLine = "home.play_line";
 
+        /// <summary>English: "9+".</summary>
+        internal const string AlbumBadgeMax = "home.album_badge_max";
+
         /// <summary>English: "Level {0} · Tricky · Rewards ×2". Arguments: {0} next level number.</summary>
         internal const string PlayLineTricky = "home.play_line_tricky";
 

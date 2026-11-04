@@ -143,7 +143,7 @@ namespace Game.Features.Home
             _isPlayTricky.Value = hard;
             var isOpen = curve.IsOriginal || _progress.Levels.IsCompleted(_balance.AlbumFromLevel);
             _isAlbumLocked.Value = !isOpen;
-            _albumBadge.Value = isOpen && album.NewCount > 0 ? (album.NewCount > 9 ? "9+" : album.NewCount.ToString()) : string.Empty;
+            _albumBadge.Value = isOpen && album.NewCount > 0 ? (album.NewCount > 9 ? _texts.Get(HomeTexts.AlbumBadgeMax) : album.NewCount.ToString()) : string.Empty;
             _isAlbumPulsing.Value = isOpen && !_progress.Onboarding.HasFlag(Flags.AlbumOpened);
             var ids = album.Found.Count >= ShowcaseSize
                 ? album.Found.Skip(album.Found.Count - ShowcaseSize).ToList()

@@ -53,6 +53,9 @@ namespace Game.Services.UI
         public void ClearCoach() => _root.Coach.Clear();
 
         /// <inheritdoc/>
+        public Vector2 PanelPoint(Vector2 fraction) => _root.Effects.PanelPoint(fraction);
+
+        /// <inheritdoc/>
         public void Burst(Vector2 panelPosition, EffectKind kind, int count, Color[] colors = null) =>
             _root.Effects.Burst(panelPosition, kind, count, colors);
 

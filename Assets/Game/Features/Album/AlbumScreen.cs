@@ -59,7 +59,6 @@ namespace Game.Features.Album
         /// <inheritdoc/>
         public async UniTask IntroAsync(CancellationToken ct)
         {
-            _onboarding.SetFlag(Flags.AlbumIntro);
             var open = false;
             var dialog = new DialogViewModel(_texts.Get(AlbumTexts.IntroTitle), RibbonStyle.Green)
             {
@@ -69,6 +68,8 @@ namespace Game.Features.Album
             dialog.Buttons.Add(new DialogButton(_texts.Get(AlbumTexts.IntroLater), ButtonStyle.WoodSmall, null));
             _audio.Play(SoundId.Win);
             await _dialogs.ShowAsync(dialog, ct);
+            // Set once the player saw it: a cancelled or failed open (or a kill while the layout loads) shows it again.
+            _onboarding.SetFlag(Flags.AlbumIntro);
             if (open)
             {
                 await OpenAsync(ct);

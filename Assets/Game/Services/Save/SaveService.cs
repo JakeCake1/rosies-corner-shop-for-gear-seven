@@ -44,8 +44,11 @@ namespace Game.Services.Save
         // and a semaphore's waiters resume on the main thread, which a flush on pause would block forever.
         private readonly object _ioLock = new object();
         private readonly Dictionary<string, string> _pending = new Dictionary<string, string>();
+        // Keys in the order they were saved: a monitor is not fair, so writes follow this queue, not the lock order.
+        private readonly Queue<string> _order = new Queue<string>();
         // Chunks whose stored data could not be read this session: saving them would overwrite data that may be fine.
         private readonly HashSet<string> _readOnly = new HashSet<string>();
+        private readonly HashSet<string> _warned = new HashSet<string>();
 
         /// <summary>
         /// Creates the service.
@@ -60,11 +63,18 @@ namespace Game.Services.Save
         public bool TryLoad(IProfileChunk chunk)
         {
             var key = StorageKey(chunk);
-            var main = TryParse(chunk, ReadSafely(key, false), out var mainError);
+            var mainText = ReadSafely(key, false);
+            var main = TryParse(chunk, mainText, out var mainError);
             if (main != null)
             {
                 chunk.Restore(main);
                 return true;
+            }
+
+            if (mainText != null && string.IsNullOrWhiteSpace(mainText))
+            {
+                // An empty file is a broken save too: left in place, the first write would move it over the backup.
+                mainError = "the file is empty";
             }
 
             if (mainError != null)
@@ -76,15 +86,18 @@ namespace Game.Services.Save
                 }
                 catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
                 {
-                    Debug.LogError($"Save '{key}' could not be quarantined: {e.Message}");
+                    // The file stays where it is. It may come from a newer build (or be locked), so the first save
+                    // of this session must not overwrite it.
+                    _readOnly.Add(key);
+                    Debug.LogError($"Save '{key}' could not be quarantined, it won't be overwritten this session: {e.Message}");
                 }
             }
 
             var backup = TryParse(chunk, ReadSafely(key, true), out var backupError);
             if (backup != null)
             {
-                // The data is in hand, so the chunk is safe to save again even if the main file was unreadable.
-                _readOnly.Remove(key);
+                // Stays read-only when the main file could not be read or moved aside: it may be intact (or newer)
+                // and a first write would replace it.
                 chunk.Restore(backup);
                 return true;
             }
@@ -111,6 +124,13 @@ namespace Game.Services.Save
             var isComplete = true;
             foreach (var chunk in chunks)
             {
+                if (_readOnly.Contains(StorageKey(chunk)))
+                {
+                    // Its stored file is unreadable: old data in memory would differ from what the next start loads.
+                    chunk.Restore(null);
+                    continue;
+                }
+
                 try
                 {
                     chunk.Restore(Deserialize(chunk, (JObject)root.DeepClone(), LegacyVersion));
@@ -124,9 +144,11 @@ namespace Game.Services.Save
             }
 
             var isWritten = TryWriteAll(chunks, out var isSkipped);
-            if (isWritten && isComplete && !isSkipped)
+            if (isWritten && !isSkipped)
             {
-                TryDeleteLegacy();
+                // An incomplete migration moves the file aside instead of keeping it as a source: a chunk that goes
+                // missing later (or is added by a future build) must start with defaults, not with old coins.
+                RetireLegacy(isComplete);
             }
             return true;
         }
@@ -145,11 +167,12 @@ namespace Game.Services.Save
             lock (_pending)
             {
                 _pending[key] = json;
+                _order.Enqueue(key);
             }
 
             // A write of its own per call, never queued behind the main thread: after the app is paused the OS may
             // stop the player loop, and a continuation waiting for it would never run.
-            await UniTask.RunOnThreadPool(() => WritePending(key), cancellationToken: ct);
+            await UniTask.RunOnThreadPool(WritePending, cancellationToken: ct);
         }
 
         /// <inheritdoc/>
@@ -238,25 +261,39 @@ namespace Game.Services.Save
                 return false;
             }
 
-            Debug.LogWarning($"Save '{key}' is not written: it could not be read at startup.");
+            if (_warned.Add(key))
+            {
+                Debug.LogWarning($"Save '{key}' is not written: it could not be read at startup.");
+            }
             return true;
         }
 
-        private void WritePending(string key)
+        // Writes everything queued so far, oldest first, so a chunk saved before another one (the wallet before the
+        // album that marks its bonus done) reaches the disk before it, whichever thread gets the lock first.
+        private void WritePending()
         {
             lock (_ioLock)
             {
-                string json;
-                lock (_pending)
+                while (true)
                 {
-                    // Taken inside the I/O lock: a snapshot can't be written after a newer one.
-                    if (!_pending.Remove(key, out json))
+                    string key;
+                    string json;
+                    lock (_pending)
                     {
-                        return;
-                    }
-                }
+                        // Taken inside the I/O lock: a snapshot can't be written after a newer one.
+                        if (!_order.TryDequeue(out key))
+                        {
+                            return;
+                        }
 
-                TryWrite(key, json);
+                        if (!_pending.Remove(key, out json))
+                        {
+                            continue;
+                        }
+                    }
+
+                    TryWrite(key, json);
+                }
             }
         }
 
@@ -364,17 +401,24 @@ namespace Game.Services.Save
             }
         }
 
-        private void TryDeleteLegacy()
+        private void RetireLegacy(bool isComplete)
         {
             try
             {
-                _storage.Delete(LegacyKey);
+                if (isComplete)
+                {
+                    _storage.Delete(LegacyKey);
+                }
+                else
+                {
+                    _storage.Quarantine(LegacyKey);
+                }
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
-                // Every chunk file exists now (or is skipped as unreadable); a chunk that later goes missing would be
-                // refilled from this file, so it stays a leftover to clean up.
-                Debug.LogError("The old profile could not be deleted: " + e.Message);
+                // Every chunk file exists now; a chunk that later goes missing would be refilled from this file, so
+                // it stays a leftover to clean up.
+                Debug.LogError("The old profile could not be retired: " + e.Message);
             }
         }
     }

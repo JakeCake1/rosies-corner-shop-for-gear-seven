@@ -36,6 +36,17 @@ namespace Game.Services.UI
         private ObjectPool<VisualElement> _particles;
 
         /// <summary>
+        /// Converts a fraction of the panel to panel space.
+        /// </summary>
+        /// <param name="fraction">(0,0) is the top left corner, (1,1) the bottom right.</param>
+        /// <returns>The point in panel space; the zero vector while the element is not in a panel yet.</returns>
+        public Vector2 PanelPoint(Vector2 fraction)
+        {
+            var panel = Root.panel;
+            return panel == null ? Vector2.zero : Vector2.Scale(panel.visualTree.worldBound.size, fraction);
+        }
+
+        /// <summary>
         /// Bursts particles from a point.
         /// </summary>
         /// <param name="panelPosition">Origin in panel space (e.g. <c>worldBound.center</c>).</param>

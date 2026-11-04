@@ -117,27 +117,11 @@ namespace Game.Features.Settings
             // On the home screen the reset comes first so the reloaded home shows the fresh profile.
             if (isInLevel)
             {
-                var cancelled = false;
-                try
-                {
-                    await _flow.GoHomeAsync();
-                }
-                catch (OperationCanceledException)
-                {
-                    // Cancelled by app shutdown: the scope is disposed, the profile must not be touched.
-                    cancelled = true;
-                    throw;
-                }
-                finally
-                {
-                    // The player confirmed the reset: it happens even if the way home fails. The home screen decides
-                    // its milestones after a delay, so it sees the fresh profile.
-                    if (!cancelled)
-                    {
-                        _profile.ResetProgress();
-                    }
-                }
-
+                // Only after the way home succeeded: if it fails (or is cancelled by shutdown) the level's scope may
+                // still be alive and the profile must not change under it. The player can reset again from home.
+                // The home screen decides its milestones after a delay, so it sees the fresh profile.
+                await _flow.GoHomeAsync();
+                _profile.ResetProgress();
                 return;
             }
 

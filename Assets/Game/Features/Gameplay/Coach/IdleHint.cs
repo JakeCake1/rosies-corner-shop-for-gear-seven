@@ -38,6 +38,22 @@ namespace Game.Features.Gameplay.Coach
         }
 
         /// <summary>
+        /// Moves the glow to the best move of the changed board (a shipment or booster changed it, or a resize
+        /// rebuilt the board and dropped the glow). Does nothing while no hint is shown.
+        /// </summary>
+        public void Refresh()
+        {
+            if (!_isHintShown)
+            {
+                return;
+            }
+
+            var hint = _context.Session.BestHint();
+            _isHintShown = hint != null;
+            _context.Board.SetHint(hint?.Id ?? 0);
+        }
+
+        /// <summary>
         /// Shows the best move once the player has been idle long enough; it stays lit until the next <see cref="Touch"/>.
         /// </summary>
         public void Tick()

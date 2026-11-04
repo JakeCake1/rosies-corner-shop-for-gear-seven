@@ -14,6 +14,12 @@ namespace Game.Services.UI
         /// </summary>
         protected CompositeDisposable Disposables { get; } = new CompositeDisposable();
 
+        /// <summary>
+        /// True when the window was closed because another window of its type opened, not by the player. Whoever
+        /// waits for an answer must not treat this as a choice.
+        /// </summary>
+        public bool IsReplaced { get; internal set; }
+
         /// <inheritdoc/>
         public virtual void Dispose() => Disposables.Dispose();
     }

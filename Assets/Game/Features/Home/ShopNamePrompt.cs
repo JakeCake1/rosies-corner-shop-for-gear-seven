@@ -54,7 +54,6 @@ namespace Game.Features.Home
         /// <inheritdoc/>
         public async UniTask AskAsync(CancellationToken ct)
         {
-            _onboarding.SetFlag(Flags.NameAsked);
             var ideas = IdeaKeys.Select(_texts.Get).ToArray();
             var dialog = new DialogViewModel(_texts.Get(HomeTexts.NameTitle), RibbonStyle.Green)
             {
@@ -76,10 +75,12 @@ namespace Game.Features.Home
 
                 _shop.Rename(name);
                 _audio.Play(SoundId.Win);
-                _overlay.Burst(new Vector3(Screen.width / 2f, Screen.height * 0.8f, 0f), EffectKind.Confetti, 50);
+                _overlay.Burst(_overlay.PanelPoint(new Vector2(0.5f, 0.2f)), EffectKind.Confetti, 50);
             }));
             dialog.Buttons.Add(new DialogButton(_texts.Get(HomeTexts.NameKeep), ButtonStyle.WoodSmall, null));
             await _dialogs.ShowAsync(dialog, ct);
+            // Set once the player saw it: a cancelled or failed open (or a kill while the layout loads) asks again.
+            _onboarding.SetFlag(Flags.NameAsked);
         }
     }
 }

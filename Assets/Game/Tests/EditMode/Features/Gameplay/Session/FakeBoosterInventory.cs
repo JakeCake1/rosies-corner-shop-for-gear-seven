@@ -13,7 +13,7 @@ namespace Game.Tests.EditMode.Features.Gameplay.Session
 
         public int Get(string id) => _owned.TryGetValue(id, out var count) ? count : 0;
 
-        public void Add(string id, int delta) => _owned[id] = Get(id) + delta;
+        public void Add(string id, int delta) => _owned[id] = Math.Max(0, Get(id) + delta);
 
         public int GetStart(string id) => 0;
 

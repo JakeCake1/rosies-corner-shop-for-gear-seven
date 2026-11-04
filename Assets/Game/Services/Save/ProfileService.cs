@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using UnityEngine;
 
 namespace Game.Services.Save
 {
@@ -78,9 +79,17 @@ namespace Game.Services.Save
                 return;
             }
 
+            // One broken chunk must not skip the others, nor the caller's work after SaveAll (pausing the audio).
             foreach (var chunk in _chunks)
             {
-                _save.Save(chunk);
+                try
+                {
+                    _save.Save(chunk);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Saving chunk '{chunk.Key}' failed: {e}");
+                }
             }
         }
 

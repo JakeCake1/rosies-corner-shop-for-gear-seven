@@ -85,6 +85,18 @@ namespace Game.Tests.EditMode.Features.Settings
             Assert.That(_log, Is.EqualTo(new[] { "home" }));
         }
 
+        [Test]
+        public void Reset_InLevel_WhenWayHomeFails_DoesNotTouchTheProfile()
+        {
+            Open(() => { });
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex("home failed"));
+
+            ConfirmReset();
+            _goHome.TrySetException(new InvalidOperationException("home failed"));
+
+            Assert.That(_log, Is.EqualTo(new[] { "home" }), "the level's scope may still be alive");
+        }
+
         private void Open(Action restartLevel)
         {
             _screen.OpenAsync(restartLevel, CancellationToken.None).Forget();
@@ -213,6 +225,8 @@ namespace Game.Tests.EditMode.Features.Settings
             public void ClearCoach()
             {
             }
+
+            public Vector2 PanelPoint(Vector2 fraction) => fraction;
 
             public void Burst(Vector2 panelPosition, EffectKind kind, int count, Color[] colors = null)
             {
