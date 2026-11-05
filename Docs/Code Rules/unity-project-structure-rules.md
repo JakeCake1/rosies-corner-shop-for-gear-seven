@@ -17,11 +17,10 @@ the most expensive single task of the project this layout comes from. A new proj
   packages to `Packages/manifest.json` (UniTask, UniRx and VContainer by git URL; existing entries stay), writes
   `.gitignore`, `.gitattributes` and `.mcp.json`, and copies `Docs/Code Rules/`, the generic part of `AGENTS.md`
   and a `CLAUDE.md` that imports it. DOTween can't come from a manifest: import it by hand before the first compile. It never overwrites
-  existing files, so it is safe to re-run. In a project created from the template, create the layout by hand if the
-  script is not there.
-- **WHEN** working in the template repository and the scaffold and this file disagree → **DO** follow this file and
-  update `scaffold.py` in the same change (its test is `scaffold/tests/test_scaffold.py`; in a project that carries the tool, both live under
-  `Tools/ProjectTemplate/`).
+  existing files, so it is safe to re-run. A new project is normally created with `python kit.py init` from the kit
+  repository, which runs this scaffold and sets up the workflow; `kit.py sync` keeps the rules and workflow current.
+- **WHEN** working in the kit repository and the scaffold and this file disagree → **DO** follow this file and
+  update `scaffold.py` in the same change (its test is `scaffold/tests/test_scaffold.py`).
 - **WHEN** a folder of the baseline stays empty → **DO** keep it; it marks where that kind of code or asset goes.
   Add feature folders, service folders and `Content/<Kind>/<Feature>` folders only when the first file needs them.
 

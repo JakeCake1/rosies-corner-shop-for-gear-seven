@@ -93,16 +93,14 @@ Reference skeletons in the topic files show structure only. When writing real co
 - **Agent bridge:** `Game.Bootstrap.Editor.Agent.AgentBridge` logs every compilation to `AgentBridge/compile.log`
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
-- **Project template:** this project's layout is the baseline for new projects on the same stack
-  (`unity-project-structure-rules.md`, "Baseline for new projects"); `Tools/ProjectTemplate/scaffold.py` creates it. `Tools/ProjectTemplate/export_kit.py <folder>` exports the reusable part (rules, workflow,
-  scaffold, generic docs) as the `unity-agent-kit` repository; it fails if a project name leaks into the kit. The kit's `scaffold/` (C# skeletons, manifest
-  entries, `scaffold.py`) is owned by the kit repository after the first export; an export never overwrites it, and
-  `Tools/ProjectTemplate/scaffold.py` here stays the older layout-only version until `kit sync` replaces it.
+- **Agent kit:** rules (`Docs/Code Rules/`), `Tools/Workflow`, the slash commands, the GitHub Action, the generic
+  docs and the kit part of this file are managed by the `unity-agent-kit` repository (`../unity-agent-kit`); change
+  them there and run `python ../unity-agent-kit/kit.py sync .` here (it asks before overwriting a managed file that
+  was changed in this project; `.kit-version` records the synced version). Project-owned: `Tools/Workflow/config.json`,
+  this section, `CLAUDE.md`, game code and content. The layout of this project is the baseline of the kit's scaffold.
 - **Resource tracking:** `Tools/Workflow` measures agent token usage per implementation attempt and sends it to
   Langfuse (`Tools/Langfuse` is the older per-phase report, run by hand).
 - **Implementation workflow:** every implementation attempt is tied to a Linear issue (`/impl-start`, `/handoff`);
   rules in `CLAUDE.md`, setup in `Docs/agent-workflow.md`, scripts in `Tools/Workflow`.
 - **Self-check** (extra checks of `/handoff` step 3): when `Features/Gameplay/Model` changed, `PrototypeParityTests`
-  must pass; UXML/USS screenshots are compared at the panel size 390×844 with the mockups in `screens.rar`; for
-  `Tools/ProjectTemplate` changes run `python Tools/ProjectTemplate/tests/test_scaffold.py` and
-  `python Tools/ProjectTemplate/tests/test_export_kit.py`.
+  must pass; UXML/USS screenshots are compared at the panel size 390×844 with the mockups in `screens.rar`.
