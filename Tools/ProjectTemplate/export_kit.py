@@ -140,7 +140,8 @@ def export(target, force=False):
         if existing and not force:
             sys.exit(f"{target} is not empty; use --force to rewrite the kit folders")
         for folder in KIT_FOLDERS:
-            shutil.rmtree(os.path.join(target, folder)) if os.path.isdir(os.path.join(target, folder)) else None
+            if os.path.isdir(os.path.join(target, folder)):
+                shutil.rmtree(os.path.join(target, folder))
         for name in KIT_FILES:
             if os.path.isfile(os.path.join(target, name)):
                 os.remove(os.path.join(target, name))
