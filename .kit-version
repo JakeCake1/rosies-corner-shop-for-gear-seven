@@ -1,6 +1,6 @@
 {
   "kit": "unity-agent-kit",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "files": {
     ".claude/commands/handoff.md": "2a7ffb6f67dcfda855f2c64ed2563904e3ada9c34b383ae7d51a63b540d90660",
     ".claude/commands/impl-start.md": "9360702d5d7d9a671d2e1eb50a5af44de8d1eb0fa01ad4a47fa0288dfaef556b",
