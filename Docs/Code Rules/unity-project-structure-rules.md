@@ -12,7 +12,11 @@ the most expensive single task of the project this layout comes from. A new proj
 - **WHEN** starting a new Unity project on this stack → **DO** run
   `python scaffold/scaffold.py <project> --root <Root> --with-rules` from the template repository
   (`unity-agent-kit`, or a project created from it) before the first line of code. It creates the folders and assembly definitions below and
-  copies `Docs/Code Rules/`, the generic part of `AGENTS.md` and a `CLAUDE.md` that imports it. It never overwrites
+  writes compilable C# skeletons of the baseline services (asset provider, save and profile, UI base, localization,
+  pooling, game state machine, composition root) with their EditMode tests (`--no-code` skips them), adds the stack's
+  packages to `Packages/manifest.json` (UniTask, UniRx and VContainer by git URL; existing entries stay), writes
+  `.gitignore`, `.gitattributes` and `.mcp.json`, and copies `Docs/Code Rules/`, the generic part of `AGENTS.md`
+  and a `CLAUDE.md` that imports it. DOTween can't come from a manifest: import it by hand before the first compile. It never overwrites
   existing files, so it is safe to re-run. In a project created from the template, create the layout by hand if the
   script is not there.
 - **WHEN** working in the template repository and the scaffold and this file disagree → **DO** follow this file and

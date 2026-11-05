@@ -7,7 +7,8 @@ Kit layout (what is copied from where):
   rules/       <- Docs/Code Rules/*.md
   AGENTS.md    <- AGENTS.md without its "This project" section, plus an empty one
   workflow/    <- Tools/Workflow (installed by a project as Tools/Workflow); config.json is written generic
-  scaffold/    <- Tools/ProjectTemplate without this script
+  scaffold/    <- Tools/ProjectTemplate without this script, only when the kit has no scaffold/ yet: from then on
+                  the kit owns it (scaffold.py, the C# template, its tests) and an export never touches it
   docs/        <- the generic Docs/*.md (agent-workflow, save-system, localization)
   kit.json, README.md
 
@@ -27,9 +28,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.abspath(os.path.join(HERE, "..", ".."))
 PROJECT_SECTION = "\n## This project"
-KIT_VERSION = "0.1.0"
+KIT_VERSION = "0.2.0"
 GENERIC_DOCS = ["agent-workflow.md", "save-system.md", "localization.md"]
-KIT_FOLDERS = ["rules", "workflow", "scaffold", "docs"]
+KIT_FOLDERS = ["rules", "workflow", "docs"]  # rewritten on every export; scaffold/ is owned by the kit
 KIT_FILES = ["AGENTS.md", "README.md", "kit.json", ".gitattributes"]
 GITATTRIBUTES = "# Shell scripts run by Git Bash on Windows must keep LF line endings\n*.sh text eol=lf\n"
 # project names that must not leak into kit files; test fixtures may use issue ids of the source team
@@ -47,20 +48,27 @@ Addressables, UI Toolkit. Extracted from a finished project; `version` is in `ki
 | `rules/` | Code rules and the everyday `digest.md` | `Docs/Code Rules/` |
 | `AGENTS.md` | Entry point for agents: which rule file to load, priorities. Ends with an empty "This project" section | `AGENTS.md` |
 | `workflow/` | Linear issue + Langfuse usage workflow, hooks, `/impl-start`, `/handoff`, merge-to-Done action | `Tools/Workflow/` |
-| `scaffold/` | `scaffold.py`: folders and assembly definitions of the baseline layout | run from here |
+| `scaffold/` | `scaffold.py`: baseline folders, assembly definitions, C# skeletons of the core services (`template/`), `Packages/manifest.json` entries, `.gitignore`, `.gitattributes`, `.mcp.json` | run from here |
 | `docs/` | Setup of the workflow, save system, localization | `Docs/` |
 
-New project: create the Unity project, then
+New project: create the Unity project (6000.3.x), then
 
 ```
 python scaffold/scaffold.py <unity project> --root <Root> --with-rules
 ```
 
-and copy `workflow/` to `<project>/Tools/Workflow/`, set `linear.team_key` in its `config.json` and follow
+It never overwrites files and can be re-run. `--no-code` skips the C# skeletons. The skeletons are the asset
+provider, save and profile chunks, UI base, localization, pooling, game state machine and composition root, each
+with its EditMode tests. Packages: UniTask and VContainer by git tag, UniRx from OpenUPM, the rest from the Unity
+registry. DOTween (free, Asset Store) can't come from a manifest: import it by hand before the first compile.
+`scaffold/` is owned by this repository: an export from the source project never overwrites it.
+
+Then copy `workflow/` to `<project>/Tools/Workflow/`, set `linear.team_key` in its `config.json` and follow
 `docs/agent-workflow.md` ("Install"). `kit init` and `kit sync` that do this in one step are planned.
 
 Tests: `python workflow/tests/test_scenarios.py`, `test_done_on_merge.py`, `test_guard.py`, `test_adoption.py`,
-`python scaffold/tests/test_scaffold.py`.
+`python scaffold/tests/test_scaffold.py`. The Unity compile test (`scaffold/tests/test_unity_compile.py`, needs
+`UNITY_EDITOR` and `DOTWEEN_SOURCE`, several minutes) scaffolds a fresh project and runs the skeletons' EditMode tests.
 """
 
 
@@ -132,7 +140,8 @@ def export(target, force=False):
         if existing and not force:
             sys.exit(f"{target} is not empty; use --force to rewrite the kit folders")
         for folder in KIT_FOLDERS:
-            shutil.rmtree(os.path.join(target, folder)) if os.path.isdir(os.path.join(target, folder)) else None
+            if os.path.isdir(os.path.join(target, folder)):
+                shutil.rmtree(os.path.join(target, folder))
         for name in KIT_FILES:
             if os.path.isfile(os.path.join(target, name)):
                 os.remove(os.path.join(target, name))
@@ -141,7 +150,8 @@ def export(target, force=False):
     shutil.copytree(os.path.join(SOURCE, "Docs", "Code Rules"), os.path.join(target, "rules"))
     copy_tree(os.path.join(SOURCE, "Tools", "Workflow"), os.path.join(target, "workflow"))
     write(os.path.join(target, "workflow", "config.json"), json.dumps(generic_config(), indent=2) + "\n")
-    copy_tree(os.path.join(SOURCE, "Tools", "ProjectTemplate"), os.path.join(target, "scaffold"))
+    if not os.path.isdir(os.path.join(target, "scaffold")):  # seed only; the kit evolves it afterwards
+        copy_tree(os.path.join(SOURCE, "Tools", "ProjectTemplate"), os.path.join(target, "scaffold"))
     os.makedirs(os.path.join(target, "docs"), exist_ok=True)
     for name in GENERIC_DOCS:
         shutil.copyfile(os.path.join(SOURCE, "Docs", name), os.path.join(target, "docs", name))
