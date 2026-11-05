@@ -95,7 +95,9 @@ Reference skeletons in the topic files show structure only. When writing real co
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
 - **Project template:** this project's layout is the baseline for new projects on the same stack
   (`unity-project-structure-rules.md`, "Baseline for new projects"); `Tools/ProjectTemplate/scaffold.py` creates it. `Tools/ProjectTemplate/export_kit.py <folder>` exports the reusable part (rules, workflow,
-  scaffold, generic docs) as the `unity-agent-kit` repository; it fails if a project name leaks into the kit.
+  scaffold, generic docs) as the `unity-agent-kit` repository; it fails if a project name leaks into the kit. The kit's `scaffold/` (C# skeletons, manifest
+  entries, `scaffold.py`) is owned by the kit repository after the first export; an export never overwrites it, and
+  `Tools/ProjectTemplate/scaffold.py` here stays the older layout-only version until `kit sync` replaces it.
 - **Resource tracking:** `Tools/Workflow` measures agent token usage per implementation attempt and sends it to
   Langfuse (`Tools/Langfuse` is the older per-phase report, run by hand).
 - **Implementation workflow:** every implementation attempt is tied to a Linear issue (`/impl-start`, `/handoff`);

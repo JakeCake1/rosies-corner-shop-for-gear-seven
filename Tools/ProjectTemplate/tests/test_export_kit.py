@@ -45,6 +45,13 @@ def main():
         assert "--force" in out, out
         run(EXPORT, kit, "--force")
 
+        # scaffold/ belongs to the kit once it exists: a forced export keeps its files
+        mine = os.path.join(kit, "scaffold", "template", "kept.txt")
+        os.makedirs(os.path.dirname(mine))
+        open(mine, "w").write("kit-owned")
+        run(EXPORT, kit, "--force")
+        assert open(mine).read() == "kit-owned"
+
         # the kit's own scaffold finds its rules next to itself
         project = os.path.join(tmp, "project")
         os.makedirs(os.path.join(project, "Assets"))
