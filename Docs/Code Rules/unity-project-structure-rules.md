@@ -4,6 +4,69 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Applies when creating fil
 
 ---
 
+## Baseline for new projects
+
+Moving code and assets after the fact is expensive: the EVG-10 restructure of Rosie's Corner Shop (976 files) was
+the most expensive single task of that project. A new project starts in its final layout instead.
+
+- **WHEN** starting a new Unity project on this stack → **DO** run
+  `python Tools/ProjectTemplate/scaffold.py <project> --root <Root> --with-rules` from the template repository
+  (Rosie's Corner Shop) before the first line of code. It creates the folders and assembly definitions below and
+  copies `Docs/Code Rules/`, the generic part of `AGENTS.md` and a `CLAUDE.md` that imports it. It never overwrites
+  existing files, so it is safe to re-run. In a project created from the template, create the layout by hand if the
+  script is not there.
+- **WHEN** working in the template repository and the scaffold and this file disagree → **DO** follow this file and
+  update `scaffold.py` in the same change (its test is `Tools/ProjectTemplate/tests/test_scaffold.py`).
+- **WHEN** a folder of the baseline stays empty → **DO** keep it; it marks where that kind of code or asset goes.
+  Add feature folders, service folders and `Content/<Kind>/<Feature>` folders only when the first file needs them.
+
+Baseline tree, under `Assets/<Root>/` (Rosie's Corner Shop uses `Game`):
+
+```
+Bootstrap/                 <Root>.Bootstrap.asmdef
+    Composition/           — ProjectLifetimeScope, scene LifetimeScopes
+    Editor/<Tool>/         — Editor-only tools; create the folder together with its Editor .asmdef (an
+                             `Editor` folder inside a runtime asmdef is not editor-only)
+Flow/                      <Root>.Flow.asmdef — GameStateMachine
+    States/                — one state per file
+Features/                  <Root>.Features.asmdef — Features/<Feature>/ added per feature
+Services/                  <Root>.Services.asmdef
+    Assets/                — IAssetProvider (Addressables)
+    Pooling/               — ElementPool<T>, GameObjectPool<T>
+    Save/                  — save storage and profile
+    UI/                    — IUIService, View / ViewModel / WindowView base classes
+        Elements/          — ElementView, VisualElement helpers and tweens
+Content/
+    Data/                  — Data/<Service or Feature>/ configs and JSON
+    Prefabs/
+    Scenes/
+    Screens/Shared/        — Root.uxml, Game.uss, Kit.uss, PanelSettings; Screens/<Feature>/ per feature
+    Sounds/
+    Visual/Atlases/, Visual/Fonts/, Visual/UI/ — plus Visual/<Feature>/ per feature
+Tests/
+    EditMode/              <Root>.Tests.EditMode.asmdef — Features/, Flow/, Services/ mirror production
+```
+
+Assembly definitions (all `autoReferenced: false`):
+
+| Assembly | References | Notes |
+|---|---|---|
+| `<Root>.Services` | stack only | never references Features, Flow or Bootstrap |
+| `<Root>.Features` | Services + stack | |
+| `<Root>.Flow` | Features, Services + stack | |
+| `<Root>.Bootstrap` | Flow, Features, Services + stack | composition root, references everything |
+| `<Root>.Tests.EditMode` | Services, Features, Flow + stack + test runner | Editor only, `UNITY_INCLUDE_TESTS`, `nunit.framework.dll` |
+| `<Root>.Bootstrap.Editor.<Tool>` | what the tool needs | Editor only, one per tool |
+
+Stack references: `UniTask`, `UniTask.Addressables`, `UniTask.DOTween`, `UniRx`, `VContainer`, `DOTween.Modules`,
+`Unity.Addressables`, `Unity.ResourceManager`. Add a package assembly (`Unity.Localization`,
+`Newtonsoft.Json.dll`, ...) to the assemblies that use it when the package is added.
+
+Outside `Assets/<Root>/`, only what packages require: `Assets/Plugins/` (DOTween), `Assets/Resources/` for
+`DOTweenSettings` only, `Assets/AddressableAssetsData/`.
+
+---
+
 ## Top-level layout
 
 ```

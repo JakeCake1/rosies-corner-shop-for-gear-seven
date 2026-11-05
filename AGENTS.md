@@ -10,8 +10,9 @@ Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween*
 
 | File | Use when |
 |---|---|
-| `Docs/Code Rules/unity-tech-stack-rules.md` | Always. Defines the allowed libraries and how to use them. |
-| `Docs/Code Rules/unity-code-style-rules.md` | Always when writing or editing C# code. Naming, formatting, member ordering, comments. |
+| `Docs/Code Rules/digest.md` | Always. The everyday rules of the two files below, each with its source section (~3k tokens). |
+| `Docs/Code Rules/unity-tech-stack-rules.md` | Adding a library or a new use of one, or when a stack rule in the digest is unclear. |
+| `Docs/Code Rules/unity-code-style-rules.md` | A style question the digest doesn't answer. Naming, formatting, member ordering, comments. |
 | `Docs/Code Rules/unity-project-structure-rules.md` | Creating files or folders, adding a feature or service, moving code, adding `.asmdef`s. |
 | `Docs/Code Rules/unity-testing-rules.md` | Adding or changing logic in `Features/` or `Services/`, adding or changing configs, fixing bugs, writing tests. |
 | `Docs/Code Rules/unity-architecture-rules.md` | Designing classes, choosing patterns, refactoring, object pooling, game flow and state machines. |
@@ -21,7 +22,7 @@ Stack: **Unity 6000.3.25f1**, **VContainer**, **UniTask**, **UniRx**, **DOTween*
 
 Any task that spawns or removes objects repeatedly (projectiles, VFX, enemies, list items) must follow the **Object Pooling** section of `unity-architecture-rules.md`.
 
-Load `unity-tech-stack-rules.md` for every task and `unity-code-style-rules.md` for every task that touches C# code, plus the files whose topic the task touches. Do not load files the task doesn't need.
+Load `digest.md` for every task, plus the files whose topic the task touches. Open `unity-tech-stack-rules.md` or `unity-code-style-rules.md` only for the section a digest rule names when you need more than the digest says. The full files stay the source of truth; when they and the digest disagree, the full file wins. Do not load files the task doesn't need.
 
 ---
 
@@ -92,6 +93,8 @@ Reference skeletons in the topic files show structure only. When writing real co
 - **Agent bridge:** `Game.Bootstrap.Editor.Agent.AgentBridge` logs every compilation to `AgentBridge/compile.log`
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
+- **Project template:** this project's layout is the baseline for new projects on the same stack
+  (`unity-project-structure-rules.md`, "Baseline for new projects"); `Tools/ProjectTemplate/scaffold.py` creates it.
 - **Resource tracking:** `Tools/Workflow` measures agent token usage per implementation attempt and sends it to
   Langfuse (`Tools/Langfuse` is the older per-phase report, run by hand).
 - **Implementation workflow:** every implementation attempt is tied to a Linear issue (`/impl-start`, `/handoff`);
