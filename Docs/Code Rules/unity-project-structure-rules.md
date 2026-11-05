@@ -6,21 +6,22 @@ Format: each rule is `WHEN <trigger> → DO <action>`. Applies when creating fil
 
 ## Baseline for new projects
 
-Moving code and assets after the fact is expensive: the EVG-10 restructure of Rosie's Corner Shop (976 files) was
-the most expensive single task of that project. A new project starts in its final layout instead.
+Moving code and assets after the fact is expensive: a late restructure of a finished project (976 files moved) was
+the most expensive single task of the project this layout comes from. A new project starts in its final layout instead.
 
 - **WHEN** starting a new Unity project on this stack → **DO** run
-  `python Tools/ProjectTemplate/scaffold.py <project> --root <Root> --with-rules` from the template repository
-  (Rosie's Corner Shop) before the first line of code. It creates the folders and assembly definitions below and
+  `python scaffold/scaffold.py <project> --root <Root> --with-rules` from the template repository
+  (`unity-agent-kit`, or a project created from it) before the first line of code. It creates the folders and assembly definitions below and
   copies `Docs/Code Rules/`, the generic part of `AGENTS.md` and a `CLAUDE.md` that imports it. It never overwrites
   existing files, so it is safe to re-run. In a project created from the template, create the layout by hand if the
   script is not there.
 - **WHEN** working in the template repository and the scaffold and this file disagree → **DO** follow this file and
-  update `scaffold.py` in the same change (its test is `Tools/ProjectTemplate/tests/test_scaffold.py`).
+  update `scaffold.py` in the same change (its test is `scaffold/tests/test_scaffold.py`; in a project that carries the tool, both live under
+  `Tools/ProjectTemplate/`).
 - **WHEN** a folder of the baseline stays empty → **DO** keep it; it marks where that kind of code or asset goes.
   Add feature folders, service folders and `Content/<Kind>/<Feature>` folders only when the first file needs them.
 
-Baseline tree, under `Assets/<Root>/` (Rosie's Corner Shop uses `Game`):
+Baseline tree, under `Assets/<Root>/` (the root name is a `--root` argument; `Game` by default):
 
 ```
 Bootstrap/                 <Root>.Bootstrap.asmdef

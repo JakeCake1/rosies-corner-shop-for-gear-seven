@@ -71,7 +71,7 @@ does not lift this, and reset progress is not persisted for such a chunk either.
 
 - **Per chunk:** bump `Version` on the owner and handle the old version in `Migrate(JObject data, int fromVersion)`;
   add a sample of the old format to `Tests/EditMode/Services/Save`.
-- **Single-file profile (builds before EVG-12):** when no chunk file exists, `profile.json` is read and every chunk
+- **Single-file profile (builds before the chunked profile):** when no chunk file exists, `profile.json` is read and every chunk
   takes its own fields from it (chunk field names match the old ones). The chunks are written immediately and
   `profile.json` is deleted only after all of them were written. A chunk whose fields can't be converted (wrong type)
   starts with defaults and the others are migrated as usual; `profile.json` is then moved aside (`profile.corrupt_<time>.json`) for investigation, so it can't refill a chunk that

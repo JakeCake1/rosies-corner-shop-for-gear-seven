@@ -553,7 +553,7 @@ def build_payload(attempt, ledger, cfg):
                       "endTimeUnixNano": nanos(rec["timestamp"]),
                       "attributes": [{"key": k, "value": otlp_value(v)} for k, v in attrs.items()]})
     resource = {"attributes": [{"key": "service.name", "value": {"stringValue": "claude-code-workflow"}}]}
-    scope = {"name": "rosie.workflow", "version": "1"}
+    scope = {"name": "agent.workflow", "version": "1"}
     return [{"resourceSpans": [{"resource": resource, "scopeSpans": [{"scope": scope, "spans": spans[i:i + 200]}]}]}
             for i in range(0, len(spans), 200)]
 
@@ -934,7 +934,7 @@ def rel_path(path):
 
 
 def index_settings():
-    return {"command": "codebase-memory-mcp", "name": "rosies-corner-shop", "timeout": 900,
+    return {"command": "codebase-memory-mcp", "name": os.path.basename(ROOT), "timeout": 900,
             **(load_config().get("code_index") or {})}
 
 

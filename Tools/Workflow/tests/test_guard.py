@@ -36,6 +36,7 @@ for command in ("gh pr view 5", "git push origin feature", "gh pr list --state o
 print("GUARD TESTS PASSED")
 
 # ---------------------------------------------------------------- code graph nudge
+import subprocess  # noqa: E402
 import tempfile  # noqa: E402
 
 w.NUDGE_DIR = os.path.join(tempfile.mkdtemp(), "nudges")
@@ -67,6 +68,10 @@ print("NUDGE TESTS PASSED")
 
 # ---------------------------------------------------------------- code index refresh
 state = tempfile.mkdtemp()
+repo = tempfile.mkdtemp()  # a throwaway git repo: the test does not depend on where the kit is checked out
+for args in (["init", "-q"], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "x"]):
+    subprocess.run(["git", *args], cwd=repo, check=True)
+w.ROOT = repo
 w.STATE, w.LOG_FILE = state, os.path.join(state, "hook.log")
 w.INDEX_HEAD_FILE, w.INDEX_LOCK_FILE = os.path.join(state, "index-head"), os.path.join(state, "reindex.lock")
 assert w.index_is_stale()  # never indexed

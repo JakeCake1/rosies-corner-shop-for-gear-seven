@@ -13,14 +13,13 @@ Hand off the active implementation attempt.
      `git diff origin/main...HEAD`. A criterion you did not meet is either done now or named in the report.
    - **Review:** run `/code-review` on the branch diff and fix the confirmed findings. Skip it only for changes to
      docs alone.
-   - **C# changes:** no compile errors in the Unity console; EditMode tests through Unity MCP (`run_tests`); when
-     `Features/Gameplay/Model` changed, `PrototypeParityTests` must pass.
-   - **UXML/USS changes:** take a Game view screenshot of each changed screen (panel 390×844) and compare it with
-     the matching mockup from `screens.rar`; fix visible differences.
+   - **C# changes:** no compile errors in the Unity console; EditMode tests through Unity MCP (`run_tests`).
+   - **UXML/USS changes:** take a Game view screenshot of each changed screen and compare it with the matching
+     mockup (the project's mockup set, see `AGENTS.md`); fix visible differences.
    - **Workflow changes** (`Tools/Workflow`): `python Tools/Workflow/tests/test_scenarios.py` and
      `python Tools/Workflow/tests/test_done_on_merge.py`.
-   - **Project template changes** (`Tools/ProjectTemplate`, the baseline layout in the structure rules):
-     `python Tools/ProjectTemplate/tests/test_scaffold.py`.
+   - **Project-specific checks:** every check listed under "Self-check" in the "This project" section of
+     `AGENTS.md`.
 4. Run `sh Tools/Workflow/wf.sh handoff` and pass each check you ran yourself as
    `--check-result "<name>: <result>"` (the review and the mockup comparison count as checks). The script pushes,
    creates or updates the PR (never a second one; the automatic draft PR is marked ready for review),

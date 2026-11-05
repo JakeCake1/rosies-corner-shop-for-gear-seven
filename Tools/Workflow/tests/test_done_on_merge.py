@@ -6,6 +6,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+os.environ["LINEAR_TEAM_KEY"] = "EVG"  # the test does not depend on the project's config.json
 import linear_done_on_merge as m  # noqa: E402
 
 
