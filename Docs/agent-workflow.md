@@ -13,9 +13,20 @@ Applies to this repository only (`Tools/Workflow/`, installed into `.claude/` an
 | End of each agent reply | `Stop` hook | If the issue branch has commits not on GitHub yet: push and create a **draft** PR when none is open. Status, attempt and Langfuse are not touched. Turn off with `"auto_draft_pr": false` in `Tools/Workflow/config.json`. |
 | Code edit without an attempt | `PreToolUse` guard | Edits under `Assets/`, `Packages/`, `ProjectSettings/` and Unity MCP script edits are denied. |
 | `git commit` | git `commit-msg`, `pre-commit` | Message must contain the active issue id; `.env` files, workflow state and key-like strings are blocked. |
-| `/handoff` | `wf.sh handoff` | Checks → push → create/update PR (draft → ready for review) → In Review → usage to Langfuse → attempt closed. Stops at the first failed step. |
+| `/handoff` | agent self-check, then `wf.sh handoff` | Self-check by the agent (below) → checks → push → create/update PR (draft → ready for review) → In Review → usage to Langfuse → attempt closed. Stops at the first failed step. |
 | `/impl-start EVG-12` after review | `wf.sh start` | Back to In Progress, new attempt linked to the same issue and PR. |
 | PR merged on GitHub | `.github/workflows/linear-done-on-merge.yml` | Issue → Done, unless another PR for it is still open. Closing without merge does nothing. |
+
+**Self-check before handoff** (`/handoff` step 3, EVG-27). About 36% of the agent cost up to EVG-26 went to
+review-fix issues opened after merge, so the agent checks its own work first:
+- every acceptance criterion of the issue is met by the branch diff;
+- `/code-review` on the diff, confirmed findings fixed (skipped for docs-only changes);
+- C#: no compile errors, EditMode tests pass, `PrototypeParityTests` when `Features/Gameplay/Model` changed;
+- UXML/USS: Game view screenshots of changed screens match the mockups in `screens.rar`;
+- `Tools/Workflow`: the workflow tests pass.
+
+The results go to the PR body through `--check-result`. The script doesn't enforce the self-check; it is part of
+the `/handoff` command text.
 
 Statuses are resolved from the team's own workflow (team DEV: Todo, In Progress, In Review, Done) by the names in
 `Tools/Workflow/config.json`; if a name is missing the script stops instead of guessing.
