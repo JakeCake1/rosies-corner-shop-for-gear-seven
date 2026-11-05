@@ -146,11 +146,12 @@ namespace Game.Tests.EditMode.Services.Save
         }
 
         [Test]
-        public void Save_WhenMainFileUnreadableButBackupLoads_IsSaved()
+        public void Save_WhenMainFileUnreadableButBackupLoads_KeepsTheMainFileUntouched()
         {
             _storage.Backup[TestKey] = "{\"version\":2,\"name\":\"from backup\"}";
             _storage.HasReadFailure = true;
             LogAssert.Expect(LogType.Error, new Regex("could not be read"));
+            LogAssert.Expect(LogType.Warning, new Regex("is not written"));
 
             var isLoaded = _service.TryLoad(_chunk);
             _storage.HasReadFailure = false;
@@ -158,7 +159,9 @@ namespace Game.Tests.EditMode.Services.Save
             _service.Save(_chunk);
 
             Assert.That(isLoaded, Is.True);
-            Assert.That(_storage.Main[TestKey], Does.Contain("progress"));
+            Assert.That(_chunk.Name, Is.EqualTo("progress"));
+            // The unreadable main file may be intact (or newer): the chunk stays read-only for this session.
+            Assert.That(_storage.Main.ContainsKey(TestKey), Is.False);
         }
 
         [Test]
