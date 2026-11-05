@@ -30,6 +30,8 @@ PROJECT_SECTION = "\n## This project"
 KIT_VERSION = "0.1.0"
 GENERIC_DOCS = ["agent-workflow.md", "save-system.md", "localization.md"]
 KIT_FOLDERS = ["rules", "workflow", "scaffold", "docs"]
+KIT_FILES = ["AGENTS.md", "README.md", "kit.json", ".gitattributes"]
+GITATTRIBUTES = "# Shell scripts run by Git Bash on Windows must keep LF line endings\n*.sh text eol=lf\n"
 # project names that must not leak into kit files; test fixtures may use issue ids of the source team
 LEAK = re.compile(r"rosie|JakeCake1|\bEVG-\d+|screens\.rar|PrototypeParity", re.I)
 SKIP_DIRS = {"__pycache__", ".pytest_cache"}
@@ -99,8 +101,11 @@ def write(path, text):
 
 def source_commit():
     try:
-        return subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=SOURCE, capture_output=True, text=True,
-                              check=True).stdout.strip()
+        sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=SOURCE, capture_output=True, text=True,
+                             check=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=SOURCE,
+                               capture_output=True, text=True, check=True).stdout.strip()
+        return sha + "+uncommitted" if dirty else sha
     except (OSError, subprocess.CalledProcessError):
         return "unknown"
 
@@ -127,7 +132,10 @@ def export(target, force=False):
         if existing and not force:
             sys.exit(f"{target} is not empty; use --force to rewrite the kit folders")
         for folder in KIT_FOLDERS:
-            shutil.rmtree(os.path.join(target, folder), ignore_errors=True)
+            shutil.rmtree(os.path.join(target, folder)) if os.path.isdir(os.path.join(target, folder)) else None
+        for name in KIT_FILES:
+            if os.path.isfile(os.path.join(target, name)):
+                os.remove(os.path.join(target, name))
     os.makedirs(target, exist_ok=True)
 
     shutil.copytree(os.path.join(SOURCE, "Docs", "Code Rules"), os.path.join(target, "rules"))
@@ -141,6 +149,7 @@ def export(target, force=False):
     write(os.path.join(target, "kit.json"), json.dumps({"name": "unity-agent-kit", "version": KIT_VERSION,
                                                         "exported_from": source_commit()}, indent=2) + "\n")
     write(os.path.join(target, "README.md"), README)
+    write(os.path.join(target, ".gitattributes"), GITATTRIBUTES)
     return find_leaks(target)
 
 

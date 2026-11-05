@@ -28,7 +28,7 @@ def main():
         for path in ("rules/digest.md", "rules/unity-tech-stack-rules.md", "AGENTS.md", "README.md", "kit.json",
                      "workflow/workflow.py", "workflow/wf.sh", "workflow/templates/commands/handoff.md",
                      "workflow/templates/linear-done-on-merge.yml", "workflow/tests/test_scenarios.py",
-                     "scaffold/scaffold.py", "scaffold/tests/test_scaffold.py", "docs/agent-workflow.md"):
+                     "scaffold/scaffold.py", ".gitattributes", "scaffold/tests/test_scaffold.py", "docs/agent-workflow.md"):
             assert os.path.exists(os.path.join(kit, *path.split("/"))), path
         for path in ("scaffold/export_kit.py", "scaffold/tests/test_export_kit.py", "docs/audio.md",
                      "docs/art-resources.md"):
