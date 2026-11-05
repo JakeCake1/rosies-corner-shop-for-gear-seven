@@ -31,6 +31,7 @@ Digest of the must-follow rules; the full files in `Docs/Code Rules/` are the so
 - Windows open via `IUIService`; layouts are `VisualTreeAsset`s loaded via `IAssetProvider`. Never build scenes/UI from editor scripts. (tech-stack §UI Toolkit)
 - Sometimes-shown elements: create on first show, remove from hierarchy when hidden. Query by name once in `OnAttached`. Pool repeats with `ElementPool<T>`. Non-clickable: `picking-mode="Ignore"`. (tech-stack §UI Toolkit)
 - Game flow: `GameStateMachine` singleton, states are plain classes with `Enter(ct)`/`Exit(ct)`, started from an entry point. (tech-stack §Game Flow)
+- Not in this digest, open tech-stack for: Addressables groups, scene loading, remote content, init (§Addressables); DOTween init and replayed tweens (§DOTween); UniTask Tracker, `WhenAny`, DOTween define (§UniTask); `CombineLatest`, mixing UniRx with UniTask (§UniRx); safe area (§UI Toolkit).
 
 ## Code style
 

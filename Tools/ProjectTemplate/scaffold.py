@@ -5,13 +5,14 @@ Usage: python Tools/ProjectTemplate/scaffold.py <unity project> [--root Game] [-
 
 The layout is described in `Docs/Code Rules/unity-project-structure-rules.md` ("Baseline for new projects").
 Existing files are never overwritten, so re-running only adds what is missing. Unity creates the .meta files on
-the next import. `--with-rules` also copies `Docs/Code Rules/` and `AGENTS.md` without its project-specific part.
+the next import. `--with-rules` also copies `Docs/Code Rules/`, `AGENTS.md` without its project-specific part and a CLAUDE.md
+that imports it.
 Standard library only.
 """
 import argparse
 import json
 import os
-import shutil
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +21,6 @@ PROJECT_SECTION = "\n## This project"
 
 FOLDERS = [
     "Bootstrap/Composition",
-    "Bootstrap/Editor",
     "Flow/States",
     "Features",
     "Services/Assets",
@@ -106,6 +106,8 @@ def scaffold(project, root, with_rules):
         write_new(os.path.join(project, "AGENTS.md"),
                   agents + "\n\n---\n\n## This project\n\n- Add the project's spec, conventions and tools here.\n",
                   created)
+        # Claude Code loads CLAUDE.md, not AGENTS.md; the import keeps a single source of rules
+        write_new(os.path.join(project, "CLAUDE.md"), "# CLAUDE.md\n\n@AGENTS.md\n", created)
     return created
 
 
@@ -113,8 +115,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("project", help="Unity project folder (the one that holds Assets/)")
     parser.add_argument("--root", default="Game", help="root code folder and namespace (default: Game)")
-    parser.add_argument("--with-rules", action="store_true", help="copy Docs/Code Rules and the generic AGENTS.md")
+    parser.add_argument("--with-rules", action="store_true", help="copy Docs/Code Rules, the generic AGENTS.md and a CLAUDE.md")
     args = parser.parse_args()
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", args.root):
+        sys.exit(f"--root {args.root!r} must be a C# identifier: it becomes the folder, asmdef and namespace root")
     if not os.path.isdir(os.path.join(args.project, "Assets")):
         sys.exit(f"{args.project} has no Assets/ folder; create the Unity project first")
     created = scaffold(args.project, args.root, args.with_rules)

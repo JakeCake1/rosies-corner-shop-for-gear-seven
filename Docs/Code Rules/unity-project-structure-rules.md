@@ -10,11 +10,13 @@ Moving code and assets after the fact is expensive: the EVG-10 restructure of Ro
 the most expensive single task of that project. A new project starts in its final layout instead.
 
 - **WHEN** starting a new Unity project on this stack → **DO** run
-  `python Tools/ProjectTemplate/scaffold.py <project> --root <Root> --with-rules` from this repository before the
-  first line of code. It creates the folders and assembly definitions below and copies `Docs/Code Rules/` and the
-  generic part of `AGENTS.md`. It never overwrites existing files, so it is safe to re-run.
-- **WHEN** the scaffold and this file disagree → **DO** follow this file and update `scaffold.py` in the same
-  change (its test is `Tools/ProjectTemplate/tests/test_scaffold.py`).
+  `python Tools/ProjectTemplate/scaffold.py <project> --root <Root> --with-rules` from the template repository
+  (Rosie's Corner Shop) before the first line of code. It creates the folders and assembly definitions below and
+  copies `Docs/Code Rules/`, the generic part of `AGENTS.md` and a `CLAUDE.md` that imports it. It never overwrites
+  existing files, so it is safe to re-run. In a project created from the template, create the layout by hand if the
+  script is not there.
+- **WHEN** working in the template repository and the scaffold and this file disagree → **DO** follow this file and
+  update `scaffold.py` in the same change (its test is `Tools/ProjectTemplate/tests/test_scaffold.py`).
 - **WHEN** a folder of the baseline stays empty → **DO** keep it; it marks where that kind of code or asset goes.
   Add feature folders, service folders and `Content/<Kind>/<Feature>` folders only when the first file needs them.
 
@@ -23,7 +25,8 @@ Baseline tree, under `Assets/<Root>/` (Rosie's Corner Shop uses `Game`):
 ```
 Bootstrap/                 <Root>.Bootstrap.asmdef
     Composition/           — ProjectLifetimeScope, scene LifetimeScopes
-    Editor/<Tool>/         — Editor-only tools, one Editor .asmdef each (added with the first tool)
+    Editor/<Tool>/         — Editor-only tools; create the folder together with its Editor .asmdef (an
+                             `Editor` folder inside a runtime asmdef is not editor-only)
 Flow/                      <Root>.Flow.asmdef — GameStateMachine
     States/                — one state per file
 Features/                  <Root>.Features.asmdef — Features/<Feature>/ added per feature

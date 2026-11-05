@@ -24,6 +24,7 @@ def main():
     try:
         run(tmp, ok=False)  # no Assets/: refuses
         os.makedirs(os.path.join(tmp, "Assets"))
+        run(tmp, "--root", "My-Game", ok=False)  # not a C# identifier
         out = run(tmp, "--root", "Tetra")
         base = os.path.join(tmp, "Assets", "Tetra")
         for folder in ("Bootstrap/Composition", "Flow/States", "Services/UI/Elements", "Content/Screens/Shared",
@@ -40,6 +41,7 @@ def main():
         assert "Tetra.Bootstrap" not in refs["Flow"] | refs["Features"]
         assert "created Assets/Tetra/Services/Tetra.Services.asmdef" in out, out
         assert not os.path.exists(os.path.join(tmp, "AGENTS.md"))
+        assert not os.path.exists(os.path.join(base, "Bootstrap", "Editor"))  # needs its own Editor asmdef first
 
         # re-run: nothing overwritten
         path = os.path.join(base, "Services", "Tetra.Services.asmdef")
@@ -52,6 +54,7 @@ def main():
         assert "Rosie" not in agents and "## Files" in agents and "## This project" in agents, agents[-300:]
         assert os.path.exists(os.path.join(tmp, "Docs", "Code Rules", "unity-project-structure-rules.md"))
         assert os.path.exists(os.path.join(tmp, "Docs", "Code Rules", "digest.md"))
+        assert "@AGENTS.md" in open(os.path.join(tmp, "CLAUDE.md"), encoding="utf-8").read()
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     print("SCAFFOLD TESTS PASSED")
