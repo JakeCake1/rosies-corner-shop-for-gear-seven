@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Creates the baseline folder layout and assembly definitions of Rosie's Corner Shop in a Unity project.
+"""Creates the baseline folder layout and assembly definitions of the Unity stack in a Unity project.
 
 Usage: python Tools/ProjectTemplate/scaffold.py <unity project> [--root Game] [--with-rules]
 
@@ -16,7 +16,11 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SOURCE = os.path.abspath(os.path.join(HERE, "..", ".."))
+# Two layouts: the kit repository (`scaffold/`, `rules/`, `AGENTS.md` side by side) and a project that carries
+# the tool in `Tools/ProjectTemplate/` with the rules in `Docs/Code Rules/`.
+KIT = os.path.isdir(os.path.join(HERE, "..", "rules"))
+SOURCE = os.path.abspath(os.path.join(HERE, "..") if KIT else os.path.join(HERE, "..", ".."))
+RULES = os.path.join(SOURCE, "rules") if KIT else os.path.join(SOURCE, "Docs", "Code Rules")
 PROJECT_SECTION = "\n## This project"
 
 FOLDERS = [
@@ -96,10 +100,9 @@ def scaffold(project, root, with_rules):
         path = os.path.join(base, *folder.split("/"), f"{root}.{name}.asmdef")
         write_new(path, json.dumps(asmdef(root, name, own, options), indent=4) + "\n", created)
     if with_rules:
-        rules = os.path.join(SOURCE, "Docs", "Code Rules")
-        for name in sorted(os.listdir(rules)):
+        for name in sorted(os.listdir(RULES)):
             if name.endswith(".md"):
-                with open(os.path.join(rules, name), encoding="utf-8") as f:
+                with open(os.path.join(RULES, name), encoding="utf-8") as f:
                     write_new(os.path.join(project, "Docs", "Code Rules", name), f.read(), created)
         with open(os.path.join(SOURCE, "AGENTS.md"), encoding="utf-8") as f:
             agents = f.read().split(PROJECT_SECTION)[0].rstrip()

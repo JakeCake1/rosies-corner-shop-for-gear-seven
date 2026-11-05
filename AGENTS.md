@@ -94,8 +94,13 @@ Reference skeletons in the topic files show structure only. When writing real co
   and executes commands written to `AgentBridge/command.txt` (`refresh`, `invoke Type.Method`, ...). Unity MCP
   (`com.coplaydev.unity-mcp`, stdio transport) is the preferred way to drive the Editor.
 - **Project template:** this project's layout is the baseline for new projects on the same stack
-  (`unity-project-structure-rules.md`, "Baseline for new projects"); `Tools/ProjectTemplate/scaffold.py` creates it.
+  (`unity-project-structure-rules.md`, "Baseline for new projects"); `Tools/ProjectTemplate/scaffold.py` creates it. `Tools/ProjectTemplate/export_kit.py <folder>` exports the reusable part (rules, workflow,
+  scaffold, generic docs) as the `unity-agent-kit` repository; it fails if a project name leaks into the kit.
 - **Resource tracking:** `Tools/Workflow` measures agent token usage per implementation attempt and sends it to
   Langfuse (`Tools/Langfuse` is the older per-phase report, run by hand).
 - **Implementation workflow:** every implementation attempt is tied to a Linear issue (`/impl-start`, `/handoff`);
   rules in `CLAUDE.md`, setup in `Docs/agent-workflow.md`, scripts in `Tools/Workflow`.
+- **Self-check** (extra checks of `/handoff` step 3): when `Features/Gameplay/Model` changed, `PrototypeParityTests`
+  must pass; UXML/USS screenshots are compared at the panel size 390×844 with the mockups in `screens.rar`; for
+  `Tools/ProjectTemplate` changes run `python Tools/ProjectTemplate/tests/test_scaffold.py` and
+  `python Tools/ProjectTemplate/tests/test_export_kit.py`.
