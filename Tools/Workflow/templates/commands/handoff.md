@@ -19,6 +19,8 @@ Hand off the active implementation attempt.
      the matching mockup from `screens.rar`; fix visible differences.
    - **Workflow changes** (`Tools/Workflow`): `python Tools/Workflow/tests/test_scenarios.py` and
      `python Tools/Workflow/tests/test_done_on_merge.py`.
+   - **Project template changes** (`Tools/ProjectTemplate`, the baseline layout in the structure rules):
+     `python Tools/ProjectTemplate/tests/test_scaffold.py`.
 4. Run `sh Tools/Workflow/wf.sh handoff` and pass each check you ran yourself as
    `--check-result "<name>: <result>"` (the review and the mockup comparison count as checks). The script pushes,
    creates or updates the PR (never a second one; the automatic draft PR is marked ready for review),
